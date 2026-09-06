@@ -716,6 +716,7 @@ for(let i=0; i<3; i++){
   const fireMesh = new THREE.Mesh(fireGeo, fireMaterial);
   fireMesh.position.set(0, 0, 0);
   coreGroup.add(fireMesh);
+  console.log("Fuego creado: fireMesh.visible=" + fireMesh.visible + ", fireMaterial=" + (fireMaterial ? "OK" : "undefined"));
   
   const fireLight = new THREE.PointLight(0xffaa00, 4, 150);
   fireLight.position.set(0, 0, 0);
