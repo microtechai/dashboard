@@ -489,7 +489,7 @@ let sidebarCollapsed = false;
 let isDragging=false, lastMouse={x:0,y:0};
 let targetRotX=0.3, targetRotY=0, rotX=0.3, rotY=0, camDist=100, camTargetDist=100;
 let time = 0;
-let coreIntensity = 1.0;
+let coreIntensity = 1.0 + Math.sin(time * 2) * 0.3;
 let hoveredNode = null;
 let loadingStarted = false;
 
@@ -567,7 +567,8 @@ canvas.addEventListener('wheel', e => {
 // CORE
 const coreGroup = new THREE.Group(); scene.add(coreGroup);
 const coreGeo = new THREE.IcosahedronGeometry(4.5, 2);
-const coreMat = new THREE.MeshPhongMaterial({color:0x4a9eff,emissive:0x1a3a6b,shininess:100,transparent:true,opacity:0.8});
+const coreMat = new THREE.MeshPhongMaterial({color:0x4a9eff,emissive:0x00ffff,shininess:100,transparent:true,opacity:0.8});
+const coreMatInt = {val: 0.6};
 const coreMesh = new THREE.Mesh(coreGeo, coreMat); coreGroup.add(coreMesh);
 const wireGeo = new THREE.IcosahedronGeometry(6, 1);
 const wireMat = new THREE.MeshBasicMaterial({color:0x4a9eff,wireframe:true,transparent:true,opacity:0.25});
@@ -589,6 +590,141 @@ for(let i=0; i<3; i++){
 }
 
 // NODE SPHERES
+  // === FIRE SHADER (GLSL) ===
+  // Fuego volumétrico con efecto de energía eléctrica
+  
+  const fireVertexShader = `
+    varying vec2 vUv;
+    varying vec3 vNormal;
+    
+    void main() {
+      vUv = (position.xy + 4.5) / 9.0;
+      vNormal = normalize(normalMatrix * normal);
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `;
+  
+  const fireFragmentShader = `
+    uniform float uTime;
+    uniform vec3 uColor1;
+    uniform vec3 uColor2;
+    uniform vec3 uColor3;
+    uniform float uSpeed;
+    uniform float uIntensity;
+    
+    varying vec2 vUv;
+    varying vec3 vNormal;
+    
+    vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+    vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+    vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
+    vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+    
+    float snoise(vec3 v) {
+      const vec2  C = vec2(1.0/6.0, 1.0/3.0);
+      const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
+      vec3 i  = floor(v + dot(v, C.yyy));
+      vec3 x0 = v - i + dot(i, C.xxx);
+      vec3 g = step(x0.yzx, x0.xyz);
+      vec3 l = 1.0 - g;
+      vec3 i1 = min(g.xyz, l.zxy);
+      vec3 i2 = max(g.xyz, l.zxy);
+      vec3 x1 = x0 - i1 + C.xxx;
+      vec3 x2 = x0 - i2 + C.yyy;
+      vec3 x3 = x0 - D.yyy;
+      i = mod289(i);
+      vec4 p = permute(permute(permute(i.z + vec4(0.0, i1.z, i2.z, 1.0)) + i.y + vec4(0.0, i1.y, i2.y, 1.0)) + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+      float n_ = 0.142857142857;
+      vec3  ns = n_ * D.wyz - D.xzx;
+      vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+      vec4 x_ = floor(j * ns.z);
+      vec4 y_ = floor(j - 7.0 * x_);
+      vec4 x = x_ *ns.x + ns.y;
+      vec4 y = y_ *ns.x + ns.y;
+      vec4 h = 1.0 - abs(x) - abs(y);
+      vec4 b0 = vec4(x.xy, y.xy);
+      vec4 b1 = vec4(x.zw, y.zw);
+      vec4 s0 = floor(b0)*2.0 + 1.0;
+      vec4 s1 = floor(b1)*2.0 + 1.0;
+      vec4 sh = -step(h, vec4(0.0));
+      vec4 a0 = b0.xzyw + s0*x0.www;
+      vec4 a1 = b1.xzyw + s1*x0.www;
+      vec3 p0 = vec3(a0.xy,h.x);
+      vec3 p1 = vec3(a0.zw,h.y);
+      vec3 p2 = vec3(a1.xy,h.z);
+      vec3 p3 = vec3(a1.zw,h.w);
+      vec4 n = p * ns.w + ns.z * vec4(0.0, 0.0, 0.0, 1.0);
+      vec3 t = 1.6 - n.x*x0 - n.y*x1 - n.z*x2 - n.w*x3;
+      vec4 m = max(0.6 - t, 0.0);
+      m = m * m;
+      m = m * m;
+      vec4 px = x0 + n.x * vec3(0.166666);
+      vec4 py = x1 + n.y * vec3(0.166666);
+      vec4 pz = x2 + n.z * vec3(0.166666);
+      vec4 pw = x3 + n.w * vec3(0.166666);
+      vec4 vx = px * ns.x;
+      vec4 vy = py * ns.x;
+      vec4 vz = pz * ns.x;
+      vec4 vw = pw * ns.x;
+      vec4 w0 = vx.yzx + s0.xzx * ns.y + s0.yzw;
+      vec4 w1 = vx.zxy + s1.xzx * ns.y + s1.yzw;
+      vec3 n0 = vec3(w0.x, w0.y, w0.z);
+      vec3 n1 = vec3(w1.x, w1.y, w1.z);
+      vec4 temp = mix(vec4(n0.x, n0.y, n0.z, 0.0), vec4(n1.x, n1.y, n1.z, 0.0), m.z);
+      vec3 grad = mix(vec3(temp.x, temp.y, temp.z), vec3(temp.y, temp.z, temp.w), m.y);
+      grad = normalize(grad);
+      return dot(grad, x0) * m.x;
+    }
+    
+    void main() {
+      float time = uTime * uSpeed;
+      vec3 pos = vec3(vUv.x, vUv.y, 0.0);
+      float noise1 = snoise(vec3(pos.x * 2.0 + time, pos.y * 2.0 - time, 0.0));
+      float noise2 = snoise(vec3(pos.x * 3.0 - time * 0.5, pos.y * 3.0 + time * 0.5, 0.5));
+      float noise3 = snoise(vec3(pos.x * 5.0 + time * 0.3, pos.y * 5.0 - time * 0.3, 1.0));
+      float fireNoise = (noise1 + noise2 * 0.5 + noise3 * 0.25) / 1.75;
+      float dist = distance(vUv, vec2(0.5));
+      float mask = 1.0 - smoothstep(0.4, 0.5, dist);
+      vec3 color = mix(uColor1, uColor2, smoothstep(-0.2, 0.5, fireNoise));
+      color = mix(color, uColor3, smoothstep(0.3, 0.8, fireNoise));
+      float glow = pow(fireNoise, 3.0) * mask * uIntensity;
+      color += vec3(0.3, 0.5, 1.0) * glow * 0.5;
+      float normalIntensity = dot(vNormal, vec3(0.0, 0.0, 1.0));
+      color *= (0.5 + 0.5 * normalIntensity);
+      float alpha = mask * 0.8;
+      gl_FragColor = vec4(color, alpha);
+    }
+  `;
+  
+  const fireMaterial = new THREE.ShaderMaterial({
+    vertexShader: fireVertexShader,
+    fragmentShader: fireFragmentShader,
+    uniforms: {
+      uTime: { value: 0 },
+      uColor1: { value: new THREE.Color(0xffaa00) },
+      uColor2: { value: new THREE.Color(0xff5500) },
+      uColor3: { value: new THREE.Color(0xff0000) },
+      uSpeed: { value: 1.5 },
+      uIntensity: { value: 2.0 }
+    },
+    transparent: true,
+    side: THREE.DoubleSide,
+    depthWrite: false
+  });
+  
+  const fireGeo = new THREE.SphereGeometry(4.5, 64, 64);
+  const fireMesh = new THREE.Mesh(fireGeo, fireMaterial);
+  fireMesh.position.set(0, 0, 0);
+  coreGroup.add(fireMesh);
+  
+  const fireLight = new THREE.PointLight(0xffaa00, 4, 150);
+  fireLight.position.set(0, 0, 0);
+  coreGroup.add(fireLight);
+  
+  const electricLight = new THREE.PointLight(0x00ccff, 2, 100);
+  electricLight.position.set(5, 5, 5);
+  coreGroup.add(electricLight);
+
 const nodeMeshes = [];
 const nodeLines = [];
 const nodeGlows = [];
@@ -596,9 +732,9 @@ const nodeRings = [];
 
 NODES.forEach((node, i) => {
   node.visible = true;
-  const phi = Math.acos(1 - 2*(i+0.5)/NODES.length);
-  const theta = Math.PI * (1 + Math.sqrt(5)) * i * 0.618;
-  const radius = 32 + Math.sin(i*1.7)*6;
+  const phi = Math.random() * Math.PI;
+  const theta = Math.random() * Math.PI * 2;
+  const radius = 32 + Math.random() * 50;
   node.orbitX = radius * Math.sin(phi) * Math.cos(theta);
   node.orbitY = radius * Math.sin(phi) * Math.sin(theta);
   node.orbitZ = radius * Math.cos(phi);
@@ -899,7 +1035,7 @@ function animate(){
   outerMesh.rotation.x = time * 0.1; outerMesh.rotation.z = time * 0.15;
 
   coreLight.intensity = 2.5 + (coreIntensity - 0.7) * 3 + Math.sin(time * 2) * 0.5;
-  if(typeof fireMaterial !== "undefined") fireMaterial.uniforms.uTime.value = time;
+  fireMaterial.uniforms.uTime.value = time;
   coreMat.emissiveIntensity = 0.5 + Math.sin(time * 1.5) * 0.3;
 
   rings3d.forEach((ring, i) => {
@@ -1043,173 +1179,6 @@ setTimeout(() => showNotification('Navega entre secciones · Click en esferas ·
 
 fetchData();
 setInterval(fetchData, 10000);
-  
-  // === FIRE SHADER (GLSL) ===
-  // Fuego volumétrico con efecto de energía eléctrica
-  
-  const fireVertexShader = `
-    varying vec2 vUv;
-    varying vec3 vNormal;
-    
-    void main() {
-      vUv = (position.xy + 4.5) / 9.0;
-      vNormal = normalize(normalMatrix * normal);
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-  `;
-  
-  const fireFragmentShader = `
-    uniform float uTime;
-    uniform vec3 uColor1;
-    uniform vec3 uColor2;
-    uniform vec3 uColor3;
-    uniform float uSpeed;
-    uniform float uIntensity;
-    
-    varying vec2 vUv;
-    varying vec3 vNormal;
-    
-    // Simplex noise function
-    vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-    vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-    vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
-    vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
-    
-    float snoise(vec3 v) {
-      const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
-      const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
-      
-      vec3 i  = floor(v + dot(v, C.yyy) );
-      vec3 x0 = v - i + dot(i, C.xxx) ;
-      vec3 g = step(x0.yzx, x0.xyz);
-      vec3 l = 1.0 - g;
-      vec3 i1 = min( g.xyz, l.zxy );
-      vec3 i2 = max( g.xyz, l.zxy );
-      
-      vec3 x1 = x0 - i1 + C.xxx;
-      vec3 x2 = x0 - i2 + C.yyy;
-      vec3 x3 = x0 - D.yyy;
-      
-      i = mod289(i);
-      vec4 p = permute( permute( permute( i.z + vec4(0.0, i1.z, i2.z, 1.0 )) + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
-      
-      float n_ = 0.142857142857;
-      vec3  ns = n_ * D.wyz - D.xzx;
-      
-      vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
-      
-      vec4 x_ = floor(j * ns.z);
-      vec4 y_ = floor(j - 7.0 * x_ );
-      
-      vec4 x = x_ *ns.x + ns.y;
-      vec4 y = y_ *ns.x + ns.y;
-      vec4 h = 1.0 - abs(x) - abs(y);
-      
-      vec4 b0 = vec4( x.xy, y.xy );
-      vec4 b1 = vec4( x.zw, y.zw );
-      
-      vec4 s0 = floor(b0)*2.0 + 1.0;
-      vec4 s1 = floor(b1)*2.0 + 1.0;
-      vec4 sh = -step(h, vec4(0.0));
-      
-      vec4 a0 = b0.xzyw + s0*x0.www;
-      vec4 a1 = b1.xzyw + s1*x0.www;
-      
-      vec3 p0 = vec3(a0.xy,h.x);
-      vec3 p1 = vec3(a0.zw,h.y);
-      vec3 p2 = vec3(a1.xy,h.z);
-      vec3 p3 = vec3(a1.zw,h.w);
-      
-      vec4 n = p * ns.w + ns.z * vec4(0.0, 0.0, 0.0, 1.0);
-      
-      vec3 t = 1.6 - n.x*x0 - n.y*x1 - n.z*x2 - n.w*x3;
-      vec4 m = max(0.6 - t, 0.0);
-      m = m * m;
-      m = m * m;
-      
-      vec4 px = x0 + n.x * vec3(0.166666);
-      vec4 py = x1 + n.y * vec3(0.166666);
-      vec4 pz = x2 + n.z * vec3(0.166666);
-      vec4 pw = x3 + n.w * vec3(0.166666);
-      
-      vec4 vx = px * ns.x;
-      vec4 vy = py * ns.x;
-      vec4 vz = pz * ns.x;
-      vec4 vw = pw * ns.x;
-      
-      vec4 w0 = vx.yzx + s0.xzx * ns.y + s0.yzw;
-      vec4 w1 = vx.zxy + s1.xzx * ns.y + s1.yzw;
-      
-      vec3 n0 = vec3(w0.x, w0.y, w0.z);
-      vec3 n1 = vec3(w1.x, w1.y, w1.z);
-      
-      vec4 temp = mix(vec4(n0.x, n0.y, n0.z, 0.0), vec4(n1.x, n1.y, n1.z, 0.0), m.z);
-      vec3 grad = mix(vec3(temp.x, temp.y, temp.z), vec3(temp.y, temp.z, temp.w), m.y);
-      grad = normalize(grad);
-      
-      return dot(grad, x0) * m.x;
-    }
-    
-    void main() {
-      float time = uTime * uSpeed;
-      
-      vec3 pos = vec3(vUv.x, vUv.y, 0.0);
-      float noise1 = snoise(vec3(pos.x * 2.0 + time, pos.y * 2.0 - time, 0.0));
-      float noise2 = snoise(vec3(pos.x * 3.0 - time * 0.5, pos.y * 3.0 + time * 0.5, 0.5));
-      float noise3 = snoise(vec3(pos.x * 5.0 + time * 0.3, pos.y * 5.0 - time * 0.3, 1.0));
-      
-      float fireNoise = (noise1 + noise2 * 0.5 + noise3 * 0.25) / 1.75;
-      
-      float dist = distance(vUv, vec2(0.5));
-      float mask = 1.0 - smoothstep(0.4, 0.5, dist);
-      
-      vec3 color = mix(uColor1, uColor2, smoothstep(-0.2, 0.5, fireNoise));
-      color = mix(color, uColor3, smoothstep(0.3, 0.8, fireNoise));
-      
-      float glow = pow(fireNoise, 3.0) * mask * uIntensity;
-      color += vec3(0.3, 0.5, 1.0) * glow * 0.5;
-      
-      float normalIntensity = dot(vNormal, vec3(0.0, 0.0, 1.0));
-      color *= (0.5 + 0.5 * normalIntensity);
-      
-      float alpha = mask * 0.8;
-      
-      gl_FragColor = vec4(color, alpha);
-    }
-  `;
-  
-  // Crear el ShaderMaterial para el fuego
-  const fireMaterial = new THREE.ShaderMaterial({
-    vertexShader: fireVertexShader,
-    fragmentShader: fireFragmentShader,
-    uniforms: {
-      uTime: { value: 0 },
-      uColor1: { value: new THREE.Color(0xffaa00) },
-      uColor2: { value: new THREE.Color(0xff5500) },
-      uColor3: { value: new THREE.Color(0xff0000) },
-      uSpeed: { value: 1.5 },
-      uIntensity: { value: 2.0 }
-    },
-    transparent: true,
-    side: THREE.DoubleSide,
-    depthWrite: false
-  });
-  
-  // Crear la geometría del fuego (esfera)
-  const fireGeo = new THREE.SphereGeometry(4.5, 64, 64);
-  const fireMesh = new THREE.Mesh(fireGeo, fireMaterial);
-  fireMesh.position.set(0, 0, 0);
-  coreGroup.add(fireMesh);
-  
-  // Añadir luz emisiva (fuego)
-  const fireLight = new THREE.PointLight(0xffaa00, 4, 150);
-  fireLight.position.set(0, 0, 0);
-  coreGroup.add(fireLight);
-  
-  // Añadir luz de energía eléctrica (azul)
-  const electricLight = new THREE.PointLight(0x00ccff, 2, 100);
-  electricLight.position.set(5, 5, 5);
-  coreGroup.add(electricLight);
 </script>
 </body>
 </html>
