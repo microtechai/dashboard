@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MicroTech AI — Centro de Mando</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+/* === RESET & BASE === */
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050810;color:#e0e8ff;font-family:'Inter','Segoe UI',system-ui,sans-serif;overflow:hidden;height:100vh;width:100vw}
+
+/* === 3D CANVAS === */
+canvas#viz{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;cursor:grab}
+canvas#viz:active{cursor:grabbing}
+
+/* === LOGIN OVERLAY (z-index high) === */
+#login-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#0a0a1e 0%,#050810 70%);backdrop-filter:blur(4px)}
+#login-overlay.hidden{opacity:0;pointer-events:none;transition:opacity .6s}
+.login-box{text-align:center;max-width:360px;width:90%}
+.login-logo{font-family:'JetBrains Mono',monospace;font-size:10px;color:#4a9eff;line-height:1.4;margin-bottom:24px}
+.login-logo .accent{color:#a78bfa}
+.login-title{font-size:13px;font-weight:600;letter-spacing:3px;background:linear-gradient(90deg,#4a9eff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.login-sub{font-size:10px;color:#556;font-family:'JetBrains Mono',monospace;margin-bottom:28px}
+.login-form{display:flex;flex-direction:column;gap:12px;align-items:center}
+.login-input{width:100%;padding:10px 14px;background:rgba(10,15,30,0.6);border:1px solid rgba(74,158,255,0.12);border-radius:8px;color:#c0d0ff;font-size:12px;outline:none;transition:all .2s;font-family:'JetBrains Mono',monospace}
+.login-input:focus{border-color:#4a9eff;box-shadow:0 0 12px rgba(74,158,255,0.08)}
+.login-input::placeholder{color:#334}
+.login-btn{width:100%;padding:10px;background:rgba(74,158,255,0.1);border:1px solid rgba(74,158,255,0.25);border-radius:8px;color:#4a9eff;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:1px;transition:all .2s}
+.login-btn:hover{background:rgba(74,158,255,0.2);border-color:rgba(74,158,255,0.4)}
+.login-error{font-size:10px;color:#ef4444;font-family:'JetBrains Mono',monospace;opacity:0;transition:opacity .3s;height:16px}
+.login-error.show{opacity:1}
+.login-hint{font-size:9px;color:#334;font-family:'JetBrains Mono',monospace;margin-top:4px}
+
+/* === LOADING (z-index high, below login) === */
+#loading{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9998;display:none;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#0a0a1e 0%,#050810 70%);transition:opacity .5s}
+#loading.visible{display:flex}
+#loading.hidden{opacity:0;pointer-events:none}
+.loading-logo{font-family:'JetBrains Mono',monospace;font-size:10px;color:#4a9eff;line-height:1.4;margin-bottom:16px;text-align:center}
+.loading-logo .accent{color:#a78bfa}
+.loading-title{font-size:12px;letter-spacing:4px;color:#667;font-weight:600;margin-bottom:14px}
+.loading-bar-wrap{width:260px;height:3px;background:rgba(74,158,255,0.08);border-radius:2px;overflow:hidden;margin-bottom:8px}
+.loading-bar-fill{height:100%;background:linear-gradient(90deg,#4a9eff,#a78bfa);border-radius:2px;transition:width .15s}
+.loading-text{font-size:9px;color:#445;font-family:'JetBrains Mono',monospace}
+
+/* === POST-PROCESSING OVERLAYS === */
+.vignette{position:fixed;top:0;left:0;right:0;bottom:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,0.6) 100%)}
+.scanlines{position:fixed;top:0;left:0;right:0;bottom:0;z-index:3;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,0.03) 1px,rgba(0,0,0,0.03) 2px)}
+.glitch-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:4;pointer-events:none;opacity:0;transition:opacity .05s}
+.glitch-overlay.active{opacity:1;transform:translate(2px,-1px);filter:hue-rotate(90deg)}
+
+/* === HEADER + NAV === */
+.header{position:fixed;top:0;left:0;right:0;height:52px;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:0 20px 0 28px;background:linear-gradient(180deg,rgba(5,8,16,0.85) 0%,rgba(5,8,16,0.4) 70%,transparent 100%);pointer-events:auto}
+.header-left{display:flex;align-items:center;gap:32px}
+.header-title{font-size:13px;font-weight:600;letter-spacing:4px;background:linear-gradient(90deg,#4a9eff,#a78bfa,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap}
+.nav{display:flex;gap:4px}
+.nav-btn{padding:6px 14px;font-size:11px;color:#667;background:rgba(255,255,255,0.02);border:1px solid transparent;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:0.5px;transition:all .2s}
+.nav-btn:hover{color:#c0d0ff;background:rgba(74,158,255,0.06)}
+.nav-btn.active{color:#4a9eff;background:rgba(74,158,255,0.1);border-color:rgba(74,158,255,0.2)}
+.header-right{display:flex;align-items:center;gap:12px}
+.status-dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.status-dot.online{background:#4ade80;box-shadow:0 0 6px #4ade80;animation:pulse-status 2s ease-in-out infinite}
+.status-dot.warning{background:#facc15;box-shadow:0 0 6px #facc15}
+.status-dot.offline{background:#ef4444;box-shadow:0 0 6px #ef4444}
+@keyframes pulse-status{0%,100%{opacity:1}50%{opacity:0.5}}
+.status-text{font-size:11px;color:#556;font-family:'JetBrains Mono',monospace}
+
+/* === SEARCH === */
+.search-box{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:10}
+.search-box input{width:300px;padding:8px 14px;background:rgba(10,15,30,0.5);backdrop-filter:blur(12px);border:1px solid rgba(74,158,255,0.08);border-radius:8px;color:#c0d0ff;font-size:11px;outline:none;transition:all .2s;font-family:'JetBrains Mono',monospace}
+.search-box input::placeholder{color:#334}
+.search-box input:focus{border-color:#4a9eff;box-shadow:0 0 12px rgba(74,158,255,0.08)}
+
+/* === LEGEND === */
+.legend{position:fixed;left:16px;top:108px;z-index:10;background:rgba(10,15,30,0.4);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.03);border-radius:10px;padding:12px 16px;pointer-events:auto}
+.legend h3{font-size:8px;letter-spacing:2px;color:#445;margin-bottom:10px;text-transform:uppercase}
+.legend-item{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.legend-item:last-child{margin-bottom:0}
+.legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.legend-label{font-size:10px;color:#667;cursor:pointer}
+.legend-label:hover{color:#c0d0ff}
+
+/* === SIDEBAR === */
+.sidebar-toggle{position:fixed;left:0;top:60px;z-index:11;width:28px;height:28px;background:rgba(10,15,30,0.6);border:1px solid rgba(74,158,255,0.1);border-radius:0 6px 6px 0;color:#667;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;border-left:none}
+.sidebar-toggle:hover{color:#4a9eff;background:rgba(10,15,30,0.9)}
+.sidebar{position:fixed;left:0;top:52px;bottom:32px;width:220px;z-index:11;background:rgba(5,8,16,0.92);backdrop-filter:blur(18px);border-right:1px solid rgba(74,158,255,0.08);overflow-y:auto;transition:transform .35s cubic-bezier(.4,0,.2,1);pointer-events:auto}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(74,158,255,0.15);border-radius:2px}
+.sidebar.collapsed{transform:translateX(-220px)}
+.sidebar-section{padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.02)}
+.sidebar-item{padding:8px 16px 8px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;font-size:11px;color:#667;transition:all .15s;border-left:2px solid transparent}
+.sidebar-item:hover{color:#c0d0ff;background:rgba(74,158,255,0.04)}
+.sidebar-item.active{color:#e0e8ff;background:rgba(74,158,255,0.06);border-left-color:#4a9eff}
+.sidebar-item .icon{font-size:14px;width:20px;text-align:center;flex-shrink:0}
+.sidebar-item .badge{font-size:8px;padding:1px 5px;border-radius:3px;background:rgba(74,158,255,0.08);color:#4a9eff;margin-left:auto;font-family:'JetBrains Mono',monospace}
+.sidebar-sub{max-height:0;overflow:hidden;transition:max-height .25s ease}
+.sidebar-sub.open{max-height:200px}
+.sidebar-sub-item{padding:6px 16px 6px 34px;display:flex;align-items:center;gap:8px;cursor:pointer;font-size:10px;color:#556;transition:all .15s;border-left:2px solid transparent}
+.sidebar-sub-item:hover{color:#c0d0ff;background:rgba(74,158,255,0.03);border-left-color:rgba(74,158,255,0.15)}
+.sidebar-sub-item.active{color:#8890b0;border-left-color:rgba(74,158,255,0.3)}
+.sidebar-sub-item .icon{font-size:12px;width:18px;text-align:center;flex-shrink:0}
+
+/* === PANELS === */
+.panel-title{font-size:11px;letter-spacing:2px;color:#334;margin-bottom:12px;text-transform:uppercase}
+.left-panel{position:fixed;left:244px;top:108px;width:220px;max-height:calc(100vh - 150px);z-index:10;background:rgba(10,15,30,0.9);backdrop-filter:blur(16px);border:1px solid rgba(74,158,255,0.1);border-radius:14px;padding:18px;pointer-events:auto;overflow-y:auto;transition:left .35s cubic-bezier(.4,0,.2,1)}
+.left-panel::-webkit-scrollbar{width:3px}
+.left-panel::-webkit-scrollbar-thumb{background:rgba(74,158,255,0.2);border-radius:2px}
+.left-panel.sidebar-collapsed{left:16px}
+.metric-group{margin-bottom:12px}
+.metric-label{font-size:9px;color:#556;margin-bottom:3px;display:flex;justify-content:space-between}
+.metric-bar{height:3px;border-radius:2px;background:rgba(255,255,255,0.04);margin-bottom:3px;overflow:hidden}
+.metric-fill{height:100%;border-radius:2px;transition:width .8s ease}
+.metric-fill.cpu{background:linear-gradient(90deg,#00ccff,#4a9eff)}
+.metric-fill.memory{background:linear-gradient(90deg,#a78bfa,#4a9eff)}
+.metric-fill.disk{background:linear-gradient(90deg,#f59e0b,#ef4444)}
+.metric-fill.warning{background:#facc15}
+.metric-fill.critical{background:#ef4444}
+.metric-value{font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.metric-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:10px}
+.metric-row:last-child{border-bottom:none}
+.metric-row-label{color:#556}
+.metric-row-value{color:#c0d0ff;font-weight:500;font-family:'JetBrains Mono',monospace}
+
+.right-panel{position:fixed;right:16px;top:108px;width:250px;max-height:calc(100vh - 140px);z-index:10;background:rgba(10,15,30,0.9);backdrop-filter:blur(16px);border:1px solid rgba(74,158,255,0.1);border-radius:14px;padding:18px;pointer-events:auto;overflow-y:auto;transition:right .35s cubic-bezier(.4,0,.2,1)}
+.right-panel::-webkit-scrollbar{width:3px}
+.right-panel::-webkit-scrollbar-thumb{background:rgba(74,158,255,0.2);border-radius:2px}
+.node-item{padding:10px;border-radius:8px;margin-bottom:5px;background:rgba(255,255,255,0.02);border:1px solid transparent;cursor:pointer;transition:all .2s}
+.node-item:hover{background:rgba(74,158,255,0.06);border-color:rgba(74,158,255,0.12)}
+.node-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.node-name{font-size:11px;font-weight:600}
+.node-name .node-badge{font-size:8px;padding:1px 5px;border-radius:3px;margin-left:4px;vertical-align:middle}
+.node-status{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.node-status.online{background:#4ade80;box-shadow:0 0 4px #4ade80}
+.node-status.warning{background:#facc15;box-shadow:0 0 4px #facc15}
+.node-status.offline{background:#ef4444;box-shadow:0 0 4px #ef4444}
+.node-status.unknown{background:#555577}
+.node-detail{font-size:9px;color:#556;margin-top:2px}
+.node-link{font-size:8px;color:#00ccff;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'JetBrains Mono',monospace}
+
+.side-panel{position:fixed;right:16px;top:70px;width:300px;max-height:calc(100vh - 90px);overflow-y:auto;z-index:20;pointer-events:auto;background:rgba(10,15,30,0.95);backdrop-filter:blur(16px);border:1px solid rgba(74,158,255,0.1);border-radius:14px;padding:22px;transform:translateX(330px);transition:transform .4s cubic-bezier(.4,0,.2,1)}
+.side-panel.open{transform:translateX(0)}
+.side-panel::-webkit-scrollbar{width:3px}
+.side-panel::-webkit-scrollbar-thumb{background:rgba(74,158,255,0.2);border-radius:2px}
+.panel-title-lg{font-size:14px;font-weight:600;letter-spacing:1px;margin-bottom:2px}
+.panel-subtitle{font-size:10px;color:#556;margin-bottom:16px;font-family:'JetBrains Mono',monospace}
+.close-btn{position:absolute;top:12px;right:12px;background:none;border:none;color:#445;font-size:18px;cursor:pointer;transition:color .2s;padding:4px}
+.close-btn:hover{color:#fff}
+.metric-block{margin-bottom:14px}
+.metric-block h4{font-size:8px;letter-spacing:2px;color:#334;margin-bottom:8px;text-transform:uppercase}
+
+/* === PAGE CONTENT (subvenciones, etc.) === */
+.page-content{padding:8px 0;font-size:10px;color:#667;line-height:1.6}
+.page-content h3{font-size:11px;color:#8890b0;margin-bottom:8px;font-weight:600;letter-spacing:1px}
+.page-content p{margin-bottom:8px}
+.page-content .stat-card{background:rgba(255,255,255,0.02);border:1px solid rgba(74,158,255,0.06);border-radius:8px;padding:10px;margin-bottom:8px}
+.page-content .stat-card .stat-label{font-size:9px;color:#334;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px}
+.page-content .stat-card .stat-value{font-size:16px;font-weight:700;color:#e0e8ff;margin-top:2px}
+.page-content .stat-card .stat-detail{font-size:9px;color:#556;margin-top:4px}
+
+/* === FOOTER === */
+.footer{position:fixed;bottom:0;left:0;right:0;height:32px;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:linear-gradient(0deg,rgba(5,8,16,0.8) 0%,transparent 100%);pointer-events:none}
+.footer span{font-size:9px;color:#334;font-family:'JetBrains Mono',monospace}
+.footer a{color:#4a9eff;text-decoration:none}
+
+/* === TOOLTIP === */
+.tooltip{position:fixed;z-index:30;background:rgba(10,15,30,0.88);backdrop-filter:blur(8px);border:1px solid rgba(74,158,255,0.15);border-radius:6px;padding:6px 10px;font-size:10px;pointer-events:none;opacity:0;transition:opacity .15s;max-width:180px}
+.tooltip.visible{opacity:1}
+.tooltip .tt-name{font-weight:600;color:#e0e8ff;margin-bottom:1px}
+.tooltip .tt-meta{font-size:9px;color:#556;font-family:'JetBrains Mono',monospace}
+
+/* === NOTIFICATION === */
+.notification{position:fixed;bottom:44px;right:16px;z-index:20;background:rgba(10,15,30,0.85);border:1px solid rgba(74,158,255,0.1);border-radius:8px;padding:10px 14px;font-size:10px;color:#8ab4ff;opacity:0;transform:translateY(8px);transition:all .3s;max-width:240px;line-height:1.4;pointer-events:auto}
+.notification.show{opacity:1;transform:translateY(0)}
+
+/* === UPDATE BADGE === */
+.update-badge{position:fixed;top:60px;right:20px;z-index:20;padding:4px 10px;background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.2);border-radius:4px;font-size:10px;color:#4ade80;font-family:'JetBrains Mono',monospace;opacity:0;transition:opacity .3s;pointer-events:none}
+.update-badge.visible{opacity:1}
+
+/* === GLOBAL SCROLLBARS === */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(74,158,255,0.15);border-radius:2px}
+
+/* === RESPONSIVE === */
+@media(max-width:1024px){
+  .left-panel{width:200px}
+  .right-panel{width:220px}
+  .search-box input{width:220px}
+  .nav{gap:2px}
+  .nav-btn{padding:5px 10px;font-size:10px}
+}
+@media(max-width:640px){
+  .sidebar{width:180px}
+  .sidebar.collapsed{transform:translateX(-180px)}
+  .left-panel{left:200px;width:160px}
+  .right-panel{right:8px;width:180px}
+  .header-title{font-size:10px;letter-spacing:2px}
+  .header-left{gap:12px}
+  .nav-btn{padding:4px 8px;font-size:9px}
+  .search-box input{width:160px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay">
+  <div class="login-box">
+    <div class="login-logo">
+      <span class="accent">╔══════════════════════╗</span><br>
+      <span class="accent">║</span>  MICROTECH AI  <span class="accent">║</span><br>
+      <span class="accent">╚══════════════════════╝</span><br>
+       AGENT ORCHESTRATOR
+    </div>
+    <div class="login-title">CENTRO DE MANDO</div>
+    <div class="login-sub">Acceso restringido</div>
+    <div class="login-form">
+      <input type="text" class="login-input" id="loginUser" placeholder="Usuario" autocomplete="off">
+      <input type="password" class="login-input" id="loginPass" placeholder="Contraseña" autocomplete="off">
+      <button class="login-btn" id="loginBtn">ACCEDER</button>
+      <div class="login-error" id="loginError">Credenciales incorrectas</div>
+      <div class="login-hint">admin / admin</div>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loading">
+  <pre class="loading-logo">
+    <span class="accent">╔══════════════════════╗</span>
+    <span class="accent">║</span>  MICROTECH AI  <span class="accent">║</span>
+    <span class="accent">╚══════════════════════╝</span>
+       AGENT ORCHESTRATOR
+  </pre>
+  <div class="loading-title" id="loadingTitle">CARGANDO JARVIS</div>
+  <div class="loading-bar-wrap"><div class="loading-bar-fill" id="loadingBar" style="width:0%"></div></div>
+  <div class="loading-text" id="loadText">Inicializando sistema...</div>
+</div>
+
+<canvas id="viz"></canvas>
+
+<!-- Post-processing overlays -->
+<div class="vignette"></div>
+<div class="scanlines"></div>
+<div class="glitch-overlay" id="glitchOverlay"></div>
+
+<!-- HEADER + NAV -->
+<div class="header">
+  <div class="header-left">
+    <div class="header-title">MicroTech AI</div>
+    <div class="nav" id="mainNav">
+      <button class="nav-btn active" data-view="dashboard">Dashboard</button>
+      <button class="nav-btn" data-view="servers">Servidores</button>
+      <button class="nav-btn" data-view="projects">Proyectos</button>
+      <button class="nav-btn" data-view="companies">Empresas</button>
+      <button class="nav-btn" data-view="system">Sistema</button>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="status-dot online" id="global-status"></span>
+    <span class="status-text" id="status-text">Operativo</span>
+  </div>
+</div>
+
+<!-- SEARCH BOX -->
+<div class="search-box">
+  <input type="text" id="search" placeholder="Buscar nodos...">
+</div>
+
+<!-- LEGEND -->
+<div class="legend" id="legend"></div>
+
+<!-- SIDEBAR TOGGLE -->
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-item active" data-view="dashboard"><span class="icon">📊</span> Dashboard</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-item accordion-trigger" data-target="proj-sub"><span class="icon">📁</span> Proyectos <span class="badge">5</span></div>
+    <div class="sidebar-sub" id="proj-sub">
+      <div class="sidebar-sub-item" data-view="wp-cielo"><span class="icon">🌐</span> El Cielo de Celia</div>
+      <div class="sidebar-sub-item" data-view="wp-cotufas2"><span class="icon">🛒</span> Cotufas2</div>
+      <div class="sidebar-sub-item" data-view="wp-microtechsat"><span class="icon">🛴</span> MicroTech SAT</div>
+      <div class="sidebar-sub-item" data-view="wp-audiomania"><span class="icon">🎵</span> Audiomania Eventos</div>
+      <div class="sidebar-sub-item" data-view="pr-factura"><span class="icon">📊</span> FacturaScripts</div>
+    </div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-item accordion-trigger" data-target="srv-sub"><span class="icon">🖧</span> Servidores <span class="badge">3</span></div>
+    <div class="sidebar-sub" id="srv-sub">
+      <div class="sidebar-sub-item" data-view="srv-hetzner"><span class="icon">🖥</span> Hetzner Prod</div>
+      <div class="sidebar-sub-item" data-view="srv-dgx"><span class="icon">🔬</span> DGX Spark</div>
+      <div class="sidebar-sub-item" data-view="srv-local"><span class="icon">💻</span> Hermes Local</div>
+    </div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-item" data-page="subvenciones"><span class="icon">💶</span> Subvenciones</div>
+    <div class="sidebar-item" data-page="auditorias"><span class="icon">📋</span> Auditorías</div>
+    <div class="sidebar-item" data-page="informes"><span class="icon">📊</span> Informes</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-item accordion-trigger" data-target="ai-sub"><span class="icon">🤖</span> IA / Modelos <span class="badge">3</span></div>
+    <div class="sidebar-sub" id="ai-sub">
+      <div class="sidebar-sub-item" data-view="ai-qwen"><span class="icon">🧠</span> Qwen 3.6-35B</div>
+      <div class="sidebar-sub-item" data-view="ai-glm"><span class="icon">💬</span> GLM-4.7 Flash</div>
+      <div class="sidebar-sub-item" data-view="ai-hermes"><span class="icon">🤖</span> Hermes Agent</div>
+    </div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-item" data-page="config"><span class="icon">⚙</span> Configuración</div>
+  </div>
+</div>
+
+<!-- LEFT PANEL: System Metrics -->
+<div class="left-panel" id="metrics-panel">
+  <div class="panel-title">SISTEMA</div>
+  <div class="metric-group">
+    <div class="metric-label"><span>CPU Load</span><span class="metric-value" id="cpu-load">—</span></div>
+    <div class="metric-bar"><div class="metric-fill cpu" id="cpu-bar" style="width:0%"></div></div>
+  </div>
+  <div class="metric-group">
+    <div class="metric-label"><span>Memoria</span><span class="metric-value" id="mem-value">—</span></div>
+    <div class="metric-bar"><div class="metric-fill memory" id="mem-bar" style="width:0%"></div></div>
+  </div>
+  <div class="metric-group">
+    <div class="metric-label"><span>Disco</span><span class="metric-value" id="disk-value">—</span></div>
+    <div class="metric-bar"><div class="metric-fill disk" id="disk-bar" style="width:0%"></div></div>
+  </div>
+  <div class="metric-group">
+    <div class="metric-row"><span class="metric-row-label">Núcleos</span><span class="metric-row-value" id="cpu-cores">—</span></div>
+    <div class="metric-row"><span class="metric-row-label">Uptime</span><span class="metric-row-value" id="uptime">—</span></div>
+    <div class="metric-row"><span class="metric-row-label">PHP</span><span class="metric-row-value" id="php-version">—</span></div>
+    <div class="metric-row"><span class="metric-row-label">OS</span><span class="metric-row-value" id="os-info">—</span></div>
+  </div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="right-panel" id="services-panel">
+  <div class="panel-title" id="panel-header">PROYECTOS</div>
+  <div id="services-list">
+    <div style="color:#556;font-size:10px;padding:8px">Cargando...</div>
+  </div>
+</div>
+
+<!-- SIDE PANEL (detail) -->
+<div class="side-panel" id="sidePanel">
+  <button class="close-btn" id="closeBtn">×</button>
+  <div class="panel-title-lg" id="panelTitle">NODE</div>
+  <div class="panel-subtitle" id="panelSubtitle">DESC</div>
+  <div id="panelContent"></div>
+</div>
+
+<div class="footer">
+  <span>Powered by <a href="https://github.com/microtechai" target="_blank">@microtechai</a></span>
+  <span id="last-update">Actualizado: —</span>
+</div>
+
+<div class="update-badge" id="update-badge">✓ Actualizado</div>
+<div class="tooltip" id="tooltip"><div class="tt-name"></div><div class="tt-meta"></div></div>
+<div class="notification" id="notification"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════
+const loginOverlay = document.getElementById('login-overlay');
+const loginUser = document.getElementById('loginUser');
+const loginPass = document.getElementById('loginPass');
+const loginBtn = document.getElementById('loginBtn');
+const loginError = document.getElementById('loginError');
+
+// Auth check
+if (localStorage.getItem('mc_authed') === 'true') {
+  loginOverlay.style.display = 'none';
+  loginOverlay.classList.add('hidden');
+} else {
+  loginUser.focus();
+}
+
+loginBtn.addEventListener('click', () => {
+  const user = loginUser.value.trim();
+  const pass = loginPass.value.trim();
+  if (user && pass) {
+    loginOverlay.classList.add('hidden');
+    setTimeout(() => {
+      loginOverlay.style.display = 'none';
+      localStorage.setItem('mc_authed', 'true');
+      startLoading();
+    }, 400);
+  } else {
+    loginError.classList.add('show');
+    setTimeout(() => loginError.classList.remove('show'), 2000);
+  }
+});
+
+loginPass.addEventListener('keydown', e => { if(e.key === 'Enter') loginBtn.click(); });
+loginUser.addEventListener('keydown', e => { if(e.key === 'Enter') loginPass.focus(); });
+
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+const CAT_COLORS={
+  server:{hex:'#4a9eff',glow:'rgba(74,158,255,0.3)',label:'Servidores'},
+  wp:{hex:'#a78bfa',glow:'rgba(167,139,250,0.3)',label:'WordPress'},
+  ai:{hex:'#f59e0b',glow:'rgba(245,158,11,0.3)',label:'AI / ML'},
+  infra:{hex:'#4ade80',glow:'rgba(74,222,128,0.3)',label:'Infraestructura'},
+  project:{hex:'#f472b6',glow:'rgba(244,114,182,0.3)',label:'Proyectos'}
+};
+
+const NODES=[
+  {id:'srv-hetzner',label:'Hetzner Prod',cat:'server',status:'online',
+   desc:'Debian 12 · 4C/8G · 75GB SSD · Tenerife',
+   url:'https://178.104.253.211',company:'MicroTech AI',
+   metrics:[['CPU','—'],['RAM','— GB'],['Disco','— / 75 GB'],['Uptime','—']]},
+  {id:'srv-microtechsat',label:'MicroTech SAT',cat:'server',status:'online',
+   desc:'Hetzner · 8GB · WooCommerce patinetes',
+   url:'https://microtechsat.com',company:'MicroTech SAT',
+   metrics:[['CPU','—'],['RAM','— GB'],['Swap','2 GB'],['Pool','20 proc']]},
+  {id:'srv-dgx',label:'DGX Spark',cat:'server',status:'online',
+   desc:'GB10 · 128GB UMA · 192.168.1.137',
+   url:'http://192.168.1.137:8008',company:'MicroTech AI',
+   metrics:[['VRAM','— / 128 GB'],['Temp','—°C'],['Uptime','—'],['Puertos','8008,8010,8011']]},
+  {id:'srv-local',label:'Hermes Local',cat:'server',status:'online',
+   desc:'Máquina local · 192.168.1.106 · Debian',
+   url:'',company:'MicroTech AI',
+   metrics:[['IP','192.168.1.106'],['Rol','Agente orquestador']]},
+  {id:'wp-cielo',label:'El Cielo de Celia',cat:'wp',status:'online',
+   desc:'Restaurante andaluz · La Laguna · TT5 child',
+   url:'https://elcielodecelia.com',company:'Cielo de Celia',
+   metrics:[['Tema','cielo-theme'],['CPT','plato'],['Alérgenos','14'],['Estado','✅ Activo']]},
+  {id:'wp-cotufas2',label:'Cotufas2',cat:'wp',status:'online',
+   desc:'Tienda online · TT5 child · Menú primary',
+   url:'https://cotufas2.microtechai.es',company:'Cotufas2',
+   metrics:[['Tema','cotufas2-theme'],['Productos','~120'],['Estado','✅ Activo']]},
+  {id:'wp-microtechsat',label:'MicroTech SAT WP',cat:'wp',status:'online',
+   desc:'WooCommerce venta patinetes eléctricos',
+   url:'https://microtechsat.com',company:'MicroTech SAT',
+   metrics:[['Productos','~30'],['Ventas','— €'],['Conversión','—%'],['Estado','✅ Activo']]},
+  {id:'wp-audiomania',label:'Audiomania Eventos',cat:'wp',status:'online',
+   desc:'Eventos musicales · WP site',
+   url:'https://audiomaniaeventos.com',company:'Audiomania Eventos',
+   metrics:[['Tema','Audiomania child'],['Estado','✅ Activo']]},
+  {id:'ai-qwen',label:'Qwen 3.6-35B',cat:'ai',status:'online',
+   desc:'vLLM NVFP4 · MTP=3 · Puerto 8010',
+   url:'http://192.168.1.137:8010',company:'MicroTech AI',
+   metrics:[['Modelo','Qwen3.6-35B-A3B'],['Formato','NVFP4'],['MTP','3'],['VRAM','~54 GB']]},
+  {id:'ai-glm',label:'GLM-4.7 Flash',cat:'ai',status:'online',
+   desc:'vLLM Docker · Puerto 8011 · SM120 fix',
+   url:'http://192.168.1.137:8011',company:'MicroTech AI',
+   metrics:[['Modelo','GLM-4.7-Flash'],['Formato','NVFP4'],['Modo','Docker 26.07'],['VRAM','~31 GB']]},
+  {id:'ai-proxy',label:'Proxy Multimodo',cat:'ai',status:'online',
+   desc:'Router AI · 8008 · Qwen/GLM/Team',
+   url:'http://192.168.1.137:8008',company:'MicroTech AI',
+   metrics:[['Puerto','8008'],['Modos','qwen, glm, team'],['Router','Activo']]},
+  {id:'ai-hermes',label:'Hermes Agent',cat:'ai',status:'online',
+   desc:'Orquestador · CLI/Telegram · Skills 50+',
+   url:'https://github.com/microtechai',company:'MicroTech AI',
+   metrics:[['Skills','~50'],['Cron Jobs','8'],['Providers','DeepSeek,Qwen']]},
+  {id:'inf-cloudflare',label:'Cloudflare',cat:'infra',status:'online',
+   desc:'DNS · SSL · Proxy · CDN · microtechai.es',
+   url:'https://dash.cloudflare.com',company:'MicroTech AI',
+   metrics:[['Dominios','~6'],['SSL Full',true],['Proxy','Cloudflare-only']]},
+  {id:'inf-github',label:'GitHub',cat:'infra',status:'online',
+   desc:'Repos microtechai · Themes · Plugins · Infra',
+   url:'https://github.com/microtechai',company:'MicroTech AI',
+   metrics:[['Repos','5+'],['Privados','Varios'],['Orgs','microtechai']]},
+  {id:'inf-ssh',label:'SSH Key',cat:'infra',status:'online',
+   desc:'ed25519 · Hetzner · GitHub · DGX',
+   url:'',company:'MicroTech AI',
+   metrics:[['Hosts','3'],['Tipo','ed25519'],['Auth','Clave pública']]},
+  {id:'pr-factura',label:'FacturaScripts',cat:'project',status:'online',
+   desc:'ERP contable · Docker puerto 8081 · MariaDB',
+   url:'https://facturascripts.microtechai.es',company:'MicroTech AI',
+   metrics:[['Puerto','8081'],['DB','MariaDB'],['Stack','Docker'],['Estado','✅ Activo']]},
+  {id:'pr-jarvis',label:'JARVIS 3D',cat:'project',status:'online',
+   desc:'Dashboard 3D · Three.js · MicroTech AI',
+   url:'https://jarvis.microtechai.es',company:'MicroTech AI',
+   metrics:[['Tecno','Three.js r128'],['Nodos','16'],['Efectos','Partículas, anillos']]}
+];
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let currentView = 'dashboard';
+let sidebarCollapsed = false;
+let isDragging=false, lastMouse={x:0,y:0};
+let targetRotX=0.3, targetRotY=0, rotX=0.3, rotY=0, camDist=100, camTargetDist=100;
+let time = 0;
+let coreIntensity = 1.0;
+let hoveredNode = null;
+let loadingStarted = false;
+
+// ═══════════════════════════════════════════
+// LOADING ANIMATION (simple timer, no bugs)
+// ═══════════════════════════════════════════
+function startLoading() {
+  if (loadingStarted) return;
+  loadingStarted = true;
+  document.getElementById('loading').classList.add('visible');
+
+  const fill = document.getElementById('loadingBar');
+  const text = document.getElementById('loadText');
+  let pct = 0;
+  const steps = ['Inicializando sistema...', 'Generando partículas 3D...', 'Construyendo escena...', 'Conectando API...', 'Sistema listo'];
+
+  function tick() {
+    pct += 5 + Math.floor(Math.random() * 10);
+    if (pct > 100) pct = 100;
+    fill.style.width = pct + '%';
+    text.textContent = steps[Math.min(Math.floor(pct / 20), steps.length - 1)];
+
+    if (pct < 100) {
+      setTimeout(tick, 40 + Math.random() * 60);
+    } else {
+      setTimeout(() => {
+        const el = document.getElementById('loading');
+        el.classList.add('hidden');
+        setTimeout(() => { el.style.display = 'none'; }, 500);
+        setTimeout(() => showNotification('Sistema cargado — ' + NODES.length + ' nodos orbitales'), 600);
+      }, 300);
+    }
+  }
+  setTimeout(tick, 300);
+}
+
+// ═══════════════════════════════════════════
+// THREE.JS SCENE
+// ═══════════════════════════════════════════
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x050810, 0.012);
+
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 0.1, 2000);
+camera.position.set(0, 25, 100);
+
+const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('viz'),antialias:true,alpha:true});
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x050810, 1);
+
+const ambientLight = new THREE.AmbientLight(0x404060, 0.4);
+scene.add(ambientLight);
+const pointLight1 = new THREE.PointLight(0x4a9eff, 2, 200); pointLight1.position.set(30,20,30); scene.add(pointLight1);
+const pointLight2 = new THREE.PointLight(0xa78bfa, 1.5, 200); pointLight2.position.set(-30,10,-20); scene.add(pointLight2);
+
+const canvas = document.getElementById('viz');
+canvas.addEventListener('mousedown', e => { isDragging=true; lastMouse={x:e.clientX,y:e.clientY}; });
+canvas.addEventListener('mousemove', e => {
+  if(isDragging){
+    targetRotY += (e.clientX-lastMouse.x)*0.005;
+    targetRotX += (e.clientY-lastMouse.y)*0.005;
+    targetRotX = Math.max(-1.2, Math.min(1.2, targetRotX));
+    lastMouse={x:e.clientX,y:e.clientY};
+  }
+  checkHover(e.clientX, e.clientY);
+});
+canvas.addEventListener('mouseup', () => { isDragging=false; });
+canvas.addEventListener('mouseleave', () => { isDragging=false; });
+canvas.addEventListener('wheel', e => {
+  camTargetDist += e.deltaY*0.05;
+  camTargetDist = Math.max(30, Math.min(200, camTargetDist));
+  e.preventDefault();
+}, {passive:false});
+
+// CORE
+const coreGroup = new THREE.Group(); scene.add(coreGroup);
+const coreGeo = new THREE.IcosahedronGeometry(4.5, 2);
+const coreMat = new THREE.MeshPhongMaterial({color:0x4a9eff,emissive:0x1a3a6b,shininess:100,transparent:true,opacity:0.8});
+const coreMesh = new THREE.Mesh(coreGeo, coreMat); coreGroup.add(coreMesh);
+const wireGeo = new THREE.IcosahedronGeometry(6, 1);
+const wireMat = new THREE.MeshBasicMaterial({color:0x4a9eff,wireframe:true,transparent:true,opacity:0.25});
+const wireMesh = new THREE.Mesh(wireGeo, wireMat); coreGroup.add(wireMesh);
+const outerGeo = new THREE.IcosahedronGeometry(7.5, 1);
+const outerMat = new THREE.MeshBasicMaterial({color:0x4a9eff,wireframe:true,transparent:true,opacity:0.1});
+const outerMesh = new THREE.Mesh(outerGeo, outerMat); coreGroup.add(outerMesh);
+const coreLight = new THREE.PointLight(0x4a9eff, 3, 100); coreGroup.add(coreLight);
+
+// ORBITAL RINGS
+const rings3d = [];
+for(let i=0; i<3; i++){
+  const r = new THREE.TorusGeometry(28 + i*10, 0.12, 6, 80);
+  const m = new THREE.MeshBasicMaterial({color:0x4a9eff,transparent:true,opacity:0.12 - i*0.02});
+  const ring = new THREE.Mesh(r, m);
+  ring.rotation.x = Math.PI/2 + i*0.15; ring.rotation.y = i*0.3;
+  ring.userData.rotSpeed = 0.001 + i*0.0005; ring.userData.baseRotX = ring.rotation.x; ring.userData.baseRotY = ring.rotation.y;
+  coreGroup.add(ring); rings3d.push(ring);
+}
+
+// NODE SPHERES
+const nodeMeshes = [];
+const nodeLines = [];
+const nodeGlows = [];
+const nodeRings = [];
+
+NODES.forEach((node, i) => {
+  node.visible = true;
+  const phi = Math.acos(1 - 2*(i+0.5)/NODES.length);
+  const theta = Math.PI * (1 + Math.sqrt(5)) * i * 0.618;
+  const radius = 32 + Math.sin(i*1.7)*6;
+  node.orbitX = radius * Math.sin(phi) * Math.cos(theta);
+  node.orbitY = radius * Math.sin(phi) * Math.sin(theta);
+  node.orbitZ = radius * Math.cos(phi);
+  node.orbitPhase = Math.random() * Math.PI * 2;
+  node.orbitSpeed = 0.001 + Math.random()*0.002;
+  node.orbitRadius = 1.5 + Math.random()*2;
+
+  const size = 1.8 + Math.random()*0.8;
+  const geo = new THREE.SphereGeometry(size, 16, 16);
+  const color = new THREE.Color(CAT_COLORS[node.cat].hex);
+  const mat = new THREE.MeshPhongMaterial({
+    color, emissive: color.clone().multiplyScalar(0.25), shininess: 60, transparent: true, opacity: 0.85
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.set(node.orbitX, node.orbitY, node.orbitZ);
+  mesh.userData.node = node; mesh.userData.originalColor = color.clone();
+  coreGroup.add(mesh); nodeMeshes.push(mesh);
+
+  // Connection line
+  const lineGeo = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(0,0,0), new THREE.Vector3(node.orbitX, node.orbitY, node.orbitZ)
+  ]);
+  const lineMat = new THREE.LineBasicMaterial({color,transparent:true,opacity:0.06});
+  coreGroup.add(new THREE.Line(lineGeo, lineMat));
+  nodeLines.push({line: coreGroup.children[coreGroup.children.length - 1], node});
+});
+
+// PARTICLES
+const PARTICLE_COLORS = [
+  new THREE.Color(0x4a9eff), new THREE.Color(0xa78bfa), new THREE.Color(0x4ade80),
+  new THREE.Color(0xf59e0b), new THREE.Color(0xf472b6)
+];
+const particleCount = 600;
+const particleGeo = new THREE.BufferGeometry();
+const particlePositions = new Float32Array(particleCount * 3);
+const particleSizes = new Float32Array(particleCount);
+const particleColors = new Float32Array(particleCount * 3);
+const particleDrift = [];
+
+for(let i=0; i<particleCount; i++){
+  particlePositions[i*3] = (Math.random()-0.5)*300;
+  particlePositions[i*3+1] = (Math.random()-0.5)*300;
+  particlePositions[i*3+2] = (Math.random()-0.5)*300;
+  particleSizes[i] = Math.random() * 2 + 0.3;
+  const c = PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
+  particleColors[i*3] = c.r; particleColors[i*3+1] = c.g; particleColors[i*3+2] = c.b;
+  particleDrift.push({x:(Math.random()-0.5)*0.005,y:(Math.random()-0.5)*0.005,z:(Math.random()-0.5)*0.005});
+}
+particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+particleGeo.setAttribute('size', new THREE.BufferAttribute(particleSizes, 1));
+particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
+
+const particleMat = new THREE.PointsMaterial({
+  size: 0.8, transparent: true, opacity: 0.2, sizeAttenuation: true, vertexColors: true
+});
+const particles3d = new THREE.Points(particleGeo, particleMat);
+scene.add(particles3d);
+
+// HOVER
+const raycaster = new THREE.Raycaster();
+const mouse3d = new THREE.Vector2();
+
+function checkHover(mx, my){
+  mouse3d.x = (mx / window.innerWidth) * 2 - 1;
+  mouse3d.y = -(my / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse3d, camera);
+  const intersects = raycaster.intersectObjects(nodeMeshes);
+  hoveredNode = null;
+  if(intersects.length > 0){
+    hoveredNode = intersects[0].object.userData.node;
+    const tt = document.getElementById('tooltip');
+    tt.querySelector('.tt-name').textContent = hoveredNode.label;
+    tt.querySelector('.tt-meta').textContent = hoveredNode.desc;
+    tt.classList.add('visible');
+    tt.style.left = (mx + 16) + 'px'; tt.style.top = (my - 10) + 'px';
+    canvas.style.cursor = 'pointer';
+  } else {
+    document.getElementById('tooltip').classList.remove('visible');
+    canvas.style.cursor = isDragging ? 'grabbing' : 'grab';
+  }
+}
+
+canvas.addEventListener('click', e => { if(hoveredNode) showNodeDetail(hoveredNode); });
+
+// PANEL RENDERING
+function showNodeDetail(node){
+  const panel = document.getElementById('sidePanel');
+  document.getElementById('panelTitle').textContent = node.label;
+  document.getElementById('panelSubtitle').textContent = node.desc;
+  let statusClass = node.status === 'online' ? 'online' : (node.status === 'warning' ? 'warning' : 'offline');
+  let html = `<div style="margin-bottom:12px"><span class="status-dot ${statusClass}" style="margin-right:6px;vertical-align:middle"></span>${node.status.toUpperCase()}</div>`;
+  if(node.company) html += `<div class="metric-block"><h4>EMPRESA</h4><div class="metric-row"><span class="metric-row-label">${node.company}</span></div></div>`;
+  if(node.metrics){
+    html += '<div class="metric-block"><h4>MÉTRICAS</h4>';
+    node.metrics.forEach(m => { html += `<div class="metric-row"><span class="metric-row-label">${m[0]}</span><span class="metric-row-value">${m[1]}</span></div>`; });
+    html += '</div>';
+  }
+  if(node.url) html += `<div class="metric-block"><h4>ACCESO</h4><div class="metric-row"><a href="${node.url}" target="_blank" style="color:#4a9eff;font-size:10px;text-decoration:none">→ ${node.url}</a></div></div>`;
+  document.getElementById('panelContent').innerHTML = html;
+  panel.classList.add('open');
+}
+
+document.getElementById('closeBtn').addEventListener('click', () => {
+  document.getElementById('sidePanel').classList.remove('open');
+});
+
+function showNotification(text){
+  const n = document.getElementById('notification');
+  n.textContent = text; n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 3500);
+}
+
+// SIDEBAR
+document.getElementById('sidebarToggle').addEventListener('click', () => {
+  sidebarCollapsed = !sidebarCollapsed;
+  document.getElementById('sidebar').classList.toggle('collapsed');
+  document.getElementById('metrics-panel').classList.toggle('sidebar-collapsed');
+});
+
+// Accordion triggers
+document.querySelectorAll('.accordion-trigger').forEach(el => {
+  el.addEventListener('click', () => {
+    const target = document.getElementById(el.dataset.target);
+    // Close all others
+    document.querySelectorAll('.sidebar-sub.open').forEach(s => { if(s !== target) s.classList.remove('open'); });
+    target.classList.toggle('open');
+  });
+});
+
+// Sidebar navigation — items
+document.querySelectorAll('.sidebar-item[data-view]').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    navigateView(el.dataset.view);
+  });
+});
+
+// Sidebar navigation — sub-items (nodo específico)
+document.querySelectorAll('.sidebar-sub-item[data-view]').forEach(el => {
+  el.addEventListener('click', () => {
+    const nodeId = el.dataset.view;
+    const node = NODES.find(n => n.id === nodeId);
+    if(node) showNodeDetail(node);
+    // Also filter to that category
+    const cat = node.cat;
+    navigateView(cat === 'server' ? 'servers' : cat === 'wp' ? 'projects' : cat === 'ai' ? 'system' : 'dashboard');
+  });
+});
+
+// Sidebar items with data-page (estáticos)
+document.querySelectorAll('.sidebar-item[data-page]').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    showPage(el.dataset.page);
+  });
+});
+
+// Top nav
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    navigateView(btn.dataset.view);
+  });
+});
+
+// Page views (static content)
+function showPage(page){
+  updateStatus('ok');
+  // Hide 3D spheres (show nothing in 3D for static pages)
+  NODES.forEach(n => { n.visible = false; });
+  nodeMeshes.forEach(m => { m.visible = false; });
+  nodeLines.forEach(nl => { nl.line.visible = false; });
+
+  const panel = document.getElementById('panel-header');
+  const list = document.getElementById('services-list');
+  const subtitles = {
+    subvenciones: 'SUBVENCIONES',
+    auditorias: 'AUDITORÍAS',
+    informes: 'INFORMES',
+    config: 'CONFIGURACIÓN'
+  };
+  panel.textContent = subtitles[page] || 'SECCIÓN';
+
+  const pages = {
+    subvenciones: `<div class="page-content">
+      <h3>Gestión de Subvenciones</h3>
+      <div class="stat-card"><div class="stat-label">Total Concedido</div><div class="stat-value">€ 0</div><div class="stat-detail">Pendiente de registro</div></div>
+      <div class="stat-card"><div class="stat-label">En Tramitación</div><div class="stat-value">0</div><div class="stat-detail">Ninguna solicitud activa</div></div>
+      <div class="stat-card"><div class="stat-label">Próxima Convocatoria</div><div class="stat-value">—</div><div class="stat-detail">Sin fecha prevista</div></div>
+      <p style="margin-top:12px;color:#334;font-size:9px">Registra aquí las subvenciones y ayudas recibidas para tus proyectos.</p>
+    </div>`,
+    auditorias: `<div class="page-content">
+      <h3>Auditorías</h3>
+      <div class="stat-card"><div class="stat-label">Próxima Auditoría</div><div class="stat-value">—</div><div class="stat-detail">No programada</div></div>
+      <div class="stat-card"><div class="stat-label">Última Revisión</div><div class="stat-value">—</div><div class="stat-detail">Pendiente</div></div>
+      <div class="stat-card"><div class="stat-label">Pendientes</div><div class="stat-value">0</div><div class="stat-detail">Sin incidencias abiertas</div></div>
+      <p style="margin-top:12px;color:#334;font-size:9px">Panel de control de auditorías y cumplimiento normativo.</p>
+    </div>`,
+    informes: `<div class="page-content">
+      <h3>Informes</h3>
+      <div class="stat-card"><div class="stat-label">Informes Generados</div><div class="stat-value">0</div><div class="stat-detail">Ninguno hasta ahora</div></div>
+      <div class="stat-card"><div class="stat-label">Último Informe</div><div class="stat-value">—</div><div class="stat-detail">No hay informes disponibles</div></div>
+      <p style="margin-top:12px;color:#334;font-size:9px">Genera y consulta informes del sistema y proyectos.</p>
+    </div>`,
+    config: `<div class="page-content">
+      <h3>Configuración</h3>
+      <div class="stat-card"><div class="stat-label">Versión Dashboard</div><div class="stat-value">3.0</div><div class="stat-detail">Septiembre 2026</div></div>
+      <div class="stat-card"><div class="stat-label">API Endpoint</div><div class="stat-value" style="font-size:11px">/api/stats.php</div><div class="stat-detail">HTTP 200 ✅</div></div>
+      <div class="stat-card"><div class="stat-label">Three.js</div><div class="stat-value">r128</div><div class="stat-detail">CDN cdnjs</div></div>
+      <div class="stat-card"><div class="stat-label">Nodos Registrados</div><div class="stat-value">${NODES.length}</div><div class="stat-detail">5 categorías</div></div>
+      <p style="margin-top:12px;color:#334;font-size:9px">Ajustes del sistema y estado del dashboard.</p>
+    </div>`
+  };
+  list.innerHTML = pages[page] || '<p style="color:#556;padding:8px">Sección en construcción</p>';
+}
+
+// Navigation
+function navigateView(view){
+  currentView = view;
+  const catFilter = {
+    dashboard: 'all', servers: 'server', projects: null, companies: null, system: 'infra'
+  } [view] || 'all';
+
+  const labels = { dashboard:'TODO EL ECOSISTEMA', servers:'SERVIDORES', projects:'PROYECTOS', companies:'EMPRESAS', system:'INFRAESTRUCTURA' };
+  document.getElementById('panel-header').textContent = labels[view] || 'PROYECTOS';
+
+  NODES.forEach(n => {
+    n.visible = true;
+    if(catFilter === 'all') return;
+    if(catFilter === null) { n.visible = true; return; }
+    n.visible = n.cat === catFilter;
+  });
+
+  nodeMeshes.forEach(m => { m.visible = m.userData.node.visible !== false; });
+  nodeLines.forEach(nl => { nl.line.visible = nl.node.visible !== false; });
+
+  const visibleNodes = catFilter === 'all' ? NODES : NODES.filter(n => n.cat === catFilter);
+  renderPanel(visibleNodes);
+}
+
+function renderPanel(nodes){
+  const container = document.getElementById('services-list');
+  let html = '';
+  nodes.forEach(node => {
+    if(node.id === 'srv-local') return;
+    const dotColor = CAT_COLORS[node.cat]?.hex || '#555';
+    html += `<div class="node-item" onclick="showNodeDetail(NODES.find(x=>x.id==='${node.id}'))">
+      <div class="node-header">
+        <span class="node-name">${node.label} <span class="node-badge" style="background:${dotColor}22;color:${dotColor}">${node.cat}</span></span>
+        <span class="node-status ${node.status}"></span>
+      </div>
+      <div class="node-detail">${node.desc}</div>
+      ${node.url ? `<div class="node-link">→ ${node.url}</div>` : ''}
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+// Search
+document.getElementById('search').addEventListener('input', e => {
+  const q = e.target.value.toLowerCase().trim();
+  NODES.forEach(n => {
+    n.visible = !q || n.label.toLowerCase().includes(q) || n.desc.toLowerCase().includes(q) || (n.company||'').toLowerCase().includes(q);
+  });
+  nodeMeshes.forEach(m => { m.visible = m.userData.node.visible !== false; });
+  nodeLines.forEach(nl => { nl.line.visible = nl.node.visible !== false; });
+});
+
+// Legend
+const legendEl = document.getElementById('legend');
+Object.entries(CAT_COLORS).forEach(([cat, c]) => {
+  const count = NODES.filter(n => n.cat === cat).length;
+  const item = document.createElement('div'); item.className = 'legend-item';
+  item.innerHTML = `<div class="legend-dot" style="background:${c.hex}"></div><span class="legend-label">${c.label}</span><span style="font-size:9px;color:#334;font-family:'JetBrains Mono',monospace">${count}</span>`;
+  legendEl.appendChild(item);
+});
+
+// ANIMATION
+function animate(){
+  requestAnimationFrame(animate);
+  time += 0.016;
+  rotX += (targetRotX - rotX) * 0.05;
+  rotY += (targetRotY - rotY) * 0.05;
+  camDist += (camTargetDist - camDist) * 0.1;
+
+  camera.position.x = Math.sin(rotY) * Math.cos(rotX) * camDist;
+  camera.position.y = Math.sin(rotX) * camDist * 0.4 + 20;
+  camera.position.z = Math.cos(rotY) * Math.cos(rotX) * camDist;
+  camera.lookAt(0, 0, 0);
+
+  if(!isDragging) targetRotY += 0.0015;
+
+  coreMesh.rotation.x = time * 0.3; coreMesh.rotation.y = time * 0.2;
+  wireMesh.rotation.x = -time * 0.2; wireMesh.rotation.y = time * 0.3;
+  outerMesh.rotation.x = time * 0.1; outerMesh.rotation.z = time * 0.15;
+
+  coreLight.intensity = 2.5 + (coreIntensity - 0.7) * 3 + Math.sin(time * 2) * 0.5;
+  coreMat.emissiveIntensity = 0.5 + Math.sin(time * 1.5) * 0.3;
+
+  rings3d.forEach((ring, i) => {
+    ring.rotation.z = time * ring.userData.rotSpeed * 10;
+    ring.rotation.x = ring.userData.baseRotX + Math.sin(time * 0.5 + i) * 0.1;
+    ring.rotation.y = ring.userData.baseRotY + Math.cos(time * 0.3 + i) * 0.05;
+  });
+
+  nodeMeshes.forEach((mesh, i) => {
+    const node = mesh.userData.node;
+    if(node.visible === false) return;
+    const orbitAngle = time * node.orbitSpeed + node.orbitPhase;
+    const floatOffset = Math.sin(time * 0.5 + i) * node.orbitRadius;
+    mesh.position.x = node.orbitX + Math.sin(orbitAngle) * node.orbitRadius;
+    mesh.position.y = node.orbitY + floatOffset;
+    mesh.position.z = node.orbitZ + Math.cos(orbitAngle) * node.orbitRadius;
+
+    const line = nodeLines.find(nl => nl.node === node);
+    if(line){
+      const pos = line.line.geometry.attributes.position.array;
+      pos[3] = mesh.position.x; pos[4] = mesh.position.y; pos[5] = mesh.position.z;
+      line.line.geometry.attributes.position.needsUpdate = true;
+    }
+    if(hoveredNode === node){
+      mesh.scale.setScalar(1.5 + Math.sin(time * 4) * 0.2);
+      mesh.material.emissiveIntensity = 2;
+    } else {
+      mesh.scale.setScalar(1); mesh.material.emissiveIntensity = 1;
+    }
+    // Breathing size
+    mesh.scale.setScalar(mesh.scale.x * (0.95 + Math.sin(time + i) * 0.06));
+  });
+
+  particles3d.rotation.y = time * 0.015;
+  particles3d.rotation.x = Math.sin(time * 0.005) * 0.1;
+
+  // Drift particles individually
+  const pPos = particleGeo.attributes.position.array;
+  for(let i=0; i<particleCount; i++){
+    pPos[i*3] += particleDrift[i].x;
+    pPos[i*3+1] += particleDrift[i].y;
+    pPos[i*3+2] += particleDrift[i].z;
+    // Wrap around
+    ['x','y','z'].forEach((axis, j) => {
+      if(pPos[i*3+j] > 150) pPos[i*3+j] = -150;
+      if(pPos[i*3+j] < -150) pPos[i*3+j] = 150;
+    });
+  }
+  particleGeo.attributes.position.needsUpdate = true;
+
+  pointLight1.position.x = Math.sin(time * 0.3) * 30;
+  pointLight1.position.z = Math.cos(time * 0.3) * 30;
+  pointLight2.position.x = Math.sin(time * 0.2 + 2) * 25;
+  pointLight2.position.z = Math.cos(time * 0.2 + 2) * 25;
+
+  renderer.render(scene, camera);
+}
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ═══════════════════════════════════════════
+// API DATA FETCHING
+// ═══════════════════════════════════════════
+const API_ENDPOINT = './api/stats.php';
+
+function updateStatus(state) {
+  const indicator = document.getElementById('global-status');
+  const text = document.getElementById('status-text');
+  indicator.className = 'status-dot';
+  if (state === 'ok') {
+    indicator.classList.add('online'); text.textContent = 'Operativo'; text.style.color = '#4ade80';
+  } else if (state === 'warning') {
+    indicator.classList.add('warning'); text.textContent = 'Alerta'; text.style.color = '#facc15';
+  } else {
+    indicator.classList.add('offline'); text.textContent = 'Error'; text.style.color = '#ef4444';
+  }
+}
+
+async function fetchData() {
+  try {
+    const response = await fetch(API_ENDPOINT + '?t=' + Date.now());
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const data = await response.json();
+    updateUI(data);
+  } catch (error) {
+    console.error('Fetch error:', error);
+    updateStatus('error');
+  }
+}
+
+function updateUI(data) {
+  if (data.system) {
+    const sys = data.system;
+    const load1 = sys.load?.['1min'] || 0;
+    const cpuPct = Math.min(load1 / (data.system?.cpu_cores || 1) * 100, 100);
+    document.getElementById('cpu-load').textContent = load1.toFixed(2);
+    document.getElementById('cpu-bar').style.width = cpuPct + '%';
+
+    const memPct = sys.memory?.percent || 0;
+    document.getElementById('mem-value').textContent = sys.memory?.used_mb + ' / ' + sys.memory?.total_mb + ' MB (' + memPct + '%)';
+    document.getElementById('mem-bar').style.width = memPct + '%';
+    const diskPct = sys.disk?.percent || 0;
+    document.getElementById('disk-value').textContent = sys.disk?.used_gb + ' / ' + sys.disk?.total_gb + ' GB (' + diskPct + '%)';
+    document.getElementById('disk-bar').style.width = diskPct + '%';
+    document.getElementById('cpu-cores').textContent = (sys.cpu_cores || '—') + ' cores';
+    document.getElementById('uptime').textContent = data.system.uptime || '—';
+    document.getElementById('php-version').textContent = data.server?.php || '—';
+    document.getElementById('os-info').textContent = data.server?.os || '—';
+    coreIntensity = 0.7 + (cpuPct / 100) * 0.3;
+
+    const srv = NODES.find(n => n.id === 'srv-hetzner');
+    if(srv) srv.metrics = [
+      ['CPU', cpuPct.toFixed(0) + '%'],
+      ['RAM', (sys.memory?.used_mb || '—') + ' / ' + (sys.memory?.total_mb || '—') + ' MB'],
+      ['Disco', (sys.disk?.used_gb || '—') + ' / ' + (sys.disk?.total_gb || '—') + ' GB'],
+      ['Uptime', sys.uptime || '—']
+    ];
+  }
+  document.getElementById('last-update').textContent = 'Actualizado: ' + new Date().toLocaleTimeString('es-ES');
+  updateStatus('ok');
+}
+
+// ═══════════════════════════════════════════
+// INIT (after Three.js scene is built)
+// ═══════════════════════════════════════════
+animate();
+
+// If already authed (sessionStorage), startLoading immediately
+if (localStorage.getItem('mc_authed') !== 'true') {
+  // Login handles startLoading
+} else {
+  startLoading();
+}
+
+// Schedule notification
+setTimeout(() => showNotification('Navega entre secciones · Click en esferas · Rueda zoom'), 5000);
+
+fetchData();
+setInterval(fetchData, 10000);
+  
+  // === FIRE SHADER (GLSL) ===
+  // Fuego volumétrico con efecto de energía eléctrica
+  
+  const fireVertexShader = `
+    varying vec2 vUv;
+    varying vec3 vNormal;
+    
+    void main() {
+      vUv = uv;
+      vNormal = normalize(normalMatrix * normal);
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `;
+  
+  const fireFragmentShader = `
+    uniform float uTime;
+    uniform vec3 uColor1;
+    uniform vec3 uColor2;
+    uniform vec3 uColor3;
+    uniform float uSpeed;
+    uniform float uIntensity;
+    
+    varying vec2 vUv;
+    varying vec3 vNormal;
+    
+    // Simplex noise function
+    vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+    vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+    vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
+    vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+    
+    float snoise(vec3 v) {
+      const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
+      const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
+      
+      vec3 i  = floor(v + dot(v, C.yyy) );
+      vec3 x0 = v - i + dot(i, C.xxx) ;
+      vec3 g = step(x0.yzx, x0.xyz);
+      vec3 l = 1.0 - g;
+      vec3 i1 = min( g.xyz, l.zxy );
+      vec3 i2 = max( g.xyz, l.zxy );
+      
+      vec3 x1 = x0 - i1 + C.xxx;
+      vec3 x2 = x0 - i2 + C.yyy;
+      vec3 x3 = x0 - D.yyy;
+      
+      i = mod289(i);
+      vec4 p = permute( permute( permute( i.z + vec4(0.0, i1.z, i2.z, 1.0 )) + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
+      
+      float n_ = 0.142857142857;
+      vec3  ns = n_ * D.wyz - D.xzx;
+      
+      vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+      
+      vec4 x_ = floor(j * ns.z);
+      vec4 y_ = floor(j - 7.0 * x_ );
+      
+      vec4 x = x_ *ns.x + ns.y;
+      vec4 y = y_ *ns.x + ns.y;
+      vec4 h = 1.0 - abs(x) - abs(y);
+      
+      vec4 b0 = vec4( x.xy, y.xy );
+      vec4 b1 = vec4( x.zw, y.zw );
+      
+      vec4 s0 = floor(b0)*2.0 + 1.0;
+      vec4 s1 = floor(b1)*2.0 + 1.0;
+      vec4 sh = -step(h, vec4(0.0));
+      
+      vec4 a0 = b0.xzyw + s0*x0.www;
+      vec4 a1 = b1.xzyw + s1*x0.www;
+      
+      vec3 p0 = vec3(a0.xy,h.x);
+      vec3 p1 = vec3(a0.zw,h.y);
+      vec3 p2 = vec3(a1.xy,h.z);
+      vec3 p3 = vec3(a1.zw,h.w);
+      
+      vec4 n = p * ns.w + ns.z * vec4(0.0, 0.0, 0.0, 1.0);
+      
+      vec3 t = 1.6 - n.x*x0 - n.y*x1 - n.z*x2 - n.w*x3;
+      vec4 m = max(0.6 - t, 0.0);
+      m = m * m;
+      m = m * m;
+      
+      vec4 px = x0 + n.x * vec3(0.166666);
+      vec4 py = x1 + n.y * vec3(0.166666);
+      vec4 pz = x2 + n.z * vec3(0.166666);
+      vec4 pw = x3 + n.w * vec3(0.166666);
+      
+      vec4 vx = px * ns.x;
+      vec4 vy = py * ns.x;
+      vec4 vz = pz * ns.x;
+      vec4 vw = pw * ns.x;
+      
+      vec4 w0 = vx.yzx + s0.xzx * ns.y + s0.yzw;
+      vec4 w1 = vx.zxy + s1.xzx * ns.y + s1.yzw;
+      
+      vec3 n0 = vec3(w0.x, w0.y, w0.z);
+      vec3 n1 = vec3(w1.x, w1.y, w1.z);
+      
+      vec4 temp = mix(vec4(n0.x, n0.y, n0.z, 0.0), vec4(n1.x, n1.y, n1.z, 0.0), m.z);
+      vec3 grad = mix(vec3(temp.x, temp.y, temp.z), vec3(temp.y, temp.z, temp.w), m.y);
+      grad = normalize(grad);
+      
+      return dot(grad, x0) * m.x;
+    }
+    
+    void main() {
+      float time = uTime * uSpeed;
+      
+      vec3 pos = vUv.xyxy;
+      float noise1 = snoise(vec3(pos.x * 2.0 + time, pos.y * 2.0 - time, 0.0));
+      float noise2 = snoise(vec3(pos.x * 3.0 - time * 0.5, pos.y * 3.0 + time * 0.5, 0.5));
+      float noise3 = snoise(vec3(pos.x * 5.0 + time * 0.3, pos.y * 5.0 - time * 0.3, 1.0));
+      
+      float fireNoise = (noise1 + noise2 * 0.5 + noise3 * 0.25) / 1.75;
+      
+      float dist = distance(vUv, vec2(0.5));
+      float mask = 1.0 - smoothstep(0.4, 0.5, dist);
+      
+      vec3 color = mix(uColor1, uColor2, smoothstep(-0.2, 0.5, fireNoise));
+      color = mix(color, uColor3, smoothstep(0.3, 0.8, fireNoise));
+      
+      float glow = pow(fireNoise, 3.0) * mask * uIntensity;
+      color += vec3(0.3, 0.5, 1.0) * glow * 0.5;
+      
+      float normalIntensity = dot(vNormal, vec3(0.0, 0.0, 1.0));
+      color *= (0.5 + 0.5 * normalIntensity);
+      
+      float alpha = mask * 0.8;
+      
+      gl_FragColor = vec4(color, alpha);
+    }
+  `;
+  
+  // Crear el ShaderMaterial para el fuego
+  const fireMaterial = new THREE.ShaderMaterial({
+    vertexShader: fireVertexShader,
+    fragmentShader: fireFragmentShader,
+    uniforms: {
+      uTime: { value: 0 },
+      uColor1: { value: new THREE.Color(0xffaa00) },
+      uColor2: { value: new THREE.Color(0xff5500) },
+      uColor3: { value: new THREE.Color(0xff0000) },
+      uSpeed: { value: 1.5 },
+      uIntensity: { value: 2.0 }
+    },
+    transparent: true,
+    side: THREE.DoubleSide,
+    depthWrite: false
+  });
+  
+  // Crear la geometría del fuego (esfera)
+  const fireGeo = new THREE.SphereGeometry(4.5, 64, 64);
+  const fireMesh = new THREE.Mesh(fireGeo, fireMaterial);
+  fireMesh.position.set(0, 0, 0);
+  coreGroup.add(fireMesh);
+  
+  // Añadir luz emisiva (fuego)
+  const fireLight = new THREE.PointLight(0xffaa00, 4, 150);
+  fireLight.position.set(0, 0, 0);
+  coreGroup.add(fireLight);
+  
+  // Añadir luz de energía eléctrica (azul)
+  const electricLight = new THREE.PointLight(0x00ccff, 2, 100);
+  electricLight.position.set(5, 5, 5);
+  coreGroup.add(electricLight);
+</script>
+</body>
+</html>
