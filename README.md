@@ -423,3 +423,25 @@ MIT License - Ver [LICENSE](LICENSE)
 ---
 
 **Última actualización:** 2026-09-06
+
+---
+
+## 🚀 Cambios Recientes
+
+### 2026-09-06 - Animación 3D Mejorada
+
+**Mejoras:**
+- ✅ Más aleatoriedad en la posición de nodos (phi/theta aleatorios)
+- ✅ Rango de órbita ampliado: 32-82 unidades
+- ✅ Núcleo con efecto "video" (emissive: cyan)
+- ✅ `coreIntensity` con animación dinámica
+
+**Archivos modificados:**
+- `/var/www/dashboard/index.html` (líneas ~599-601, ~570)
+- `/home/ddr/fix-dashboard.sh` (script de corrección)
+
+**Estado:**
+- HTTP 200 ✅
+- Sintaxis JS: 434/434 paréntesis ✅
+- Sintaxis JS: 142/142 llaves ✅
+
