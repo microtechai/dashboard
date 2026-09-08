@@ -15,23 +15,9 @@ function checkThree() {
     });
 }
 
-// Load fire animation
-async function loadFire() {
-    try {
-        // Crear los elementos necesarios en la escena
-        const coreGroup = new THREE.Group();
-        scene.add(coreGroup);
-        window.dashboardCoreGroup = coreGroup;
-        
-        // Cargar shaders mejorados
-        await import('./fire/integration.js');
-        
-        console.log('✅ Fuego cargado correctamente');
-        return true;
-    } catch (e) {
-        console.error('❌ Error cargando fuego:', e);
-        return false;
-    }
+// The main scene owns fire creation and updates; never create a second group.
+function loadFire() {
+    return Boolean(window.dashboardFireController);
 }
 
 // Load voice system

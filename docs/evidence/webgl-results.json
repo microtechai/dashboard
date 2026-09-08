@@ -1,0 +1,154 @@
+{
+  "result": "PASS",
+  "backend": "real WebGL via Chromium ANGLE SwiftShader (software GPU)",
+  "errors": [],
+  "samples": [
+    {
+      "distance": 100,
+      "angle": 0,
+      "before": {
+        "time": 0,
+        "changed": 6809,
+        "outsideCore": 3360,
+        "blue": 6809,
+        "checksum": 444018914,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "after": {
+        "time": 1.4999999999999996,
+        "changed": 6478,
+        "outsideCore": 3031,
+        "blue": 6478,
+        "checksum": 441808281,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "screenshot": "fire-100-angle-0.png"
+    },
+    {
+      "distance": 30,
+      "angle": 0,
+      "before": {
+        "time": 1.4999999999999996,
+        "changed": 48555,
+        "outsideCore": 17455,
+        "blue": 48555,
+        "checksum": 764846804,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "after": {
+        "time": 2.9999999999999942,
+        "changed": 55264,
+        "outsideCore": 24151,
+        "blue": 55264,
+        "checksum": 818446290,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "screenshot": "fire-30-angle-0.png"
+    },
+    {
+      "distance": 30,
+      "angle": 1.57,
+      "before": {
+        "time": 2.9999999999999942,
+        "changed": 56252,
+        "outsideCore": 25619,
+        "blue": 56252,
+        "checksum": 799040763,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "after": {
+        "time": 4.499999999999989,
+        "changed": 52717,
+        "outsideCore": 21957,
+        "blue": 52717,
+        "checksum": 788866257,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "screenshot": "fire-30-angle-1.57.png"
+    }
+  ]
+}
