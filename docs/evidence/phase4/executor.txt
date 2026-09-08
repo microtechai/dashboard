@@ -1,0 +1,1 @@
+PASS: minimize, restore via keyboard, draft preservation, persistence, idempotent init, no command execution

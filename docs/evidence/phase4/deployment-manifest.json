@@ -1,0 +1,52 @@
+{
+  "rollback_dir": "/root/.local/state/jarvis-rollbacks/20260908T104937Z-phase4",
+  "files": [
+    {
+      "path": "/var/www/dashboard/api/chat.php",
+      "backup": "/root/.local/state/jarvis-rollbacks/20260908T104937Z-phase4/var/www/dashboard/api/chat.php",
+      "old_sha256": "839f1c4edf9bcb75023c91eb254ecd78fa3d4426f7a0cf3e2a25d1714e722ebb",
+      "new_sha256": "fcefcfb24b8577a2d2b2b326c8b44fa29129de7f557d382057255512727626c4",
+      "bytes": 16923,
+      "uid": 0,
+      "gid": 33,
+      "mode": 420
+    },
+    {
+      "path": "/var/www/dashboard/chat/chat.js",
+      "backup": "/root/.local/state/jarvis-rollbacks/20260908T104937Z-phase4/var/www/dashboard/chat/chat.js",
+      "old_sha256": "d632c6c5c9657fcbbb077a03847e9bc0ca84e5ff58334404c1c4726b4d0fe38f",
+      "new_sha256": "554d951ff157c8e921f295f6fa77930df3d436e83faea1d3cb89e7a1648d31d1",
+      "bytes": 22056,
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "path": "/var/www/dashboard/chat/core-state.js",
+      "backup": "/root/.local/state/jarvis-rollbacks/20260908T104937Z-phase4/var/www/dashboard/chat/core-state.js",
+      "old_sha256": "e5792f09653cb9f57769446150b23abc31bf3138ef49636094ff39df997a501f",
+      "new_sha256": "3245a4eef32f87985b03867c8a0cb7fced9cdd0f151c3f8ed93cb5dad3d57371",
+      "bytes": 1179,
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "path": "/var/www/dashboard/index.html",
+      "backup": "/root/.local/state/jarvis-rollbacks/20260908T104937Z-phase4/var/www/dashboard/index.html",
+      "old_sha256": "96da30862f279ab0bb1384393fb438a86a3bcfcbdf33c44de46f4123494db031",
+      "new_sha256": "12e3e1aa99acac56bc76008a6d10ad0b0b45f7b5cc68ac236ed763f93998cb7e",
+      "bytes": 57690,
+      "uid": 33,
+      "gid": 33,
+      "mode": 420
+    }
+  ],
+  "new_private_paths": [
+    "/opt/jarvis-stt/transcribe.php",
+    "/opt/jarvis-stt/stt_worker.py",
+    "/opt/jarvis-stt/venv",
+    "/opt/jarvis-stt/model"
+  ],
+  "note": "New STT private dependencies installed and real-tested before web publication. Remove only after restoring web files; no preexisting STT paths."
+}

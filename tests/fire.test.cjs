@@ -68,7 +68,7 @@ test('changed classic assets are versioned and fire honors reduced motion withou
   const stateCall = html.match(/fireController\.setState\([^;]+;/)?.[0];
   for (const reduced of [true,false]) {
     let state;
-    vm.runInNewContext(stateCall, {coreIntensity:1, fireMotionPreference:{matches:reduced}, fireController:{setState(s){state=s;}}});
+    vm.runInNewContext(stateCall, {coreIntensity:1, chatBoost:0, fireMotionPreference:{matches:reduced}, fireController:{setState(s){state=s;}}});
     assert.equal(state.intensity,1);
     assert.equal(state.speed,reduced ? 0.2 : 1);
   }

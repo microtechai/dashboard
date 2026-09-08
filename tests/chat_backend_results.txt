@@ -1,0 +1,21 @@
+LOCAL FIXTURE TEST EVIDENCE; NOT PRODUCTION INFERENCE/AUDIO
+Command: php -l api/chat.php && php -l api/chat-config.example.php && python3 tests/chat_backend_test.py
+Exit code: 0
+No syntax errors detected in api/chat.php
+No syntax errors detected in api/chat-config.example.php
+test_authentication_and_request_guards (__main__.Backend.test_authentication_and_request_guards) ... ok
+test_global_locks (__main__.Backend.test_global_locks) ... ok
+test_history_bound_and_unicode_limit (__main__.Backend.test_history_bound_and_unicode_limit) ... ok
+test_missing_private_temp_dir_fails_closed (__main__.Backend.test_missing_private_temp_dir_fails_closed) ... ok
+test_multiline_tts_is_one_piper_utterance (__main__.Backend.test_multiline_tts_is_one_piper_utterance) ... ok
+test_session_cookie_and_anonymous_state (__main__.Backend.test_session_cookie_and_anonymous_state) ... ok
+test_stream_history_limits_and_failure (__main__.Backend.test_stream_history_limits_and_failure) ... ok
+test_stream_unlock_and_clear_race (__main__.Backend.test_stream_unlock_and_clear_race) ... ok
+test_tts_process_wav_and_cleanup (__main__.Backend.test_tts_process_wav_and_cleanup) ... ok
+test_tts_single_cpu_affinity (__main__.Backend.test_tts_single_cpu_affinity) ... ok
+test_tts_timeout_reaps_and_unlocks (__main__.Backend.test_tts_timeout_reaps_and_unlocks) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 21.206s
+
+OK

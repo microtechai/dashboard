@@ -1,0 +1,21 @@
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const vm=require('node:vm');
+const path=require('node:path');
+test('core state accepts bounded live audio, resets and honors reduced motion',()=>{
+ let now=0;const listeners={};
+ const w={performance:{now:()=>now},addEventListener:(name,fn)=>listeners[name]=fn};w.window=w;
+ vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../chat/core-state.js'),'utf8'),w);
+ const send=detail=>listeners['jarvis-chat-state']({detail});
+ assert.equal(w.JarvisCoreState.boost(0,0,false),0);
+ send({state:'thinking',level:0}); assert.ok(w.JarvisCoreState.boost(0,0,false)>0);
+ send({state:'speaking',level:0}); assert.equal(w.JarvisCoreState.boost(0,0,false),0);
+ send({state:'speaking',level:0.5});const full=w.JarvisCoreState.boost(0,0,false);assert.ok(full>0);
+ assert.ok(w.JarvisCoreState.boost(0,0,true)<full);
+ send({state:'speaking',level:999});assert.ok(w.JarvisCoreState.boost(0,0,false)<=0.8);
+ send({state:'speaking',level:NaN});assert.equal(w.JarvisCoreState.boost(0,0,false),0);
+ send({state:'arbitrary',level:1});assert.equal(w.JarvisCoreState.boost(0,0,false),0);
+ send({state:'speaking',level:1});now=2000;assert.equal(w.JarvisCoreState.boost(now,0,false),0);
+ send({state:'idle',level:1});assert.equal(w.JarvisCoreState.boost(now,0,false),0);
+});
