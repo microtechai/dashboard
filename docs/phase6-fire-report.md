@@ -1,66 +1,68 @@
-# Fase6 — candidato volumétrico, NO-GO de publicación
+# Fase6 — fuego volumétrico con presupuesto de fragmentos
 
-## Resultado
+## Resultado técnico
 
-**No desplegado.** Mejora visual real inspeccionada, pero regresión de coste demasiado grande en el único renderer disponible. Producción mantiene el fuego anterior y su gate seguro. La fase6 **no está completada ni aprobada para producción**. No se implementó fase7.
+**PASS del guard 3× sin cambiar el benchmark.** Una única optimización arquitectural conserva el raymarch 3D pero lo ejecuta en un render target limitado; composición de la caja a resolución nativa. La publicación selectiva se registra en `deployment-manifest.json` (no confundir con el antiguo `candidate-manifest.json`). No fase7, cambios de login/backend/Nginx/Cloudflare, permisos de micrófono ni autenticación inyectada.
 
-Rama candidata `feat/jarvis-volumetric-fire`, apilada sobre `feat/jarvis-single-login` / PR4 abierta, base `710159086df80ed6f5956714dd2187264f7e1a95`.
+Rama conservada `feat/jarvis-volumetric-fire`, PR5 apilada sobre `feat/jarvis-single-login`. El candidato anterior `c931da9acc14f0a950be5321bdc372032f1e8186` fue correctamente NO-GO y nunca se desplegó. Su informe y evidencia permanecen en Git; las mediciones/PNG originales también en `/home/ddr/jarvis-phase6-artifacts/pre-target/`.
 
-## Candidato ejecutable
+## Perfil antes de implementar
 
-- `fire/shaders.js`: sustituye cuatro billboards aditivos por un volumen raymarch de caja, intersección near/far y origen de cámara transformado a espacio local. BackSide, depthTest, sin depthWrite; composición front-to-back y NormalBlending para no recortar el verde/cian por acumulación aditiva.
-- Turbulencia 3D ascendente, hojas plegadas finas y erosión del contorno. Azul eléctrico con cian localizado; no esfera estática. Un atlas de ruido **generado localmente** de 256×256 RGBA, sin archivos nuevos de runtime, peticiones externas ni CDN. Liberación de geometría, material y textura.
-- 40 pasos normales / 24 low, límite estático48 con early-out; salto de espacio vacío antes de ruido. Ajuste por presión de frames con histéresis; móvil inicia low. `reducedMotion` limita velocidad a0.2 y baja pasos; estados intensity/speed interpolados, contrato update/setState/dispose conservado. No RAF/timers propios.
-- `index.html`: solo tres líneas de integración: versión del shader, calidad responsive, reducedMotion. Sin cambio de cámara, diseño, materiales del núcleo, sidebar, chat, login, executor, backend o puertos. `chat/core-state.js` intacto: conserva niveles RMS reales, estados y expiración existentes.
-- No chispas adicionales: se priorizó volumen y se rechazó añadir más coste antes de resolver rendimiento.
+`tests/fire_profile.py` reproduce el candidato anterior desde ese SHA y aísla costes en WebGL real. Cerca30, 1200×800, mediana8, readPixels dentro del intervalo:
 
-## Evidencia visual: real, aislada, no autenticada
-
-![Baseline izquierda / candidato derecha, cerca/lateral/normal](evidence/phase6/comparison.png)
-
-El componente carga Three.js r128 local de tests y el shader real candidato. Es una escena de pruebas aislada con el núcleo/wireframes existentes, **no una página de producción autenticada**, ni una captura de todo el dashboard. No se ocultó login, no se inyectó sesión ni se utilizaron credenciales.
-
-`tests/core_visual_quality.py`: baseline leído con `git show` de la base conocida; normal100, cerca30, oblicuo0.78rad, lateral1.57, trasero3.14, low y reduced. Dos frames separados por actualizaciones por caso: **14 casos/28 PNG**. Programas enlazados en Chromium `/usr/bin/chromium` con ANGLE SwiftShader, glError0, píxeles azules visibles fuera del núcleo y frame-diffs positivos. Capturas revisadas con visión real: desaparece el parche cian uniforme, se ven pliegues internos y silueta turbulenta desde frente/lateral; los wireframes geométricos conservados siguen siendo visibles. No se confunden con billboards de fuego.
-
-Fracción de píxeles azules activos con G/B>220: baseline cercano0.3848, candidato0.0. Esto es un guard cuantitativo contra clipping, no sustituye aceptación estética del propietario.
-
-Todas las capturas y métricas: `/home/ddr/jarvis-phase6-artifacts/{baseline,new}/`, `quality-results.json`; selección versionada en `docs/evidence/phase6/`.
-
-## Por qué NO se desplegó
-
-Medianas de ocho renders **incluyendo readPixels sincronizado** a1200×800, mismo componente y entorno. Son tiempos software con coste de readback, **no FPS ni coste de GPU física**:
-
-| Perfil | Baseline ms | Candidato ms |
+| Caso diagnóstico | Submit JS ms | Render + readback ms |
 |---|---:|---:|
-| Normal |11.70|38.30|
-| Cerca |24.55|279.05|
-| Oblicuo |24.10|280.90|
-| Lateral |24.70|271.10|
-| Trasero |24.15|294.15|
-| Low |25.00|183.30|
-| Reduced |25.45|176.95|
+| Raymarch anterior |0.30|279.90|
+| Sin fuego |0.20|12.00|
+| Misma caja, fragmento plano |0.20|14.60|
 
-El guard conservador de publicación rechaza >3× el baseline. El test final termina **exit1 / NO-GO: performance**, aunque sus contratos visuales son PASS. No se disimula como suite verde. Las primeras mediciones usando únicamente render+gl.finish devolvían ~0.2ms: eran encolado JS, **inválidas como render time**, y se corrigieron antes de decidir. Primer shader procedural llegó a ~689ms cercano; atlas local y salto del espacio vacío lo redujeron, pero no lo suficiente. Low tampoco resuelve el bloqueo. No se atribuye esta lentitud directamente a equipos físicos no probados.
+Esto localiza la regresión en shading/fragmentos, no en geometría ni actualizaciones JS. El submit solo mide encolado CPU; la columna sincronizada incluye render software y readback, **no tiempo de GPU física ni FPS**. El shader plano es exclusivamente diagnóstico y nunca el resultado publicado. Fuente de datos: `profile-before.json`.
 
-Siguiente decisión requerida: optimización adicional con presupuesto de píxeles/pasos verificable, o medición legítima en hardware físico y aceptación del propietario antes de reconsiderar despliegue. No se cambia el diseño ni se fuerza una sesión para obtener esa prueba.
+## Cambio acotado
 
-## Pruebas y revisión
+- El mismo volumen 3D, cámara local, turbulencia ascendente, atlas local, 40/24 pasos, alpha y transiciones de audio reales. No cuatro planos ni esfera estática.
+- `WebGLRenderTarget` RGBA, filtro lineal, sin depth/stencil/mipmaps; un tercio de la dimensión de viewport físico, máximo512 en el lado largo. A1200×800:400×267. Solo el fuego reduce resolución; núcleo, wireframes, escena y UI siguen a resolución original.
+- Raymarch con NoBlending al target transparente para conservar RGBA straight; composición NormalBlending sobre la caja BackSide existente, depthTest activo y depthWrite desactivado. Conserva el contrato de profundidad de la caja anterior; no se afirma intersección volumétrica exacta con objetos dentro del volumen.
+- Offscreen render dentro de `onBeforeRender`, sin RAF/timers adicionales. Preserva/restaura target, viewport, scissor, clear color/alpha, autoClear, XR e info.autoReset mediante finally. Los contadores incluyen ambas pasadas (5 draws en el fixture, no el engañoso2 de un reset anidado).
+- Tamaño adaptado al viewport/DPR y liberación idempotente de target, atlas, materiales y geometría. Contratos update/setState/dispose y reducedMotion conservados.
+- `index.html`: tres líneas frente al baseline fase5: versión de asset, calidad responsive y reducedMotion. No cambios a `chat/core-state.js`.
 
-- TDD observado: volumen falla4!=1 antes de implementar; transición suave falla2!=1; integración responsive ausente; atlas ausente; frames sostenidos0.3s no reducían calidad. Implementaciones posteriores y regresiones pasan. Logs RED seguros de atlas/slow en evidencia; no se versiona el volcado HTML del fallo de integración.
-- `node --test tests/fire.test.cjs tests/fire_volume.cjs tests/core_activity.cjs tests/stt_core.cjs`: **12 PASS**. Contratos nuevos con objetos THREE reales: posición de cámara, una caja, textura local, disposal idempotente, estado interpolado, slow/recuperación, reduced, resume, integración sin nuevo RAF.
-- `python3 tests/access_gate_test.py`: **15 PASS** incluyendo11 backend heredados. `python3 tests/access_browser_test.py BrowserAccess`: **1 PASS**, PHP real + MC fixture; no login propietario.
-- `python3 tests/fire_webgl.py`: ejecutado PASS durante iteraciones; comparación final amplia sustituye la cobertura visual estrecha y conserva su fixture. Scripts originales no borrados.
-- `node --check fire/shaders.js`, `python3 -m py_compile tests/core_visual_quality.py`, `git diff --check`: PASS. Shared-classic global declaration collision test PASS.
-- Legacy `fire.test.cjs` se adapta solo para NormalBlending y transición suave. Tests chat/STT frontend dependientes del segundo login siguen sin migrarse en este alcance; no se presenta toda la suite legacy como aprobada.
-- Una petición real a Qwen3-Coder-Next, respuesta guardada en `qwen-review.json`: APPROVE con advertencia de coste. Revisó versión procedural anterior, no atlas final. Sus propuestas de dynamic while/GL_GOOGLE_include_directive y afirmación24×48 no son correctas como solución universal WebGL1; no se aplicaron. El loop fijo con break es válido; Qwen no sustituye mediciones. Revisión propia final mantiene NO-GO por coste.
-- Entorno de pruebas: faltaban Pillow y uv; se creó `/home/ddr/jarvis-phase6-venv` con `python3 -m venv` y se instalaron Playwright/Pillow allí, sin alterar Python del sistema.
+## Comparativa final sin tocar el guard ni esconder readback
 
-## Producción y seguridad verificadas al cierre
+`tests/core_visual_quality.py` permanece idéntico al candidato anterior. Mismo Chromium `/usr/bin/chromium`, ANGLE SwiftShader, viewport1200×800, baseline Git `710159086df80ed6f5956714dd2187264f7e1a95`; ocho renders con readPixels por caso. Son tiempos de renderer software, no rendimiento del dispositivo del propietario.
 
-No se escribió ningún archivo remoto ni se reinició servicio desde esta fase. Hashes remotos iniciales y finales coinciden para index/fire/core-state; exactos en `candidate-manifest.json`. **No es un manifiesto de despliegue**: identifica live frente a candidato y `deployed:false`. Al no haber publicación no se generó backup/rollback; cualquier futuro deploy sigue requiriendo preservación selectiva fuera del webroot, drift guards, reemplazos atómicos compatibles y verificación posterior. No nuevo asset runtime: gate/allowlist permanecen intactos. El cache-buster nuevo existe solo en Git candidato.
+| Perfil | Baseline ms | Target ms |
+|---|---:|---:|
+| Normal100 |11.70|14.10|
+| Cerca30 |24.75|46.55|
+| Oblicuo |24.80|47.60|
+| Lateral |24.20|48.45|
+| Trasero |24.65|53.20|
+| Low |25.10|34.80|
+| Reduced |24.50|34.50|
 
-Comprobación pública final propia, sin seguir redirects: `/` e `/index.html`303, shader antiguo/nuevo y cuatro assets antiguos401, todos CF DYNAMIC + private,no-store. **El bloqueo Cloudflare anterior está resuelto**; no se cambiaron sus reglas desde esta tarea.
+**PASS**: ningún perfil supera3×. Frente al raymarch anterior: normal38.30→14.10, cerca279.05→46.55, low183.30→34.80. Son ejecuciones distintas, no una garantía estadística para hardware físico. El coste sigue siendo mayor que baseline, se informa explícitamente.
 
-El parent confirmó y dejó evidencia en `/home/ddr/jarvis-port5000-containment/REPORT.md`: executor ahora127.0.0.1:5000, debug/reloaderFalse, health local200 y externo TCP111 refused. SHA posterior `c9af50dcf07a18ea61ef82fcf2c71e691e3df137ffd430c6573a1666ec25c269`. Esa intervención independiente no forma parte de este diff. Cierra exposición pública, **no prueba executor UI funcional** ni autenticación local; sigue sin ruta autorizada al frontend.
+## Visión y pruebas
 
-Pendiente: login/logout positivo real del propietario, evaluación estética y rendimiento en su equipo. No se revirtió seguridad y no se declara GO global.
+![Baseline / raymarch anterior / target, cerca/lateral/normal](evidence/phase6/target-comparison.png)
+
+Inspección visual real del PNG: conserva pliegues internos azules y contorno turbulento, evita el centro cian plano del baseline y sigue visible desde el lateral. El target suaviza detalles muy finos respecto al raymarch completo; no se ven parches rectangulares ni planos cruzados. Es un compromiso de resolución explícito, no calidad idéntica. Comparación de componente aislado: **no captura autenticada del dashboard ni aceptación estética final del propietario**.
+
+- Quality:14 casos/28 PNG reales, cuatro programas GL enlazados, glError0, animación con diferencias de frames, azul visible fuera del núcleo y fracción cian clipped0.0 para todos los candidatos.
+- TDD real: `fire_target.py` falla primero por ausencia de target; tras implementar pasa. Segundo RED por reset de contadores anidado; preservación de info.autoReset lo corrige.
+- `fire_target.py` PASS: presupuesto400×267, restauración de renderer, alpha transparente/visible, oclusor opaco delantero, resize DPR2, liberación de las dos texturas GPU y disposal idempotente.
+- `node --test tests/fire.test.cjs tests/fire_volume.cjs tests/core_activity.cjs tests/stt_core.cjs`:12 PASS; estados RMS, transiciones, reduced, recuperación, único RAF y ausencia de colisión entre scripts classic.
+- `tests/fire_webgl.py`:PASS en Chromium/SwiftShader real,3 vistas con movimiento.
+- `python3 tests/access_gate_test.py`:15 PASS (incluye backend heredado).
+- `tests/access_browser_test.py BrowserAccess`:1 PASS, PHP real y fixture MC autorizado; no login del propietario.
+- `node --check fire/shaders.js`, compilación Python y `git diff --check`:PASS.
+- No se presenta toda la suite legacy chat/STT del segundo login como verde; su migración sigue fuera del alcance, fase7 pendiente.
+
+## Seguridad / entrega
+
+Solo se autorizan `fire/shaders.js` e `index.html`, con hash guard fase5, preservación selectiva fuera del webroot y reemplazo atómico por archivo (shader primero compatible con índice anterior). No restart/reload ni nuevo asset en allowlist. Las rutas protegidas no permiten comparar bytes públicos de assets sin sesión: hashes de origen por SSH y comprobaciones públicas anónimas303/401 son pruebas distintas, no se finge descarga pública autenticada.
+
+Evidencia completa en `/home/ddr/jarvis-phase6-artifacts/`: `quality-results.json`, `profile-before.json`, `target-comparison.png`, `baseline/`, `new/`, manifiesto y resultados públicos. Selección versionada en `docs/evidence/phase6/`.
+
+Pendientes: login/logout positivo real del propietario, aceptación estética y coste/interacción en su GPU física. El guard software superado autoriza esta entrega acotada, **no GO global de todas las fases**. Executor, acceso y fase7 no se modificaron.

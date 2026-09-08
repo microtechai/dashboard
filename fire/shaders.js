@@ -88,10 +88,47 @@
       transparent:true,side:THREE.BackSide,depthWrite:false,depthTest:true,blending:THREE.NormalBlending});
     const mesh=new THREE.Mesh(geometry,material);
     mesh.name='jarvis-fire-volume';mesh.scale.set(9,13,9);mesh.position.y=5;mesh.renderOrder=2;
-    const inverse=new THREE.Matrix4();
+    // Raymarch only a bounded low-resolution buffer. The original 3D box
+    // composites it at full resolution with the same depth/ordering contract.
+    // This is not a billboard: each texel still integrates the camera's 3D ray.
+    const target=new THREE.WebGLRenderTarget(1,1,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,depthBuffer:false,stencilBuffer:false});
+    target.texture.generateMipmaps=false;
+    const rayMaterial=material.clone();
+    rayMaterial.uniforms=material.uniforms;
+    rayMaterial.blending=THREE.NoBlending;
+    const rayMesh=new THREE.Mesh(geometry,rayMaterial), rayScene=new THREE.Scene();
+    rayMesh.matrixAutoUpdate=false;rayMesh.frustumCulled=false;rayScene.add(rayMesh);
+    material.uniforms.uFireBuffer={value:target.texture};
+    material.uniforms.uViewport={value:new THREE.Vector4()};
+    material.fragmentShader=`uniform sampler2D uFireBuffer; uniform vec4 uViewport;
+      void main(){vec2 uv=(gl_FragCoord.xy-uViewport.xy)/uViewport.zw;
+        vec4 fire=texture2D(uFireBuffer,uv);if(fire.a<0.003)discard;gl_FragColor=fire;}`;
+    const inverse=new THREE.Matrix4(), viewport=new THREE.Vector4(), scissor=new THREE.Vector4(), clearColor=new THREE.Color();
     mesh.onBeforeRender=function(renderer,scene,camera) {
       inverse.copy(mesh.matrixWorld).invert();
       material.uniforms.uCamera.value.setFromMatrixPosition(camera.matrixWorld).applyMatrix4(inverse);
+      if(!renderer) return; // camera-coordinate contract also works without GL
+      renderer.getCurrentViewport(material.uniforms.uViewport.value);
+      const activeViewport=material.uniforms.uViewport.value;
+      const scale=Math.min(1/3,512/Math.max(activeViewport.z,activeViewport.w));
+      const width=Math.max(1,Math.ceil(activeViewport.z*scale)),height=Math.max(1,Math.ceil(activeViewport.w*scale));
+      if(target.width!==width || target.height!==height) target.setSize(width,height);
+      const previousTarget=renderer.getRenderTarget(), cubeFace=renderer.getActiveCubeFace(), mipLevel=renderer.getActiveMipmapLevel();
+      renderer.getViewport(viewport);renderer.getScissor(scissor);renderer.getClearColor(clearColor);
+      const scissorTest=renderer.getScissorTest(),alpha=renderer.getClearAlpha(),autoClear=renderer.autoClear,xr=renderer.xr.enabled;
+      const infoAutoReset=renderer.info.autoReset;
+      rayMesh.matrix.copy(mesh.matrixWorld);
+      try {
+        renderer.info.autoReset=false;
+        renderer.xr.enabled=false;renderer.autoClear=true;
+        renderer.setRenderTarget(target);renderer.setScissorTest(false);renderer.setClearColor(0x000000,0);
+        renderer.render(rayScene,camera);
+      } finally {
+        renderer.info.autoReset=infoAutoReset;
+        renderer.setRenderTarget(previousTarget,cubeFace,mipLevel);
+        renderer.setViewport(viewport);renderer.setScissor(scissor);renderer.setScissorTest(scissorTest);
+        renderer.setClearColor(clearColor,alpha);renderer.autoClear=autoClear;renderer.xr.enabled=xr;
+      }
     };
     coreGroup.add(mesh);
     let disposed=false, reducedMotion=false, targetIntensity=1, targetSpeed=1;
@@ -123,7 +160,7 @@
       },
       dispose() {
         if(disposed) return;disposed=true;
-        if(mesh.parent) mesh.parent.remove(mesh);geometry.dispose();material.dispose();noiseTexture.dispose();
+        if(mesh.parent) mesh.parent.remove(mesh);geometry.dispose();material.dispose();rayMaterial.dispose();noiseTexture.dispose();target.dispose();
       }
     };
   }
