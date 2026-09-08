@@ -1,0 +1,10 @@
+{
+  "softwareGL": true,
+  "measurement": {
+    "p95": 226.70000004768372,
+    "calls": 46,
+    "triangles": 30784
+  },
+  "hardwareAcceptance": "pending",
+  "technical250msBudgetPassed": true
+}

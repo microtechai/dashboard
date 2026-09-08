@@ -1,0 +1,6 @@
+test_tts_stdin_strips_emoji_without_touching_history (__main__.EmojiBackend.test_tts_stdin_strips_emoji_without_touching_history) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.593s
+
+OK

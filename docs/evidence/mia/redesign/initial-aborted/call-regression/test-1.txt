@@ -1,0 +1,269 @@
+test_audio_blocked_explicit_retry (__main__.CallFrontend.test_audio_blocked_explicit_retry) ... ERROR
+test_audio_full_queue_and_end_cleanup (__main__.CallFrontend.test_audio_full_queue_and_end_cleanup) ... ERROR
+test_audio_queue_stop_and_real_wav_analyser (__main__.CallFrontend.test_audio_queue_stop_and_real_wav_analyser) ... Audio fixture: generated sine WAV (not Piper)
+ERROR
+test_audio_stale_play_cannot_stop_new_audio (__main__.CallFrontend.test_audio_stale_play_cannot_stop_new_audio) ... ERROR
+test_autoread_history_and_tts_error (__main__.CallFrontend.test_autoread_history_and_tts_error) ... ERROR
+test_byte_split_sse_abort_stale_and_malformed (__main__.CallFrontend.test_byte_split_sse_abort_stale_and_malformed) ... ok
+test_errors_and_auth_expiry (__main__.CallFrontend.test_errors_and_auth_expiry) ... ok
+test_incremental_speech_and_mute_keep_model_separate (__main__.CallFrontend.test_incremental_speech_and_mute_keep_model_separate) ... ERROR
+test_login_csrf_and_safe_history (__main__.CallFrontend.test_login_csrf_and_safe_history) ... ok
+test_logout_cancels_pending_reply (__main__.CallFrontend.test_logout_cancels_pending_reply) ... ok
+test_logout_clears_private_history_even_if_refresh_fails (__main__.CallFrontend.test_logout_clears_private_history_even_if_refresh_fails) ... ok
+test_long_read_is_bounded_and_never_reads_labels (__main__.CallFrontend.test_long_read_is_bounded_and_never_reads_labels) ... ERROR
+test_minimize_responsive_login (__main__.CallFrontend.test_minimize_responsive_login) ... ok
+test_muting_pending_stt_drops_it_without_false_listening_status (__main__.CallFrontend.test_muting_pending_stt_drops_it_without_false_listening_status) ... ok
+test_no_message_during_logout (__main__.CallFrontend.test_no_message_during_logout) ... ok
+test_primary_call_and_explicit_fallback (__main__.CallFrontend.test_primary_call_and_explicit_fallback) ... ok
+test_session_retry_after_unavailable (__main__.CallFrontend.test_session_retry_after_unavailable) ... ok
+test_stream_utf8_multiline_and_safe_done (__main__.CallFrontend.test_stream_utf8_multiline_and_safe_done) ... ok
+
+======================================================================
+ERROR: test_audio_blocked_explicit_retry (__main__.CallFrontend.test_audio_blocked_explicit_retry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ddr/jarvis-phase2-20260908/tests/chat_frontend_test.py", line 218, in test_audio_blocked_explicit_retry
+    self.page.wait_for_function("document.querySelector('#jarvis-chat-status').textContent.includes('Pulsa Leer')")
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 12761, in wait_for_function
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.wait_for_function(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        )
+        ^
+    )
+    ^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_page.py", line 1151, in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 940, in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.
+
+======================================================================
+ERROR: test_audio_full_queue_and_end_cleanup (__main__.CallFrontend.test_audio_full_queue_and_end_cleanup)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ddr/jarvis-phase2-20260908/tests/chat_frontend_test.py", line 240, in test_audio_full_queue_and_end_cleanup
+    self.page.wait_for_function("document.querySelector('#jarvis-chat-status').textContent.includes('Lectura completada')")
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 12761, in wait_for_function
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.wait_for_function(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        )
+        ^
+    )
+    ^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_page.py", line 1151, in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 940, in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.
+
+======================================================================
+ERROR: test_audio_queue_stop_and_real_wav_analyser (__main__.CallFrontend.test_audio_queue_stop_and_real_wav_analyser)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ddr/jarvis-phase2-20260908/tests/chat_frontend_test.py", line 129, in test_audio_queue_stop_and_real_wav_analyser
+    self.page.wait_for_function("states.some(x=>x.state==='speaking' && x.level>0)", timeout=5000)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 12761, in wait_for_function
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.wait_for_function(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        )
+        ^
+    )
+    ^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_page.py", line 1151, in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 940, in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 5000ms exceeded.
+
+======================================================================
+ERROR: test_audio_stale_play_cannot_stop_new_audio (__main__.CallFrontend.test_audio_stale_play_cannot_stop_new_audio)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ddr/jarvis-phase2-20260908/tests/chat_frontend_test.py", line 261, in test_audio_stale_play_cannot_stop_new_audio
+    self.page.wait_for_function('audios.length===1')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 12761, in wait_for_function
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.wait_for_function(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        )
+        ^
+    )
+    ^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_page.py", line 1151, in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 940, in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.
+
+======================================================================
+ERROR: test_autoread_history_and_tts_error (__main__.CallFrontend.test_autoread_history_and_tts_error)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ddr/jarvis-phase2-20260908/tests/chat_frontend_test.py", line 192, in test_autoread_history_and_tts_error
+    self.page.wait_for_function("document.querySelector('#jarvis-chat-status').textContent.includes('Fixture TTS unavailable')", timeout=3000)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 12761, in wait_for_function
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.wait_for_function(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        )
+        ^
+    )
+    ^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_page.py", line 1151, in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 940, in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 3000ms exceeded.
+
+======================================================================
+ERROR: test_incremental_speech_and_mute_keep_model_separate (__main__.CallFrontend.test_incremental_speech_and_mute_keep_model_separate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ddr/jarvis-phase2-20260908/tests/call_frontend_test.py", line 21, in test_incremental_speech_and_mute_keep_model_separate
+    self.page.wait_for_function('window.emit!==undefined')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 12761, in wait_for_function
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.wait_for_function(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        )
+        ^
+    )
+    ^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_page.py", line 1151, in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 940, in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.
+
+======================================================================
+ERROR: test_long_read_is_bounded_and_never_reads_labels (__main__.CallFrontend.test_long_read_is_bounded_and_never_reads_labels)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ddr/jarvis-phase2-20260908/tests/call_frontend_test.py", line 53, in test_long_read_is_bounded_and_never_reads_labels
+    self.page.wait_for_function("document.querySelector('.jarvis-speech-limit')!==null",timeout=2000)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 12761, in wait_for_function
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.wait_for_function(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        )
+        ^
+    )
+    ^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_page.py", line 1151, in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 940, in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/ddr/.local/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 2000ms exceeded.
+
+----------------------------------------------------------------------
+Ran 18 tests in 161.377s
+
+FAILED (errors=7)

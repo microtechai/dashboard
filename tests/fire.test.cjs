@@ -65,7 +65,7 @@ test('changed classic assets are versioned and fire honors reduced motion withou
     const src = [...html.matchAll(/<script src="([^"]+)"/g)].map(m=>m[1]).find(s=>s.split('?')[0]===asset);
     assert.ok(src?.includes('?v='), asset + ' must have an explicit version');
   }
-  assert.ok(html.includes('<script src="voice/speech.js"></script>'));
+  assert.ok(!html.includes('<script src="voice/speech.js"></script>'), 'legacy file preserved privately but not instantiated beside chat');
   assert.ok(html.includes("window.matchMedia('(prefers-reduced-motion: reduce)')"));
   const stateCall = html.match(/fireController\.setState\([^;]+;/)?.[0];
   for (const reduced of [true,false]) {

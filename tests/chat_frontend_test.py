@@ -41,7 +41,7 @@ class ChatFrontend(unittest.TestCase):
         elif req.url.endswith('/login.html'):
             route.fulfill(content_type='text/html',body=(ROOT/'login.html').read_text())
         elif '/chat/' in req.url:
-            path = ROOT / req.url.split('chat-fixture.test/')[1]
+            path = ROOT / req.url.split('chat-fixture.test/')[1].split('?',1)[0]
             route.fulfill(status=200 if path.exists() else 404, content_type='text/javascript' if path.suffix in ['.js','.mjs'] else 'text/css', body=path.read_text() if path.exists() else '')
         else:
             route.fulfill(content_type='text/html', body='<!doctype html><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><body style="background:#050810;color:white"><h1>ISOLATED MOCK API FIXTURE — NOT LIVE</h1><link rel="stylesheet" href="/chat/chat.css"><script defer src="/chat/chat.js"></script>')

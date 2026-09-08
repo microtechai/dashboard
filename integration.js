@@ -20,24 +20,8 @@ function loadFire() {
     return Boolean(window.dashboardFireController);
 }
 
-// Load voice system
-function loadVoice() {
-    try {
-        // El archivo voice/speech.js se carga como script
-        // Esperar a que se inicie
-        setTimeout(() => {
-            if (window.voiceSystem) {
-                console.log('✅ Sistema de voz cargado');
-            } else {
-                console.warn('⚠️  Voice system no encontrado - Web Speech API no soportado');
-            }
-        }, 1000);
-        return true;
-    } catch (e) {
-        console.error('❌ Error cargando voz:', e);
-        return false;
-    }
-}
+// The authenticated chat is the sole voice owner. Legacy file remains private, not loaded.
+function loadVoice() { return true; }
 
 // Load task executor UI
 function loadTaskExecutor() {
@@ -72,7 +56,7 @@ function loadTaskExecutor() {
                         color: #4a9eff;
                         letter-spacing: 1px;
                         text-transform: uppercase;
-                    ">⚙️ Task Executor</h3>
+                    "><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"><path d="m4 6 6 6-6 6m9 0h7"/></svg> Task Executor</h3>
                     <button id="toggle-executor" type="button" aria-label="Minimizar Task Executor" title="Minimizar Task Executor" aria-controls="executor-body" aria-expanded="true" style="
                         background: none;
                         border: none;
@@ -109,7 +93,7 @@ function loadTaskExecutor() {
                     font-size: 10px;
                     cursor: pointer;
                     margin-top: 8px;
-                ">🚀 Ejecutar</button>
+                ">Ejecutar</button>
                 <div id="executor-output" style="
                     margin-top: 10px;
                     padding: 8px;
@@ -130,7 +114,7 @@ function loadTaskExecutor() {
         const body = panel.querySelector('#executor-body');
         const box = panel.querySelector('#executor-window');
         const desktopStorageKey = 'jarvis.executor.minimized';
-        const mobileLayout = window.matchMedia('(max-width: 760px)');
+        const mobileLayout = window.matchMedia('(max-width: 1100px)');
         const storageKey = () => mobileLayout.matches ? 'jarvis.executor.mobile.minimized' : desktopStorageKey;
         function setMinimized(minimized) {
             body.hidden = minimized;

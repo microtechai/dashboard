@@ -44,7 +44,7 @@ class VoiceBargeIn(unittest.TestCase):
     # Observe the existing render owner, never install another animation loop.
     page.evaluate('''()=>{window.miaFrameSamples=[];const c=dashboardFireController,update=c.update.bind(c);const nucleus=c.group.children.find(o=>o.geometry?.type==='IcosahedronGeometry');const arc=c.group.children.find(o=>o.userData.arc&&o.material.uniforms.power.value>.5);c.update=function(dt){update(dt);if(miaFrameSamples.length<4096){const levels=c.levels,a=ttsAudios.at(-1);miaFrameSamples.push({at:performance.now(),input:levels.input,output:levels.output,emissive:nucleus.material.emissiveIntensity,arcPower:arc.material.uniforms.power.value,playing:!!a&&!a.paused,audioTime:a?.currentTime||0});}};}''')
     self.assertEqual(page.evaluate('micCalls'),0)
-    self.assertTrue(page.evaluate('window.voiceSystem!==undefined'))
+    self.assertTrue(page.evaluate('window.voiceSystem===undefined'),'chat is the only voice owner; legacy stays private on disk')
     self.assertEqual(page.locator('#voice-mic-btn').count(),0)
     page.keyboard.press('Control+m');self.assertEqual(page.evaluate('legacyStarts'),0)
     self.assertEqual(page.locator('#jarvis-chat-continuous').count(),1,'continuous button required')

@@ -1,0 +1,45 @@
+{
+  "idle": [
+    0.0,
+    0.0
+  ],
+  "response": {
+    "id": "chatcmpl-8e047449900a9d25",
+    "object": "chat.completion",
+    "created": 1788907736,
+    "model": "qwen3-coder-next",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "Here's a concise risk critique of the proposed changes and current implementation, focusing on **bounded design review** (no code execution assumed):\n\n---\n\n### \u2705 **Strengths (Already Present)**\n- **TTS safety**: `normalizeSpeech()` strips markdown, images, and *leading decorative* emoji\u2014aligns with \u201cmeaningful emoji preserved\u201d policy.\n- **Queue discipline**: 3-sentence max, 1000-char coalescing, abort controller per utterance, and epoch-based cancellation prevent runaway synthesis.\n- **Speech source fidelity**: Explicitly avoids DOM parsing\u2014only message content \u2192 robust against UI changes.\n\n---\n\n### \u26a0\ufe0f **Key Risks & Gaps**\n\n1. **Emoji Removal Overreach**  \n   - `normalizeSpeech()` uses `^[\ud83d\udfe6\ud83d\udfe2\ud83d\udd35\u2705\u2728\ud83e\udd16\ud83d\udccc]+\\uFE0F?\\s+` \u2014 **only removes leading badges**, but *does not* remove *all* emoji (e.g., `\ud83d\udcb0`, `\u00b0C`, `\u03c0`, `\u2248`, `\u2713`).  \n   - **Risk**: If backend TTS engine chokes on *any* Unicode (even currency/math), it may fail silently or truncate mid-utterance.  \n   - **Mitigation needed**: Explicitly whitelist *only* `[0-9.,%$\u20ac\u00a3\u00a5+-=\u2713\u2713\u2713]` + math symbols *if* required, or sanitize via backend (not frontend-only).\n\n2. **Mobile Collapse Ambiguity**  \n   - \u201cCollapse context on mobile\u201d is underspecified:  \n     - Does it hide chat? Reactor? Both?  \n     - Does `showNodeDetail` still fire if DOM nodes are hidden/collapsed?  \n   - **Risk**: Accessibility (ARIA) or event delegation may break if nodes are removed from layout flow without proper `aria-hidden` or focus management.\n\n3. **Sidebar-Excluded Centering**  \n   - Centering *within* `content - 220px` is trivial, but:  \n     - If sidebar is *fixed*, centering must account for viewport width *minus* sidebar *and* padding/margins.  \n     - **Risk**: Off-center layout on narrow screens (e.g., 360px mobile) if responsive math ignores container constraints.\n\n4. **STT/MIA/TTS Stage Lighting**  \n   - \u201cLit only from real chat state callbacks\u201d \u2014 but no state machine defined.  \n   - **Risk**: Race conditions if STT fires while TTS is playing, or if MIA (mid-intent abort) isn\u2019t atomic.  \n   - **Missing**: Clear state transitions (e.g., `IDLE \u2192 LISTENING \u2192 PROCESSING \u2192 SPEAKING`) with mutual exclusion.\n\n5. **Sentence Buffer Edge Cases**  \n   - `SentenceBuffer` throws `Respuesta demasiado larga` at 32k chars \u2014 but `SpeechQueue` only checks *sentence* length (1000).  \n   - **Risk**: A single huge sentence (e.g., 31k chars) passes `push()` but fails `pump()` mid-queue \u2014 queue may hang or leak.  \n   - **Fix needed**: Validate *total* buffer size *before* splitting sentences.\n\n6. **No MC Proxy = No Retry/Backpressure**  \n   - \u201cNo new MC proxy\u201d means no fallback/retry on TTS failure.  \n   - **Risk**: One transient network error \u2192 queue deadlocks (no `onError` recovery).  \n   - **Current code**: `cancel()` aborts *all* pending \u2014 but `onIdle` may not restart if `running=false` and `queue.length>0`.\n\n---\n\n### \ud83d\udccc **Recommendations**\n- **TTS sanitization**: Add backend-side emoji stripping *in addition* to frontend (defense-in-depth).  \n- **Mobile layout**: Use `calc(100vw - 220px)` *and* test on 320px viewport. Prefer `container-query` or `@media (max-width: 768px)` for collapse.  \n- **State machine**: Define explicit TTS state transitions with guards (e.g., `canSpeak = !isListening && !isProcessing`).  \n- **Buffer safety**: Move 32k check *into* `SentenceBuffer.push()` *before* sentence extraction.  \n- **Error recovery**: On `onError`, *reset* `queue`, but *do not* reset `epoch` \u2014 allow resume.\n\n---\n\nLet me know if you'd like a state diagram or layout mockup sketch for the centered reactor/chat.",
+          "refusal": null,
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "reasoning": null
+        },
+        "logprobs": null,
+        "finish_reason": "stop",
+        "stop_reason": null,
+        "token_ids": null,
+        "routed_experts": null
+      }
+    ],
+    "service_tier": null,
+    "system_fingerprint": "vllm-0.27.1-5e1afbcf",
+    "usage": {
+      "prompt_tokens": 1089,
+      "total_tokens": 2050,
+      "completion_tokens": 961,
+      "prompt_tokens_details": null
+    },
+    "prompt_logprobs": null,
+    "prompt_token_ids": null,
+    "prompt_text": null,
+    "kv_transfer_params": null,
+    "ec_transfer_params": null,
+    "metrics": null
+  }
+}

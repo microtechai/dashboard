@@ -1,6 +1,12 @@
 # Microtech AI / MIA — desplegada para prueba del operador
 
-## Estado vigente — 2026-09-08 22:36:15 UTC: OPERATOR PREVIEW
+## Estado vigente — rediseño y voz, 2026-09-08 23:26:29 UTC
+
+Publicado rediseño metal/azul, centrado en contenido,17nodos semánticos/24nav y filtro Unicode de voz frontend/backend. [Informe actual](mia-redesign-report.md), [manifiesto](evidence/mia/redesign/operator-preview.json), [cobertura real](evidence/mia/redesign/release-validation.json). Seis archivos/18hashes/38probes verificados;12protegidos intactos. Corrida14/16 más dos contratos heredados revalidados sobre fuente idéntica:31entradas exitosas de cobertura, NO nueva suite completa verde. GPU/acústica física pendientes, OPERATOR PREVIEW, PR8draft sin merge.
+
+**Lo inferior es historial de la publicación anterior, no el alcance actual.**
+
+## Publicación anterior — 2026-09-08 22:36:15 UTC: OPERATOR PREVIEW
 
 Autorización explícita posterior al NO-GO: **«despliegala para probarla»**. Publicada en https://dashboard.microtechai.es exclusivamente para prueba del propietario; **no es GO técnico ni PASS de rendimiento**. La decisión histórica `architectural-cycle.json` permanece byte a byte NO-GO. Hardware acelerado no disponible (QXL/SwiftShader; investigación local `/home/ddr/mia-hardware-qa/README.md`); no se repitió ni relajó el benchmark. Pendientes GPU física, estética/fluidez y audio/login/micrófono reales del dueño.
 

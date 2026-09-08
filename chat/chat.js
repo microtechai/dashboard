@@ -187,7 +187,7 @@
       button.addEventListener('click', () => speak(message.content.textContent, message)); message.row.append(button);
     }
     let SpeechQueue = null, speech = null, ttsEpoch = 0;
-    const speechReady = import('/chat/voice/speech.mjs').then(module => { SpeechQueue = module.SpeechQueue; });
+    const speechReady = import('/chat/voice/speech.mjs?v=20260909-emoji2').then(module => { SpeechQueue = module.SpeechQueue; });
     speechReady.catch(() => {}); // A requested read reports load failure explicitly.
     const ttsRequests = [];
     function newSpeech(id, message) {
@@ -257,7 +257,7 @@
     async function speak(text, message) {
       if (!authenticated || authBusy) return;
       cancelResponse(); cleanupMic(); const id = generation;
-      try { await speechReady; if (id !== generation) return; speech = newSpeech(id, message); speech.push(text.slice(0, 32000), true); }
+      try { await speechReady; if (id !== generation) return; speech = newSpeech(id, message); speech.push(text, true); }
       catch (error) { if (id === generation) showError(error); }
     }
     function state(value, level = 0) {

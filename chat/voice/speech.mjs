@@ -1,5 +1,5 @@
 // Speech is derived from message content, never DOM labels or HTML parsing.
-// Conservative: only decorative leading badges are removed; meaningful emoji stay.
+// Emoji are omitted from speech everywhere; message display/history stay untouched.
 // At most 3 synthesis requests/answer (6 answers/min => 18), one in flight.
 // Keep the first complete sentence responsive; coalesce queued sentences to 1000 chars.
 // Text beyond the audible budget stays visible with an explicit notice, never retried.
@@ -60,7 +60,10 @@ export function normalizeSpeech(text) {
   .replace(/!\[[^\]]*\]\([^\n)]*\)/g,'')
   .replace(/\[([^\]]+)\]\([^\n)]*\)/g,'$1')
   .replace(/^\s{0,3}#{1,6}\s+/gm,'').replace(/^\s*[-*+]\s+/gm,'')
-  .replace(/^\s*[🟦🟢🔵✅✨🤖📌]+\uFE0F?\s+/gmu,'')
+  // Remove complete keycaps before their variation selectors; plain digits stay.
+  .replace(/[0-9#*]\uFE0F?\u20E3/gu,'')
+  .replace(/[\p{Extended_Pictographic}\p{Regional_Indicator}\p{Emoji_Modifier}]/gu,'')
+  .replace(/[\u200D\uFE0E\uFE0F\u20E3\u{E0020}-\u{E007F}]/gu,'')
   .replace(/\*\*([^\n]+?)\*\*/g,'$1').replace(/__([^\n]+?)__/g,'$1')
   .replace(/`([^`]+)`/g,'$1').replace(/\s+/g,' ').trim();
 }

@@ -65,7 +65,7 @@ class Reactor(unittest.TestCase):
     page.locator('#jarvis-chat-toggle').click();page.locator('#jarvis-chat-conversation').wait_for()
     page.set_viewport_size({'width':1440,'height':1120});page.wait_for_timeout(200)
     box=page.locator('#jarvis-chat-panel').bounding_box()
-    self.assertAlmostEqual(box['x']+box['width']/2,720,delta=30,msg='single bar is viewport centered')
+    self.assertAlmostEqual(box['x']+box['width']/2,830,delta=3,msg='single bar is available-content centered')
     self.assertTrue(page.evaluate('!!window.MiaReactor'),'new scoped reactor is present')
     self.assertEqual(page.evaluate('NODES.length'),17)
     baseline=json.loads((ROOT/'tests/fixtures/mia-nav-baseline.json').read_text())
@@ -74,12 +74,7 @@ class Reactor(unittest.TestCase):
     if os.getenv('MIA_PROFILE'):
      profile=page.evaluate((ROOT/'tests/mia_profile.js').read_text())
      (OUT/'bounded-profile.json').write_text(json.dumps(profile,indent=2));print(json.dumps(profile,indent=2));browser.close();return
-    perf=page.evaluate('''async()=>{const frames=[];let last=performance.now();const geos=renderer.info.memory.geometries;for(let i=0;i<90;i++){await new Promise(requestAnimationFrame);const gl=renderer.getContext();gl.readPixels(0,0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array(4));const now=performance.now();frames.push(now-last);last=now;}frames.sort((a,b)=>a-b);return {p95:frames[Math.floor(frames.length*.95)],max:Math.max(...frames),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometryGrowth:renderer.info.memory.geometries-geos};}''')
-    page.goto(origin+'/?miaBaseline=1');page.wait_for_timeout(3500)
-    oldperf=page.evaluate('''async()=>{const frames=[];let last=performance.now();for(let i=0;i<90;i++){await new Promise(requestAnimationFrame);const gl=renderer.getContext();gl.readPixels(0,0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array(4));const now=performance.now();frames.push(now-last);last=now;}frames.sort((a,b)=>a-b);return {p95:frames[Math.floor(frames.length*.95)],max:Math.max(...frames)};}''')
-    limit=max(250,oldperf['p95']*1.5+30)
-    (OUT/'render-performance.json').write_text(json.dumps({'softwareGL':True,'measurement':perf,'baselineTiming':oldperf,'p95Guard':limit,'baselineCommit':'a8aa284d22f17070d804705c5ce52d10d6da4570','baselineGeometryCounts':json.loads((OUT/'before-metrics.json').read_text()),'hardwareBenchmark':False},indent=2))
-    self.assertLess(perf['p95'],limit);self.assertLess(perf['calls'],200);self.assertLess(perf['triangles'],100000);self.assertEqual(perf['geometryGrowth'],0)
+    # Performance belongs to mia_redesign_test: fixed same-candidate baseline, not the inflated historical guard.
     page.goto(origin+'/');page.wait_for_timeout(3500);page.locator('#jarvis-chat-toggle').click();page.locator('#jarvis-chat-conversation').wait_for()
     nav=page.locator('[data-view],[data-page],[data-target]')
     self.assertEqual(nav.count(),len(baseline['navigation']))
