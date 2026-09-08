@@ -16,6 +16,7 @@ if (!in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)) {
 }
 $root = defined('JARVIS_DOCUMENT_ROOT') ? JARVIS_DOCUMENT_ROOT : '/var/www/dashboard';
 $files = [
+    '/reactor/reactor.js' => ['reactor/reactor.js', 'application/javascript'],
     '/' => ['index.html', 'text/html; charset=utf-8'],
     '/index.html' => ['index.html', 'text/html; charset=utf-8'],
     '/integration.js' => ['integration.js', 'application/javascript; charset=utf-8'],

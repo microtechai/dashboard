@@ -32,3 +32,54 @@
 #jarvis-chat .jarvis-voice-notice{margin:3px 14px 8px;color:#9fafc7;font-size:11px;line-height:1.35;flex-shrink:0}
 #jarvis-chat-panel{height:620px}
 @media(max-width:600px){#jarvis-chat{right:12px;bottom:12px}#jarvis-chat-panel{height:min(620px,calc(100dvh - 36px));max-height:calc(100dvh - 36px)}}
+#jarvis-chat .mia-workflow{font-size:10px;letter-spacing:0;color:#a7b9cc}
+#jarvis-chat .mia-workflow summary{cursor:pointer;padding:5px}
+#jarvis-chat .mia-workflow[open]>div{position:absolute;z-index:3;left:12px;right:12px;top:46px;background:#111d2b;border:1px solid #38546b;border-radius:8px;padding:14px;line-height:1.5;max-height:180px;overflow:auto}
+/* MIA theater: same mounted conversation and controls, no second composer. */
+#mia-render-status{position:fixed;top:140px;left:50%;transform:translateX(-50%);z-index:12;max-width:80vw;background:#111d2b;padding:12px;border:1px solid #37546b;font-size:12px}
+#mia-render-status[hidden]{display:none}
+.mia-placeholder-notice{font:11px/1.5 system-ui;color:#becddc;margin-bottom:12px;padding:10px;border:1px solid #37546b}
+#mia-metrics-toggle{display:none}
+@media(max-width:760px){
+ #mia-metrics-toggle{display:inline-block;color:#bfd2e3;background:#101c29;border:1px solid #2b455c;border-radius:6px;padding:7px;font-size:10px}
+ .search-box{display:flex;gap:4px}
+ body[data-mia-view].mia-metrics-open #metrics-panel{display:block;left:12px;top:145px;max-height:210px;width:calc(100vw - 24px);z-index:1001}
+ #task-executor-panel #executor-window{top:140px!important;bottom:auto!important;left:auto!important;right:12px!important;max-height:30dvh;overflow:auto}
+ #task-executor-panel #executor-window:has(#executor-body[hidden]){top:6px!important;width:36px!important;padding:6px!important}
+ #executor-window:has(#executor-body[hidden]) h3{display:none}
+ #executor-window:has(#executor-body[hidden]) #toggle-executor{width:22px;height:22px}
+
+ .header{padding:0 10px;height:96px;align-items:flex-start}
+ .header-left{display:block;width:100%;padding-top:10px}
+ .header-title{margin-bottom:12px}.header-right{display:none}
+ #mainNav{max-width:calc(100vw - 20px);overflow-x:auto;white-space:nowrap}
+ .sidebar{top:96px;z-index:1002}.sidebar-toggle{top:100px;z-index:1003}
+ .search-box{top:100px;left:50%}.search-box input{width:180px}
+ body[data-mia-view=dashboard] .left-panel,body[data-mia-view=dashboard] .right-panel,body[data-mia-view=dashboard] .legend{display:none}
+ body[data-mia-view]:not([data-mia-view=dashboard]) .right-panel{top:150px;left:12px;right:12px;width:auto;max-height:calc(100dvh - 240px)}
+ body[data-mia-view]:not([data-mia-view=dashboard]) .left-panel{display:none}
+ .side-panel{z-index:1004;max-width:calc(100vw - 24px)}
+}
+
+body[data-mia-view=dashboard] #jarvis-chat{left:50%;right:auto;transform:translateX(-50%);bottom:38px;width:min(720px,calc(100vw - 32px));z-index:15}
+body[data-mia-view=dashboard] #jarvis-chat-toggle{width:100%;padding:14px;text-align:left;background:#0b141e;border-color:#2a455c}
+body[data-mia-view=dashboard] #jarvis-chat-panel{width:100%;height:min(440px,50dvh);max-height:calc(100dvh - 90px);background:rgba(10,17,25,.97);border-color:#2a455c}
+body[data-mia-view=dashboard] #jarvis-chat-conversation{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto minmax(42px,1fr) auto;min-height:0;gap:0}
+body[data-mia-view=dashboard] #jarvis-chat-mic,body[data-mia-view=dashboard] .jarvis-voice-notice,body[data-mia-view=dashboard] #jarvis-chat-history,body[data-mia-view=dashboard] #jarvis-chat-compose{grid-column:1/-1}
+body[data-mia-view=dashboard] #jarvis-chat header{padding:6px 14px}
+body[data-mia-view=dashboard] #jarvis-chat-status{padding:4px 14px}
+body[data-mia-view=dashboard] #jarvis-chat-continuous,body[data-mia-view=dashboard] #jarvis-chat-mute{margin:3px 14px}
+body[data-mia-view=dashboard] #jarvis-chat footer{padding:5px 14px}
+body[data-mia-view=dashboard] #jarvis-chat textarea{height:45px}
+body[data-mia-view=dashboard] #jarvis-chat-compose{padding:5px 14px}
+body[data-mia-view=dashboard] .jarvis-voice-notice{font-size:10px;margin-bottom:4px}
+body[data-mia-view]:not([data-mia-view=dashboard]) #jarvis-chat{bottom:36px;z-index:15}
+body[data-mia-view]:not([data-mia-view=dashboard]) #jarvis-chat-panel{width:min(400px,calc(100vw - 24px))}
+@media(max-width:760px){
+ body[data-mia-view=dashboard] #jarvis-chat{bottom:12px;width:calc(100vw - 24px)}
+ body[data-mia-view=dashboard] #jarvis-chat-panel{height:min(460px,62dvh);max-height:calc(100dvh - 90px)}
+ body[data-mia-view=dashboard] #jarvis-chat button{padding:5px 7px;min-height:30px}
+ body[data-mia-view=dashboard] #jarvis-chat footer{font-size:10px}
+ body[data-mia-view=dashboard] #jarvis-chat .jarvis-chat-actions{gap:4px}
+}
+

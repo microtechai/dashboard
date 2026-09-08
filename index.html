@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MicroTech AI — Centro de Mando</title>
+<title>Microtech AI — Centro de Mando</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 /* === RESET & BASE === */
@@ -185,13 +185,14 @@ canvas#viz:active{cursor:grabbing}
 }
 </style>
 <script src="fire/shaders.js?v=20260908-volume6-target"></script>
+<script src="reactor/reactor.js?v=20260908-mia1"></script>
 <script src="voice/speech.js"></script>
-<script src="integration.js?v=20260908-executor3"></script>
-<link rel="stylesheet" href="chat/chat.css?v=20260908-chat4">
+<script src="integration.js?v=20260908-mia1"></script>
+<link rel="stylesheet" href="chat/chat.css?v=20260908-mia1">
 <script src="chat/core-state.js?v=20260908-chat4"></script>
-<script defer src="chat/chat.js?v=20260908-access5"></script>
+<script defer src="chat/chat.js?v=20260908-mia1"></script>
 </head>
-<body>
+<body data-mia-view="dashboard">
 
 <!-- LOADING -->
 <div id="loading">
@@ -201,12 +202,13 @@ canvas#viz:active{cursor:grabbing}
     <span class="accent">╚══════════════════════╝</span>
        AGENT ORCHESTRATOR
   </pre>
-  <div class="loading-title" id="loadingTitle">CARGANDO JARVIS</div>
+  <div class="loading-title" id="loadingTitle">CARGANDO Microtech AI</div>
   <div class="loading-bar-wrap"><div class="loading-bar-fill" id="loadingBar" style="width:0%"></div></div>
   <div class="loading-text" id="loadText">Inicializando sistema...</div>
 </div>
 
 <canvas id="viz"></canvas>
+<p id="mia-render-status" role="status" hidden>3D no disponible · navegación y chat siguen disponibles.</p>
 
 <!-- Post-processing overlays -->
 <div class="vignette"></div>
@@ -216,7 +218,7 @@ canvas#viz:active{cursor:grabbing}
 <!-- HEADER + NAV -->
 <div class="header">
   <div class="header-left">
-    <div class="header-title">MicroTech AI</div>
+    <div class="header-title">Microtech AI</div>
     <div class="nav" id="mainNav">
       <button class="nav-btn active" data-view="dashboard">Dashboard</button>
       <button class="nav-btn" data-view="servers">Servidores</button>
@@ -234,13 +236,14 @@ canvas#viz:active{cursor:grabbing}
 <!-- SEARCH BOX -->
 <div class="search-box">
   <input type="text" id="search" placeholder="Buscar nodos...">
+  <button id="mia-metrics-toggle" type="button" aria-expanded="false" aria-controls="metrics-panel">Métricas</button>
 </div>
 
 <!-- LEGEND -->
 <div class="legend" id="legend"></div>
 
 <!-- SIDEBAR TOGGLE -->
-<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+<button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="Abrir navegación" aria-controls="sidebar" aria-expanded="false">☰</button>
 
 <!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
@@ -352,7 +355,7 @@ const CAT_COLORS={
 const NODES=[
   {id:'srv-hetzner',label:'Hetzner Prod',cat:'server',status:'online',
    desc:'Debian 12 · 4C/8G · 75GB SSD · Tenerife',
-   url:'https://178.104.253.211',company:'MicroTech AI',
+   url:'https://178.104.253.211',company:'Microtech AI',
    metrics:[['CPU','—'],['RAM','— GB'],['Disco','— / 75 GB'],['Uptime','—']]},
   {id:'srv-microtechsat',label:'MicroTech SAT',cat:'server',status:'online',
    desc:'Hetzner · 8GB · WooCommerce patinetes',
@@ -360,11 +363,11 @@ const NODES=[
    metrics:[['CPU','—'],['RAM','— GB'],['Swap','2 GB'],['Pool','20 proc']]},
   {id:'srv-dgx',label:'DGX Spark',cat:'server',status:'online',
    desc:'GB10 · 128GB UMA · 192.168.1.137',
-   url:'http://192.168.1.137:8008',company:'MicroTech AI',
+   url:'http://192.168.1.137:8008',company:'Microtech AI',
    metrics:[['VRAM','— / 128 GB'],['Temp','—°C'],['Uptime','—'],['Puertos','8008,8010,8011']]},
   {id:'srv-local',label:'Hermes Local',cat:'server',status:'online',
    desc:'Máquina local · 192.168.1.106 · Debian',
-   url:'',company:'MicroTech AI',
+   url:'',company:'Microtech AI',
    metrics:[['IP','192.168.1.106'],['Rol','Agente orquestador']]},
   {id:'wp-cielo',label:'El Cielo de Celia',cat:'wp',status:'online',
    desc:'Restaurante andaluz · La Laguna · TT5 child',
@@ -384,39 +387,39 @@ const NODES=[
    metrics:[['Tema','Audiomania child'],['Estado','✅ Activo']]},
   {id:'ai-qwen',label:'Qwen 3.6-35B',cat:'ai',status:'online',
    desc:'vLLM NVFP4 · MTP=3 · Puerto 8010',
-   url:'http://192.168.1.137:8010',company:'MicroTech AI',
+   url:'http://192.168.1.137:8010',company:'Microtech AI',
    metrics:[['Modelo','Qwen3.6-35B-A3B'],['Formato','NVFP4'],['MTP','3'],['VRAM','~54 GB']]},
   {id:'ai-glm',label:'GLM-4.7 Flash',cat:'ai',status:'online',
    desc:'vLLM Docker · Puerto 8011 · SM120 fix',
-   url:'http://192.168.1.137:8011',company:'MicroTech AI',
+   url:'http://192.168.1.137:8011',company:'Microtech AI',
    metrics:[['Modelo','GLM-4.7-Flash'],['Formato','NVFP4'],['Modo','Docker 26.07'],['VRAM','~31 GB']]},
   {id:'ai-proxy',label:'Proxy Multimodo',cat:'ai',status:'online',
    desc:'Router AI · 8008 · Qwen/GLM/Team',
-   url:'http://192.168.1.137:8008',company:'MicroTech AI',
+   url:'http://192.168.1.137:8008',company:'Microtech AI',
    metrics:[['Puerto','8008'],['Modos','qwen, glm, team'],['Router','Activo']]},
   {id:'ai-hermes',label:'Hermes Agent',cat:'ai',status:'online',
    desc:'Orquestador · CLI/Telegram · Skills 50+',
-   url:'https://github.com/microtechai',company:'MicroTech AI',
+   url:'https://github.com/microtechai',company:'Microtech AI',
    metrics:[['Skills','~50'],['Cron Jobs','8'],['Providers','DeepSeek,Qwen']]},
   {id:'inf-cloudflare',label:'Cloudflare',cat:'infra',status:'online',
    desc:'DNS · SSL · Proxy · CDN · microtechai.es',
-   url:'https://dash.cloudflare.com',company:'MicroTech AI',
+   url:'https://dash.cloudflare.com',company:'Microtech AI',
    metrics:[['Dominios','~6'],['SSL Full',true],['Proxy','Cloudflare-only']]},
   {id:'inf-github',label:'GitHub',cat:'infra',status:'online',
    desc:'Repos microtechai · Themes · Plugins · Infra',
-   url:'https://github.com/microtechai',company:'MicroTech AI',
+   url:'https://github.com/microtechai',company:'Microtech AI',
    metrics:[['Repos','5+'],['Privados','Varios'],['Orgs','microtechai']]},
   {id:'inf-ssh',label:'SSH Key',cat:'infra',status:'online',
    desc:'ed25519 · Hetzner · GitHub · DGX',
-   url:'',company:'MicroTech AI',
+   url:'',company:'Microtech AI',
    metrics:[['Hosts','3'],['Tipo','ed25519'],['Auth','Clave pública']]},
   {id:'pr-factura',label:'FacturaScripts',cat:'project',status:'online',
    desc:'ERP contable · Docker puerto 8081 · MariaDB',
-   url:'https://facturascripts.microtechai.es',company:'MicroTech AI',
+   url:'https://facturascripts.microtechai.es',company:'Microtech AI',
    metrics:[['Puerto','8081'],['DB','MariaDB'],['Stack','Docker'],['Estado','✅ Activo']]},
-  {id:'pr-jarvis',label:'JARVIS 3D',cat:'project',status:'online',
-   desc:'Dashboard 3D · Three.js · MicroTech AI',
-   url:'https://jarvis.microtechai.es',company:'MicroTech AI',
+  {id:'pr-jarvis',label:'Microtech AI · MIA',cat:'project',status:'online',
+   desc:'Dashboard 3D · Three.js · Microtech AI',
+   url:'https://jarvis.microtechai.es',company:'Microtech AI',
    metrics:[['Tecno','Three.js r128'],['Nodos','16'],['Efectos','Partículas, anillos']]}
 ];
 
@@ -474,9 +477,27 @@ scene.fog = new THREE.FogExp2(0x050810, 0.012);
 const camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 0.1, 2000);
 camera.position.set(0, 25, 100);
 
-const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('viz'),antialias:true,alpha:true});
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+let miaGLAvailable = true;
+const renderer = (() => {
+  try { return new THREE.WebGLRenderer({canvas:document.getElementById('viz'),antialias:true,alpha:true}); }
+  catch (_) {
+    miaGLAvailable = false;
+    document.getElementById('mia-render-status').hidden = false;
+    document.getElementById('viz').hidden = true;
+    // Null rendering adapter only; no fabricated telemetry. DOM/nav initialize normally.
+    return {setSize(){},setPixelRatio(){},setClearColor(){},render(){}};
+  }
+})();
+// Bound fragment workload to a CSS-viewport budget; DOM text and hit testing
+// remain native resolution. Never detect the test/browser GPU or alter materials.
+function miaPixelRatio(width, height, dpr) {
+  return Math.max(.5, Math.min(dpr || 1, 1.5, Math.sqrt(403200 / Math.max(1, width * height))));
+}
+function resizeMiaRenderer() {
+  renderer.setPixelRatio(miaPixelRatio(window.innerWidth, window.innerHeight, window.devicePixelRatio));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+resizeMiaRenderer();
 renderer.setClearColor(0x050810, 1);
 
 const ambientLight = new THREE.AmbientLight(0x404060, 0.4);
@@ -485,6 +506,8 @@ const pointLight1 = new THREE.PointLight(0x4a9eff, 2, 200); pointLight1.position
 const pointLight2 = new THREE.PointLight(0xa78bfa, 1.5, 200); pointLight2.position.set(-30,10,-20); scene.add(pointLight2);
 
 const canvas = document.getElementById('viz');
+canvas.addEventListener('webglcontextlost', event => {event.preventDefault();miaGLAvailable=false;document.getElementById('mia-render-status').hidden=false;});
+canvas.addEventListener('webglcontextrestored', () => {miaGLAvailable=true;document.getElementById('mia-render-status').hidden=true;});
 canvas.addEventListener('mousedown', e => { isDragging=true; lastMouse={x:e.clientX,y:e.clientY}; });
 canvas.addEventListener('mousemove', e => {
   if(isDragging){
@@ -530,9 +553,11 @@ for(let i=0; i<3; i++){
 
 // NODE SPHERES
 // The existing scene and animation loop are the sole owners of fire.
-const fireController = window.JarvisFire.createFire({THREE, coreGroup, quality: window.matchMedia('(max-width: 760px)').matches ? 'low' : 'auto'});
+const fireController = window.MiaReactor.create({THREE, coreGroup});
+coreMesh.visible = wireMesh.visible = outerMesh.visible = false;
 window.dashboardFireController = fireController;
 const fireMotionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+const miaPosition = new THREE.Vector3();
 
 const nodeMeshes = [];
 const nodeLines = [];
@@ -656,12 +681,23 @@ function showNotification(text){
   setTimeout(() => n.classList.remove('show'), 3500);
 }
 
-// SIDEBAR
+// Independent responsive states: mobile never overwrites desktop choices.
+const miaMobileLayout = window.matchMedia('(max-width: 760px)');
+const miaSidebarState = {desktop:false, mobile:true};
+function applyMiaSidebar() {
+  sidebarCollapsed = miaSidebarState[miaMobileLayout.matches ? 'mobile' : 'desktop'];
+  document.getElementById('sidebar').classList.toggle('collapsed', sidebarCollapsed);
+  document.getElementById('metrics-panel').classList.toggle('sidebar-collapsed', sidebarCollapsed);
+  const toggle = document.getElementById('sidebarToggle');
+  toggle.setAttribute('aria-expanded', String(!sidebarCollapsed));
+  toggle.setAttribute('aria-label', sidebarCollapsed ? 'Abrir navegación' : 'Cerrar navegación');
+}
 document.getElementById('sidebarToggle').addEventListener('click', () => {
-  sidebarCollapsed = !sidebarCollapsed;
-  document.getElementById('sidebar').classList.toggle('collapsed');
-  document.getElementById('metrics-panel').classList.toggle('sidebar-collapsed');
+  miaSidebarState[miaMobileLayout.matches ? 'mobile' : 'desktop'] = !sidebarCollapsed;
+  applyMiaSidebar();
 });
+miaMobileLayout.addEventListener('change', applyMiaSidebar);
+applyMiaSidebar();
 
 // Accordion triggers
 document.querySelectorAll('.accordion-trigger').forEach(el => {
@@ -714,7 +750,9 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
 
 // Page views (static content)
 function showPage(page){
-  updateStatus('ok');
+  currentView = page;
+  document.body.dataset.miaView = page;
+  window.dispatchEvent(new CustomEvent('mia-view-change', {detail:{view:page}}));
   // Hide 3D spheres (show nothing in 3D for static pages)
   NODES.forEach(n => { n.visible = false; });
   nodeMeshes.forEach(m => { m.visible = false; });
@@ -760,12 +798,14 @@ function showPage(page){
       <p style="margin-top:12px;color:#334;font-size:9px">Ajustes del sistema y estado del dashboard.</p>
     </div>`
   };
-  list.innerHTML = pages[page] || '<p style="color:#556;padding:8px">Sección en construcción</p>';
+  list.innerHTML = '<p class="mia-placeholder-notice">Vista estática sin conexión a MC: estos marcadores no representan registros, importes ni resultados reales.</p>' + (pages[page] || '<p style="color:#556;padding:8px">Sección en construcción</p>');
 }
 
 // Navigation
 function navigateView(view){
   currentView = view;
+  document.body.dataset.miaView = view;
+  window.dispatchEvent(new CustomEvent('mia-view-change', {detail:{view}}));
   const catFilter = {
     dashboard: 'all', servers: 'server', projects: null, companies: null, system: 'infra'
   } [view] || 'all';
@@ -828,6 +868,7 @@ Object.entries(CAT_COLORS).forEach(([cat, c]) => {
 let fireLastFrame = null;
 function animate(now = performance.now()){
   requestAnimationFrame(animate);
+  if(document.hidden || !miaGLAvailable) { fireLastFrame = null; return; }
   time += 0.016;
   rotX += (targetRotX - rotX) * 0.05;
   rotY += (targetRotY - rotY) * 0.05;
@@ -838,7 +879,7 @@ function animate(now = performance.now()){
   camera.position.z = Math.cos(rotY) * Math.cos(rotX) * camDist;
   camera.lookAt(0, 0, 0);
 
-  if(!isDragging) targetRotY += 0.0015;
+  // Deliberate drag controls the viewing angle; never spin the face away.
 
   coreMesh.rotation.x = time * 0.3; coreMesh.rotation.y = time * 0.2;
   wireMesh.rotation.x = -time * 0.2; wireMesh.rotation.y = time * 0.3;
@@ -851,6 +892,12 @@ function animate(now = performance.now()){
   fireLastFrame = now;
   fireController.setState({intensity: Math.min(2, coreIntensity + chatBoost), speed: fireMotionPreference.matches ? 0.2 : 1 + chatBoost * 0.8, reducedMotion: fireMotionPreference.matches});
   fireController.update(fireDelta);
+  fireController.group.visible = currentView === 'dashboard';
+  // Frame the face above the single chat bar in viewport-relative coordinates.
+  const miaRadius = Math.min(innerHeight * .16, innerWidth * .34);
+  fireController.group.scale.setScalar(miaRadius * camDist * Math.tan(camera.fov * Math.PI / 360) / innerHeight);
+  miaPosition.set(0, camDist * Math.tan(camera.fov * Math.PI / 360) * .38, -camDist).applyQuaternion(camera.quaternion).add(camera.position);
+  fireController.group.position.copy(miaPosition);
   coreMat.emissiveIntensity = 0.5 + Math.sin(time * 1.5) * 0.3 + chatBoost * 0.5;
 
   rings3d.forEach((ring, i) => {
@@ -912,7 +959,7 @@ function animate(now = performance.now()){
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  resizeMiaRenderer();
 });
 
 // ═══════════════════════════════════════════
@@ -980,6 +1027,10 @@ function updateUI(data) {
 // ═══════════════════════════════════════════
 // INIT (after Three.js scene is built)
 // ═══════════════════════════════════════════
+document.getElementById('mia-metrics-toggle').addEventListener('click', event => {
+  const open=document.body.classList.toggle('mia-metrics-open');
+  event.currentTarget.setAttribute('aria-expanded',String(open));
+});
 animate();
 
 // Delivered only after server authentication.

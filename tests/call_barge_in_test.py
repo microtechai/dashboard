@@ -34,10 +34,15 @@ class VoiceBargeIn(unittest.TestCase):
      r.fulfill(json={'text':'Fixture de transcripción'})
     page.route('**/api/chat.php?action=transcribe',stt)
     page.route('**/fixture.wav',lambda r:r.fulfill(body=(ROOT/'tests/fixtures/voice-check.wav').read_bytes(),content_type='audio/wav'))
-    page.add_init_script('''window.micCalls=0;window.ttsAudios=[];const NativeAudio=Audio;window.Audio=function(...args){const a=new NativeAudio(...args);a.muted=true;ttsAudios.push(a);return a;};navigator.mediaDevices.getUserMedia=async constraints=>{micCalls++;window.constraints=constraints;return window.fakeDest.stream;};''')
+    # Silence AFTER the analyser using a real zero-gain output node: muting the
+    # HTMLAudio element itself yields zero samples and cannot test output RMS.
+    page.add_init_script('''const NativeContext=AudioContext;window.AudioContext=class extends NativeContext{constructor(...args){super(...args);const silent=this.createGain();silent.gain.value=0;silent.connect(this.destination);Object.defineProperty(this,'destination',{value:silent});}};window.micCalls=0;window.ttsAudios=[];const NativeAudio=Audio;window.Audio=function(...args){const a=new NativeAudio(...args);ttsAudios.push(a);return a;};navigator.mediaDevices.getUserMedia=async constraints=>{micCalls++;window.constraints=constraints;return window.fakeDest.stream;};''')
+    page.add_init_script("window.miaObserved={input:0,output:0};window.miaSignalSamples=[];addEventListener('mia-audio-level',e=>{if(e.detail.channel==='input'){miaObserved.input=Math.max(miaObserved.input,e.detail.level);if(miaSignalSamples.length<4096)miaSignalSamples.push({at:performance.now(),channel:'input',rms:e.detail.level});}});addEventListener('jarvis-chat-state',e=>{if(e.detail.state==='speaking'){miaObserved.output=Math.max(miaObserved.output,e.detail.level);if(miaSignalSamples.length<4096)miaSignalSamples.push({at:performance.now(),channel:'output',rms:e.detail.level,micActive:e.detail.micActive});}});")
     page.add_init_script('''window.vadTimes=[];window.maxPending=0;const NativeWorker=Worker;window.Worker=class extends NativeWorker{constructor(...a){super(...a);this.times=[];this.addEventListener('message',e=>{if(e.data.type==='frame'){vadTimes.push(performance.now()-this.times.shift());}});}postMessage(data,...args){if(data.type==='frame'){this.times.push(performance.now());maxPending=Math.max(maxPending,this.times.length);}return super.postMessage(data,...args);}};''')
     page.goto(origin+'/');page.wait_for_url('**/login.html');page.locator('[name=username]').fill('fixture-user');page.locator('[name=password]').fill('fixture-password');page.locator('#submit').click();page.wait_for_url(origin+'/')
     page.locator('#jarvis-chat-toggle').click();page.locator('#jarvis-chat-conversation').wait_for()
+    # Observe the existing render owner, never install another animation loop.
+    page.evaluate('''()=>{window.miaFrameSamples=[];const c=dashboardFireController,update=c.update.bind(c);const nucleus=c.group.children.find(o=>o.geometry?.type==='IcosahedronGeometry');const arc=c.group.children.find(o=>o.userData.arc&&o.material.uniforms.power.value>.5);c.update=function(dt){update(dt);if(miaFrameSamples.length<4096){const levels=c.levels,a=ttsAudios.at(-1);miaFrameSamples.push({at:performance.now(),input:levels.input,output:levels.output,emissive:nucleus.material.emissiveIntensity,arcPower:arc.material.uniforms.power.value,playing:!!a&&!a.paused,audioTime:a?.currentTime||0});}};}''')
     self.assertEqual(page.evaluate('micCalls'),0)
     self.assertTrue(page.evaluate('window.voiceSystem!==undefined'))
     self.assertEqual(page.locator('#voice-mic-btn').count(),0)
@@ -57,6 +62,15 @@ class VoiceBargeIn(unittest.TestCase):
     # Quiet synthetic residual speech is below energy floor, not a physical AEC test.
     page.evaluate('''()=>{const s=fakeContext.createBufferSource(),g=fakeContext.createGain();s.buffer=fixtureBuffer;g.gain.value=.0005;s.connect(g);g.connect(fakeDest);s.start();s.stop(fakeContext.currentTime+1);}''');page.wait_for_timeout(1800);self.assertEqual(len(uploads),0)
     page.evaluate('injectSpeech()');page.wait_for_function('ttsAudios.some(a=>!a.paused)',timeout=25000)
+    page.wait_for_function('miaFrameSamples.some(s=>s.playing&&s.output>.001)',timeout=5000)
+    rms=page.evaluate('({observed:miaObserved,samples:miaFrameSamples,signals:miaSignalSamples})')
+    self.assertGreater(rms['observed']['input'],.001)
+    self.assertTrue(any(s['playing'] and s['output']>.001 for s in rms['samples']))
+    for sample in rms['samples']:
+     level=max(sample['input'],sample['output'])
+     self.assertAlmostEqual(sample['emissive'],1.3+level,places=7)
+     self.assertAlmostEqual(sample['arcPower'],.85+level*.5,places=7)
+    (ROOT/'docs/evidence/mia/audio-rms.json').write_text(json.dumps({'source':'real WebAudio/ONNX synthetic fixture, not physical mic','levels':rms},indent=2))
     page.evaluate('window.noiseAudio=ttsAudios.at(-1);injectNoise()');page.wait_for_timeout(1500)
     self.assertFalse(page.evaluate('noiseAudio.paused'),'noise/knocks/tone must not interrupt playing audio');self.assertEqual(len(uploads),1)
     for turn in range(2):
@@ -67,10 +81,14 @@ class VoiceBargeIn(unittest.TestCase):
      page.wait_for_function('ttsAudios.at(-1)!==oldAudio&&!ttsAudios.at(-1).paused',timeout=25000)
     self.assertEqual(len(uploads),3)
     page.wait_for_function('ttsAudios.at(-1).paused',timeout=12000);page.wait_for_timeout(1200);self.assertEqual(len(uploads),3)
+    self.assertEqual(page.evaluate('dashboardFireController.levels.output'),0,'ended audio must decay to zero')
     self.assertEqual(page.evaluate('fakeDest.stream.getTracks()[0].readyState'),'live')
     perf=page.evaluate('({roundTripMs:vadTimes,maxPending})');self.assertLessEqual(perf['maxPending'],16)
     page.locator('#jarvis-chat-mute').click()
     self.assertEqual(page.evaluate('fakeDest.stream.getTracks()[0].readyState'),'ended')
+    page.wait_for_function('dashboardFireController.levels.input===0',timeout=2000)
+    rms['negativeControls']={'endedOutputZero':True,'mutedInputZero':True}
+    (ROOT/'docs/evidence/mia/audio-rms.json').write_text(json.dumps({'source':'real WebAudio/ONNX synthetic fixture, zero output gain AFTER analyser; no physical mic','levels':rms},indent=2))
     self.assertEqual(page.locator('#jarvis-chat-continuous').inner_text(),'Colgar')
     self.assertIn('silenciado',page.locator('#jarvis-chat-mic').inner_text())
     page.evaluate('injectSpeech()');page.wait_for_timeout(1500);self.assertEqual(len(uploads),3)

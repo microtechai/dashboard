@@ -10,7 +10,7 @@
     root.innerHTML = `
       <button id="jarvis-chat-toggle" aria-expanded="false" aria-controls="jarvis-chat-panel">MIA · Chat</button>
       <section id="jarvis-chat-panel" aria-label="Conversación MIA" hidden>
-        <header><strong>MIA <small>Qwen</small></strong><button id="jarvis-chat-minimize" aria-label="Minimizar chat">−</button></header>
+        <header><strong title="MIA, acrónimo de MicrotechAI">MIA <small>Microtech AI</small></strong><details class="mia-workflow"><summary>Flujo observable</summary><div><p id="jarvis-chat-stage" role="status">Sin petición activa</p><p>STT y modelo: petición pendiente, no porcentaje interno. Audio: reproducción local observada.</p><p>Memoria y herramientas: no instrumentado. Obsidian: concepto sin datos importados.</p></div></details><button id="jarvis-chat-minimize" aria-label="Minimizar chat">−</button></header>
         <p id="jarvis-chat-status" role="status" aria-live="polite">Conectando sesión…</p>
         <button type="button" id="jarvis-chat-retry" hidden>Actualizar sesión</button>
         <div id="jarvis-chat-conversation" hidden>
@@ -262,6 +262,9 @@
     }
     function state(value, level = 0) {
       if (value === 'idle' && continuous?.active) { value = 'listening'; level = micLevel; }
+      const labels={idle:'Sin petición activa',listening:'Entrada de micrófono',transcribing:'STT · petición pendiente',thinking:'Modelo · petición / stream pendiente',speaking:'Audio · reproducción local'};
+      const label=labels[value]||'Sin instrumentación';
+      if(el('stage') && el('stage').textContent!==label) el('stage').textContent=label;
       window.dispatchEvent(new CustomEvent('jarvis-chat-state', { detail: { state: value, micActive: continuous?.active === true, level: Math.max(0, Math.min(1, Number(level) || 0)) } }));
     }
     let continuous = null, responseTimer = 0, micLevel = 0, callOn = false, callMuted = false;
@@ -285,7 +288,7 @@
       continuous = new ContinuousVoice({
         onMic: micState,
         onStart: () => { if (!callOn || callMuted) return; cancelResponse(); state('listening'); status('Nueva voz · respuesta interrumpida, escuchando…'); },
-        onLevel: level => { micLevel = level; if (!sttController && !controller && !busy && !audio) state('listening', level); },
+        onLevel: level => { micLevel = level; window.dispatchEvent(new CustomEvent('mia-audio-level', {detail:{channel:'input',level}})); if (!sttController && !controller && !busy && !audio) state('listening', level); },
         onEnd: async event => {
           if (!callOn || callMuted) return;
           cancelResponse(); const id = generation, sttId = ++sttEpoch; const current = new AbortController(); sttController = current;
@@ -398,6 +401,7 @@
         if (id !== generation) { await response.body?.cancel(); return; }
         await consume(response, id, (type, part) => {
           if (id !== generation) return;
+          if (el('stage')) el('stage').textContent=type==='delta'?'Modelo · texto recibido por stream':'Modelo · texto final recibido';
           answer = type === 'done' ? part : answer + part;
           if (answer.length > 32000) throw new Error('Respuesta demasiado larga.');
           message.content.textContent = answer;
@@ -430,15 +434,18 @@
     }
     el('retry').addEventListener('click', refreshSession);
     refreshSession();
-    function expand(value) {
+    function expand(value, focus = true) {
       if (!value) stop();
       el('panel').hidden = !value;
       el('toggle').hidden = value;
       el('toggle').setAttribute('aria-expanded', String(value));
-      (value ? el('input') : el('toggle')).focus();
+      if (focus) (value ? el('input') : el('toggle')).focus();
     }
     el('toggle').addEventListener('click', () => expand(true));
     el('minimize').addEventListener('click', () => expand(false));
+    window.addEventListener('mia-view-change', event => {
+      if (event.detail?.view !== 'dashboard') expand(false, false);
+    });
     root.addEventListener('keydown', e => { if (e.key === 'Escape') expand(false); });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount, { once: true });

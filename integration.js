@@ -129,7 +129,9 @@ function loadTaskExecutor() {
         const toggle = panel.querySelector('#toggle-executor');
         const body = panel.querySelector('#executor-body');
         const box = panel.querySelector('#executor-window');
-        const storageKey = 'jarvis.executor.minimized';
+        const desktopStorageKey = 'jarvis.executor.minimized';
+        const mobileLayout = window.matchMedia('(max-width: 760px)');
+        const storageKey = () => mobileLayout.matches ? 'jarvis.executor.mobile.minimized' : desktopStorageKey;
         function setMinimized(minimized) {
             body.hidden = minimized;
             toggle.textContent = minimized ? '+' : '−';
@@ -139,11 +141,18 @@ function loadTaskExecutor() {
             toggle.setAttribute('aria-expanded', String(!minimized));
             box.style.width = minimized ? 'min(210px, calc(100vw - 40px))' : 'min(300px, calc(100vw - 40px))';
             toggle.parentElement.style.marginBottom = minimized ? '0' : '12px';
-            try { localStorage.setItem(storageKey, String(minimized)); } catch (_) {}
+            try { localStorage.setItem(storageKey(), String(minimized)); } catch (_) {}
         }
-        let initialMinimized = false;
-        try { initialMinimized = localStorage.getItem(storageKey) === 'true'; } catch (_) {}
-        setMinimized(initialMinimized);
+        function restoreLayout() {
+            let minimized = mobileLayout.matches;
+            try {
+                const saved = localStorage.getItem(storageKey());
+                if (saved !== null) minimized = saved === 'true';
+            } catch (_) {}
+            setMinimized(minimized);
+        }
+        restoreLayout();
+        mobileLayout.addEventListener('change', restoreLayout);
         toggle.addEventListener('click', () => setMinimized(!body.hidden));
         console.log('✅ Task Executor UI cargado');
         

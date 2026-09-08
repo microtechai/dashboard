@@ -1,0 +1,7 @@
+test_identity (__main__.Branding.test_identity) ... ok
+test_observable_not_demo_workflow (__main__.Branding.test_observable_not_demo_workflow) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.002s
+
+OK
