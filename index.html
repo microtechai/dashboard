@@ -93,6 +93,8 @@ canvas#viz:active{cursor:grabbing}
 .sidebar-item.active{color:#e0e8ff;background:rgba(74,158,255,0.06);border-left-color:#4a9eff}
 .sidebar-item .icon{font-size:14px;width:20px;text-align:center;flex-shrink:0}
 .sidebar-item .badge{font-size:8px;padding:1px 5px;border-radius:3px;background:rgba(74,158,255,0.08);color:#4a9eff;margin-left:auto;font-family:'JetBrains Mono',monospace}
+.sidebar-logout{border-top:1px solid rgba(255,255,255,0.1);margin-top:6px;padding:12px 16px 12px 18px;color:#ef4444;cursor:pointer}
+.sidebar-logout:hover{background:rgba(239,68,68,0.1);color:#ef4444;border-left-color:#ef4444}
 .sidebar-sub{max-height:0;overflow:hidden;transition:max-height .25s ease}
 .sidebar-sub.open{max-height:200px}
 .sidebar-sub-item{padding:6px 16px 6px 34px;display:flex;align-items:center;gap:8px;cursor:pointer;font-size:10px;color:#556;transition:all .15s;border-left:2px solid transparent}
@@ -200,6 +202,9 @@ canvas#viz:active{cursor:grabbing}
   .search-box input{width:160px}
 }
 </style>
+<script src="fire/shaders.js"></script>
+<script src="voice/speech.js"></script>
+<script src="integration.js"></script>
 </head>
 <body>
 
@@ -311,6 +316,9 @@ canvas#viz:active{cursor:grabbing}
   </div>
   <div class="sidebar-section">
     <div class="sidebar-item" data-page="config"><span class="icon">⚙</span> Configuración</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-item sidebar-logout"><span class="icon">🚪</span> Cerrar sesión</div>
   </div>
 </div>
 
@@ -831,6 +839,15 @@ document.querySelectorAll('.sidebar-item[data-page]').forEach(el => {
     document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
     el.classList.add('active');
     showPage(el.dataset.page);
+  });
+});
+
+// Cerrar sesión
+document.querySelectorAll('.sidebar-logout').forEach(el => {
+  el.addEventListener('click', () => {
+    sessionStorage.clear();
+    localStorage.clear();
+    location.reload();
   });
 });
 
