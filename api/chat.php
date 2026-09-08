@@ -79,8 +79,8 @@ $text = textInput($body, $action === 'message' ? 4000 : 1000);
 if ($action === 'tts') {
     // Last trusted speech boundary: never mutate conversation/history or parse HTML.
     // Keycaps first; ordinary digits, currency and mathematical operators survive.
-    $text = preg_replace('/[0-9#*]\x{FE0F}?\x{20E3}/u', '', $text);
-    $text = preg_replace('/[\p{Extended_Pictographic}\p{Regional_Indicator}\p{Emoji_Modifier}]/u', '', $text);
+    $text = preg_replace('/[0-9#*]\x{FE0F}?\x{20E3}/u', ' ', $text);
+    $text = preg_replace('/[\p{Extended_Pictographic}\p{Regional_Indicator}\p{Emoji_Modifier}]/u', ' ', $text);
     $text = preg_replace('/[\x{200D}\x{FE0E}\x{FE0F}\x{20E3}\x{E0020}-\x{E007F}]/u', '', $text);
     $text = trim(preg_replace('/\s+/u', ' ', $text));
     if ($text === '') fail(400, 'El texto no contiene palabras para leer.');

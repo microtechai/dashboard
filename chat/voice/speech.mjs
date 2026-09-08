@@ -11,14 +11,19 @@ export class SpeechQueue {
  push(delta,final=false){
   if(this.closed||this.limited)return;
   for(const raw of this.sentences.push(delta,final)){
-   const text=normalizeSpeech(raw);if(!text)continue;
-   const last=this.queue.length-1;
-   if(text.length>1000){this.limit();break;}
-   if(last>=0&&this.queue[last].length+1+text.length<=1000)this.queue[last]+=' '+text;
-   else if(this.sent+this.queue.length<3)this.queue.push(text);
-   else{this.limit();break;}
-   // Start synchronously: an entire SSE delta may contain many sentences.
-   if(!this.running)void this.pump();
+   let remaining=normalizeSpeech(raw);if(!remaining)continue;
+   while(remaining){
+    // Split only on existing word boundaries; retain the remainder for the next block.
+    const end=remaining.length>1000?remaining.lastIndexOf(' ',1000):remaining.length;
+    if(end<=0){this.limit();return;} // One oversized token: visible notice, never half a word.
+    const text=remaining.slice(0,end);remaining=remaining.slice(end).trimStart();
+    const last=this.queue.length-1;
+    if(last>=0&&this.queue[last].length+1+text.length<=1000)this.queue[last]+=' '+text;
+    else if(this.sent+this.queue.length<3)this.queue.push(text);
+    else{this.limit();return;}
+    // Start synchronously: an entire SSE delta may contain many sentences.
+    if(!this.running)void this.pump();
+   }
   }
  }
  limit(){this.limited=true;this.sentences.buffer='';this.onLimit();}
@@ -61,8 +66,8 @@ export function normalizeSpeech(text) {
   .replace(/\[([^\]]+)\]\([^\n)]*\)/g,'$1')
   .replace(/^\s{0,3}#{1,6}\s+/gm,'').replace(/^\s*[-*+]\s+/gm,'')
   // Remove complete keycaps before their variation selectors; plain digits stay.
-  .replace(/[0-9#*]\uFE0F?\u20E3/gu,'')
-  .replace(/[\p{Extended_Pictographic}\p{Regional_Indicator}\p{Emoji_Modifier}]/gu,'')
+  .replace(/[0-9#*]\uFE0F?\u20E3/gu,' ')
+  .replace(/[\p{Extended_Pictographic}\p{Regional_Indicator}\p{Emoji_Modifier}]/gu,' ')
   .replace(/[\u200D\uFE0E\uFE0F\u20E3\u{E0020}-\u{E007F}]/gu,'')
   .replace(/\*\*([^\n]+?)\*\*/g,'$1').replace(/__([^\n]+?)__/g,'$1')
   .replace(/`([^`]+)`/g,'$1').replace(/\s+/g,' ').trim();

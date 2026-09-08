@@ -2,6 +2,14 @@
 import unittest
 from chat_backend_test import Backend, RUN
 class EmojiBackend(Backend):
+ def test_emoji_between_words_preserves_tts_boundaries(self):
+  original=self.piper.read_text()
+  self.piper.write_text(original.replace('text=sys.stdin.read().strip()', 'text=sys.stdin.read().strip()\nopen('+repr(str(RUN/'spoken.txt'))+',"w").write(text)'))
+  try:
+   self.login()
+   self.assertEqual(self.req('tts',{'text':'Buenos👩🏽‍💻días. Revisa🇪🇸mañana. 10❤️25.'})[0],200)
+   self.assertEqual((RUN/'spoken.txt').read_text(),'Buenos días. Revisa mañana. 10 25.')
+  finally:self.piper.write_text(original)
  def test_tts_stdin_strips_emoji_without_touching_history(self):
   original=self.piper.read_text()
   self.piper.write_text(original.replace('text=sys.stdin.read().strip()', 'text=sys.stdin.read().strip()\nopen('+repr(str(RUN/'spoken.txt'))+',"w").write(text)'))
