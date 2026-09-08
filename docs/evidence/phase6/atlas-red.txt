@@ -1,0 +1,32 @@
+✔ one bounded volume instead of crossed billboards; coherent camera in object coordinates (3.939905ms)
+✔ production integration supplies responsive and reduced-motion quality without an extra loop (0.624332ms)
+✖ one local noise atlas amortizes turbulence and is disposed exactly once (1.790261ms)
+✔ smoothed state, bounded automatic quality and reduced-motion profile (4.106656ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 3
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 109.369236
+
+✖ failing tests:
+
+test at tests/fire_volume.cjs:13:1
+✖ one local noise atlas amortizes turbulence and is disposed exactly once (1.790261ms)
+  AssertionError [ERR_ASSERTION]: procedural local atlas, no external fetch
+      at TestContext.<anonymous> (/home/ddr/jarvis-phase2-20260908/tests/fire_volume.cjs:14:99)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

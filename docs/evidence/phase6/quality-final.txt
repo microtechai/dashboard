@@ -1,0 +1,16 @@
+baseline normal ms 11.7 cyan 0.296 outside 3301
+baseline close ms 24.55 cyan 0.3848 outside 20801
+baseline oblique ms 24.1 cyan 0.3876 outside 22230
+baseline side ms 24.7 cyan 0.3393 outside 23958
+baseline back ms 24.15 cyan 0.3867 outside 20675
+baseline low ms 25.0 cyan 0.3876 outside 22230
+baseline reduced ms 25.45 cyan 0.3245 outside 19699
+new normal ms 38.3 cyan 0.0 outside 4258
+new close ms 279.05 cyan 0.0 outside 33986
+new oblique ms 280.9 cyan 0.0 outside 35533
+new side ms 271.1 cyan 0.0 outside 34988
+new back ms 294.15 cyan 0.0 outside 35116
+new low ms 183.3 cyan 0.0 outside 34623
+new reduced ms 176.95 cyan 0.0 outside 45216
+PASS: 14 cases, 28 actual frames, linked WebGL programs, motion/blue/outside-core/clipping guards
+NO-GO: performance

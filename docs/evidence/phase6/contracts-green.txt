@@ -1,0 +1,21 @@
+✔ core state accepts bounded live audio, resets and honors reduced motion (2.662814ms)
+✔ classic shader script coexists with legacy inline lexical names (2.714028ms)
+✔ full inline classic script has no declaration collision, without running auth (2.620921ms)
+✔ explicit controller updates real THREE objects without own RAF; state and disposal (9.521233ms)
+✔ changed classic assets are versioned and fire honors reduced motion without hiding (2.495683ms)
+✔ page wires one fire controller into its only render loop (0.99996ms)
+✔ one bounded volume instead of crossed billboards; coherent camera in object coordinates (15.121547ms)
+✔ production integration supplies responsive and reduced-motion quality without an extra loop (0.752072ms)
+✔ sustained very slow frames also lower quality; long tab resumes are ignored (10.214941ms)
+✔ one local noise atlas amortizes turbulence and is disposed exactly once (4.597168ms)
+✔ smoothed state, bounded automatic quality and reduced-motion profile (9.059871ms)
+PASS listening RMS + transcribing state
+✔ tests/stt_core.cjs (49.480184ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 152.993133

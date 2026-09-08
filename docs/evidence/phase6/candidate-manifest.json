@@ -1,0 +1,28 @@
+{
+  "result": "NO-GO performance; no production writes, preservation or rollback performed",
+  "base_commit": "710159086df80ed6f5956714dd2187264f7e1a95",
+  "files": [
+    {
+      "path": "/var/www/dashboard/index.html",
+      "live_verified_sha256": "c7ea130641decf235653cbade26614fc214a18bf4e26054854a856963f19ecaa",
+      "candidate_sha256": "12f5e0340ab0414a9190f25ecc8cfdb1ba78a29735d79fd37e8d1970b5fe3ce6",
+      "deployed": false
+    },
+    {
+      "path": "/var/www/dashboard/fire/shaders.js",
+      "live_verified_sha256": "38951e11d2f4accb384a33b84c33b5eb35ecb51e7b95e20b7da3b0a59c780e39",
+      "candidate_sha256": "be93647108eeef267d219cbdf983b1037441fb05f0c56edca28afbcc7b848da2",
+      "deployed": false
+    },
+    {
+      "path": "/var/www/dashboard/chat/core-state.js",
+      "live_verified_sha256": "3245a4eef32f87985b03867c8a0cb7fced9cdd0f151c3f8ed93cb5dad3d57371",
+      "candidate_sha256": "3245a4eef32f87985b03867c8a0cb7fced9cdd0f151c3f8ed93cb5dad3d57371",
+      "deployed": false
+    }
+  ],
+  "gate_changed": false,
+  "services_changed": false,
+  "public_check": "anonymous-final.json",
+  "candidateOnly": true
+}

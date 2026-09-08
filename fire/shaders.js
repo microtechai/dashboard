@@ -1,118 +1,131 @@
-// JARVIS electric fire — classic-script namespace, Three.js r128.
-// Qwen proposed scoped crossed planes + coherent fbm; reviewed/corrected by Hermes.
+// JARVIS blue combustion volume, Three.js r128. No private loop/network assets.
 (function (root) {
   'use strict';
   const vertexShader = `
-    varying vec2 vUv;
+    varying vec3 vPosition;
     void main() {
-      vUv = uv;
+      vPosition = position;
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }
   `;
   const fragmentShader = `
-    uniform float uTime;
-    uniform float uSpeed;
-    uniform float uIntensity;
-    uniform float uSeed;
-    varying vec2 vUv;
-
-    float hash(vec2 p) {
-      return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+    uniform vec3 uCamera;
+    uniform sampler2D uNoise;
+    uniform float uTime, uSpeed, uIntensity, uSteps;
+    varying vec3 vPosition;
+    float noise(vec3 p) {
+      vec3 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
+      // RG contains adjacent Z slices. Hardware bilinear + Z interpolation:
+      // one fetch instead of eight procedural hashes, with continuous cell edges.
+      vec2 uv=i.xy+vec2(37.0,17.0)*i.z+f.xy;
+      vec2 slices=texture2D(uNoise,(uv+0.5)/256.0).rg;
+      return mix(slices.r,slices.g,f.z);
     }
-    // Interpolate all four lattice corners; no cell-boundary discontinuities.
-    float noise(vec2 p) {
-      vec2 i = floor(p), f = fract(p);
-      vec2 w = f * f * (3.0 - 2.0 * f);
-      return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), w.x),
-                 mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0)), w.x), w.y);
-    }
-    float fbm(vec2 p) {
-      float n = 0.0, a = 0.5;
-      for (int i = 0; i < 3; i++) {
-        n += a * noise(p);
-        p = p * 2.03 + vec2(19.1, 7.7);
-        a *= 0.5;
-      }
-      return n / 0.875;
+    float turbulence(vec3 p) {
+      return noise(p)*0.57 + noise(p*2.07+7.1)*0.29 + noise(p*4.13+19.7)*0.14;
     }
     void main() {
-      float h = vUv.y;
-      float x = vUv.x * 2.0 - 1.0;
-      float t = uTime * uSpeed;
-      // Negative time in the vertical coordinate advects features UP the plane.
-      vec2 p = vec2(x * 3.8 + uSeed, h * 4.8 - t * 1.6);
-      float warp = fbm(p * 0.65 + vec2(0.0, -t * 0.18));
-      float n = fbm(p + vec2((warp - 0.5) * 1.5, 0.0));
-      float curl = (warp - 0.5) * 0.38 * h;
-      float width = 0.82 * pow(max(1.0 - h, 0.0), 0.65);
-      float edge = width - abs(x + curl) + (n - 0.5) * 0.36;
-      float silhouette = smoothstep(-0.035, 0.10, edge);
-      // Height-dependent erosion splits the crest into moving tapered tongues.
-      float tongues = smoothstep(h * 0.78, h * 0.78 + 0.18, n + (1.0 - h) * 0.23);
-      float baseFade = smoothstep(0.0, 0.12, h);
-      float topFade = 1.0 - smoothstep(0.90, 1.0, h);
-      float density = silhouette * tongues * baseFade * topFade;
-      float heat = clamp(n * 0.6 + (1.0 - h) * 0.5, 0.0, 1.0);
-      vec3 color = mix(vec3(0.015, 0.13, 1.0), vec3(0.02, 0.8, 1.0),
-                       smoothstep(0.25, 0.7, heat));
-      color = mix(color, vec3(0.65, 0.9, 1.0), smoothstep(0.7, 1.0, heat));
-      float alpha = clamp(density * uIntensity * 0.46, 0.0, 0.85);
-      if (alpha < 0.003) discard;
-      gl_FragColor = vec4(color, alpha);
+      vec3 rd=normalize(vPosition-uCamera);
+      // Signed epsilon: stable slab intersection for axis-aligned rays.
+      vec3 safe=sign(rd)*max(abs(rd),vec3(0.00001));
+      safe += (vec3(1.0)-abs(sign(rd)))*0.00001;
+      vec3 a=(-vec3(1.0)-uCamera)/safe, b=(vec3(1.0)-uCamera)/safe;
+      vec3 nearV=min(a,b), farV=max(a,b);
+      float nearT=max(max(nearV.x,nearV.y),nearV.z);
+      float farT=min(min(farV.x,farV.y),farV.z);
+      nearT=max(nearT,0.0);
+      if(farT<=nearT) discard;
+      float dt=(farT-nearT)/uSteps;
+      // Fixed pixel dither removes marching bands without temporal sparkle.
+      float jitter=0.5+0.15*(fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453)-0.5);
+      vec4 sum=vec4(0.0);
+      float t=uTime;
+      for(int i=0;i<48;i++) {
+        if(float(i)>=uSteps || sum.a>0.97) break;
+        vec3 p=uCamera+rd*(nearT+(float(i)+jitter)*dt);
+        float h=(p.y+1.0)*0.5;
+        vec2 center=vec2(sin(h*7.0-t*0.65),cos(h*5.0+t*0.5))*h*h*0.17;
+        float r=length(p.xz-center);
+        float width=0.67*pow(max(1.0-h,0.0),0.72);
+        // Conservative density support: avoid all noise fetches in empty space.
+        if(h<0.04 || h>0.99 || r>width+0.52*(0.38+0.3*h)+0.025) continue;
+        vec3 q=p*vec3(3.7,4.6,3.7)-vec3(0,t*1.25,0);
+        float warp=noise(q*0.56+vec3(t*0.1,0,-t*0.08));
+        float n=turbulence(q+vec3(warp*1.7,0,warp*0.9));
+        float shape=width-r+(n-0.48)*(0.38+0.3*h);
+        float envelope=smoothstep(-0.025,0.07,shape)*smoothstep(0.04,0.20,h)*(1.0-smoothstep(0.87,0.99,h));
+        float crest=smoothstep(h*0.68,h*0.68+0.13,n);
+        // Thin folded sheets throughout the volume, not a solid glowing ball.
+        float sheet=pow(max(1.0-abs(n-0.52)*7.0,0.0),3.0);
+        float density=envelope*crest*(0.13+sheet*1.9);
+        float heat=clamp(sheet*0.8+(1.0-h)*0.16,0.0,1.0);
+        vec3 color=mix(vec3(0.018,0.12,1.0),vec3(0.04,0.85,1.5),heat);
+        color=mix(color,vec3(0.20,0.78,1.0),pow(heat,12.0)*0.6);
+        float alpha=1.0-exp(-density*dt*4.2*uIntensity);
+        sum.rgb+=(1.0-sum.a)*alpha*color;
+        sum.a+=(1.0-sum.a)*alpha;
+      }
+      if(sum.a<0.003) discard;
+      // Straight alpha for NormalBlending (no additive cyan clipping).
+      gl_FragColor=vec4(sum.rgb/max(sum.a,0.001),sum.a);
     }
   `;
-
-  function createFire({THREE, coreGroup}) {
-    if (!THREE || !coreGroup || !coreGroup.isObject3D) {
-      throw new TypeError('JarvisFire.createFire requires THREE and coreGroup');
+  function createFire({THREE, coreGroup, quality='auto'}) {
+    if (!THREE || !coreGroup || !coreGroup.isObject3D) throw new TypeError('JarvisFire.createFire requires THREE and coreGroup');
+    const values=new Uint8Array(256*256), data=new Uint8Array(256*256*4);
+    let seed=0x6d2b79f5;
+    for(let i=0;i<values.length;i++) {seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;values[i]=seed>>>24;}
+    for(let y=0;y<256;y++) for(let x=0;x<256;x++) {
+      const j=(y*256+x)*4;data[j]=values[y*256+x];data[j+1]=values[((y+17)&255)*256+((x+37)&255)];data[j+3]=255;
     }
-    const geometry = new THREE.PlaneGeometry(16, 19, 1, 1);
-    const meshes = [];
-    const materials = [];
-    let disposed = false;
-    // Four planes about Y (not Z): visible from the existing orbit camera.
-    // Lower edge -5, upper edge +14: flame silhouettes extend past core radius 4.5.
-    for (let i = 0; i < 4; i++) {
-      const material = new THREE.ShaderMaterial({
-        vertexShader, fragmentShader,
-        uniforms: {
-          uTime: {value: 0}, uSpeed: {value: 1},
-          uIntensity: {value: 1}, uSeed: {value: i * 7.31}
-        },
-        transparent: true, side: THREE.DoubleSide,
-        depthWrite: false, depthTest: true, blending: THREE.AdditiveBlending
-      });
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.name = 'jarvis-fire-tongues-' + i;
-      mesh.position.y = 4.5;
-      mesh.rotation.y = i * Math.PI / 4;
-      // Draw after the transparent core; retain depth testing against opaque objects.
-      mesh.renderOrder = 2;
-      coreGroup.add(mesh);
-      meshes.push(mesh); materials.push(material);
-    }
+    const noiseTexture=new THREE.DataTexture(data,256,256,THREE.RGBAFormat);
+    noiseTexture.wrapS=noiseTexture.wrapT=THREE.RepeatWrapping;
+    noiseTexture.minFilter=noiseTexture.magFilter=THREE.LinearFilter;
+    noiseTexture.generateMipmaps=false;noiseTexture.needsUpdate=true;
+    const geometry=new THREE.BoxGeometry(2,2,2);
+    const material=new THREE.ShaderMaterial({vertexShader,fragmentShader,
+      uniforms:{uNoise:{value:noiseTexture},uCamera:{value:new THREE.Vector3()},uTime:{value:0},uSpeed:{value:1},uIntensity:{value:1},uSteps:{value:40}},
+      transparent:true,side:THREE.BackSide,depthWrite:false,depthTest:true,blending:THREE.NormalBlending});
+    const mesh=new THREE.Mesh(geometry,material);
+    mesh.name='jarvis-fire-volume';mesh.scale.set(9,13,9);mesh.position.y=5;mesh.renderOrder=2;
+    const inverse=new THREE.Matrix4();
+    mesh.onBeforeRender=function(renderer,scene,camera) {
+      inverse.copy(mesh.matrixWorld).invert();
+      material.uniforms.uCamera.value.setFromMatrixPosition(camera.matrixWorld).applyMatrix4(inverse);
+    };
+    coreGroup.add(mesh);
+    let disposed=false, reducedMotion=false, targetIntensity=1, targetSpeed=1;
+    let averageDelta=1/60, slowFrames=0, fastFrames=0;
+    material.uniforms.uSteps.value=quality==='low'?24:40;
     return {
       update(delta) {
-        if (disposed || !Number.isFinite(delta) || delta <= 0) return;
-        // Bound tab-resume jumps; time is caller-driven, never a private RAF.
-        const step = Math.min(delta, 0.1);
-        materials.forEach(m => { m.uniforms.uTime.value += step; });
+        if(disposed || !Number.isFinite(delta) || delta<=0) return;
+        const step=Math.min(delta,0.1), u=material.uniforms;
+        const ease=1-Math.exp(-step*5);
+        u.uIntensity.value+=(targetIntensity-u.uIntensity.value)*ease;
+        u.uSpeed.value+=(targetSpeed-u.uSpeed.value)*ease;
+        u.uTime.value+=step*(reducedMotion?Math.min(u.uSpeed.value,0.2):u.uSpeed.value);
+        // Ignore tab-resume outliers; caller frame pressure is a conservative proxy,
+        // not a claim to measure GPU time. Hysteresis avoids quality thrashing.
+        if(delta<1) {
+          averageDelta+=(step-averageDelta)*0.06;
+          slowFrames=averageDelta>0.028?slowFrames+1:0;
+          fastFrames=averageDelta<0.019?fastFrames+1:0;
+        }
+        if(reducedMotion || quality==='low' || slowFrames>45) u.uSteps.value=24;
+        else if(fastFrames>240) u.uSteps.value=40;
       },
-      setState(state = {}) {
-        if (disposed || !state) return;
-        materials.forEach(m => {
-          if (Number.isFinite(state.intensity)) m.uniforms.uIntensity.value = Math.max(0, Math.min(2, state.intensity));
-          if (Number.isFinite(state.speed)) m.uniforms.uSpeed.value = Math.max(0, Math.min(3, state.speed));
-        });
+      setState(state={}) {
+        if(disposed || !state) return;
+        if(Number.isFinite(state.intensity)) targetIntensity=Math.max(0,Math.min(2,state.intensity));
+        if(Number.isFinite(state.speed)) targetSpeed=Math.max(0,Math.min(3,state.speed));
+        if(typeof state.reducedMotion==='boolean') reducedMotion=state.reducedMotion;
       },
       dispose() {
-        if (disposed) return;
-        disposed = true;
-        meshes.forEach(m => { if (m.parent) m.parent.remove(m); });
-        geometry.dispose();
-        materials.forEach(m => m.dispose());
+        if(disposed) return;disposed=true;
+        if(mesh.parent) mesh.parent.remove(mesh);geometry.dispose();material.dispose();noiseTexture.dispose();
       }
     };
   }
-  root.JarvisFire = Object.freeze({createFire});
-})(typeof window !== 'undefined' ? window : globalThis);
+  root.JarvisFire=Object.freeze({createFire});
+})(typeof window!=='undefined'?window:globalThis);
