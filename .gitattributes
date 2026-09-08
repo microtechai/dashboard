@@ -1,0 +1,2 @@
+# Preserve hash-pinned upstream bytes, including vendor whitespace.
+chat/voice/assets/* -whitespace linguist-vendored=true
