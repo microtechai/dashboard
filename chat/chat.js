@@ -13,12 +13,6 @@
         <header><strong>JARVIS <small>Qwen</small></strong><button id="jarvis-chat-minimize" aria-label="Minimizar chat">−</button></header>
         <p id="jarvis-chat-status" role="status" aria-live="polite">Conectando sesión…</p>
         <button type="button" id="jarvis-chat-retry" hidden>Actualizar sesión</button>
-        <form id="jarvis-chat-login">
-          <p>Acceso seguro con tu cuenta MC</p>
-          <label>Usuario<input id="jarvis-chat-username" name="username" autocomplete="username" required maxlength="128"></label>
-          <label>Contraseña<input id="jarvis-chat-password" name="password" type="password" autocomplete="current-password" required></label>
-          <button type="submit">Iniciar sesión</button>
-        </form>
         <div id="jarvis-chat-conversation" hidden>
           <div id="jarvis-chat-history" role="log" aria-label="Mensajes" aria-live="polite"></div>
           <form id="jarvis-chat-compose"><label for="jarvis-chat-input">Mensaje</label><textarea id="jarvis-chat-input" maxlength="4000" rows="2" placeholder="Escribe a JARVIS…"></textarea><div class="jarvis-chat-actions"><button type="submit">Enviar</button><button type="button" id="jarvis-chat-talk">Hablar</button><button type="button" id="jarvis-chat-logout">Salir</button></div></form>
@@ -44,7 +38,7 @@
     }
     function showError(error) {
       if (error.status === 401) {
-        stop(); authenticated = false; el('login').hidden = false; el('conversation').hidden = true;
+        stop(); authenticated = false; el('conversation').hidden = true; location.replace('/login.html');
         el('history').replaceChildren(); el('input').value = '';
       }
       if ([401, 403, 503].includes(error.status)) el('retry').hidden = false;
@@ -67,8 +61,8 @@
       el('retry').hidden = true;
       csrf = typeof data.csrf === 'string' ? data.csrf : '';
       authenticated = data.authenticated === true;
-      el('login').hidden = authenticated; el('conversation').hidden = !authenticated;
-      el('login').querySelector('button').disabled = !csrf;
+      if (!authenticated) { stop(); location.replace('/login.html'); return; }
+      el('conversation').hidden = false;
       el('history').replaceChildren();
       if (authenticated && Array.isArray(data.history)) {
         for (const item of data.history.slice(-40)) {
@@ -80,32 +74,20 @@
       }
       status(authenticated ? 'Sesión MC: ' + (data.username || 'conectada') : 'Inicia sesión con tu cuenta MC.');
     }
-    el('login').querySelector('button').disabled = true;
-    el('login').addEventListener('submit', async e => {
-      e.preventDefault();
-      if (authBusy || !csrf) return; authBusy = true;
-      const button = el('login').querySelector('button'); button.disabled = true;
-      const body = { username: el('username').value.trim(), password: el('password').value };
-      el('password').value = '';
-      try { await api('login', body); await session(); if (authenticated) el('input').focus(); }
-      catch (error) { showError(error); }
-      finally { authBusy = false; body.password = ''; button.disabled = !csrf; }
-    });
-    el('logout').addEventListener('click', async () => {
+    async function logout() {
       if (authBusy) return; authBusy = true;
       stop();
-      const button = el('logout'); button.disabled = true;
       el('compose').querySelector('button').disabled = true;
       try {
-        const data = await (await api('logout', {})).json();
-        authenticated = false; csrf = typeof data.csrf === 'string' ? data.csrf : '';
-        el('history').replaceChildren(); el('input').value = ''; el('login').hidden = false; el('conversation').hidden = true;
-        el('login').querySelector('button').disabled = !csrf;
-        await session();
-      }
-      catch (error) { showError(error); }
-      finally { authBusy = false; button.disabled = false; el('compose').querySelector('button').disabled = false; }
-    });
+        await api('logout', {});
+        authenticated = false; el('history').replaceChildren(); el('input').value = '';
+        location.replace('/login.html');
+      } catch (error) { showError(error); }
+      finally { authBusy = false; el('compose').querySelector('button').disabled = false; }
+    }
+    el('logout').addEventListener('click', logout);
+    document.querySelectorAll('.sidebar-logout').forEach(button => button.addEventListener('click', logout));
+    window.addEventListener('pageshow', event => { if (event.persisted) location.reload(); });
     let generation = 0, controller = null, busy = false;
     let audio = null, audioURL = null, audioContext = null, source = null, analyser = null, raf = 0, finishAudio = null;
     let mic = null, recorder = null, micContext = null, micSource = null, micAnalyser = null, micRAF = 0, micTimer = 0;

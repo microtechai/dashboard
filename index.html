@@ -14,24 +14,6 @@ body{background:#050810;color:#e0e8ff;font-family:'Inter','Segoe UI',system-ui,s
 canvas#viz{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;cursor:grab}
 canvas#viz:active{cursor:grabbing}
 
-/* === LOGIN OVERLAY (z-index high) === */
-#login-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#0a0a1e 0%,#050810 70%);backdrop-filter:blur(4px)}
-#login-overlay.hidden{opacity:0;pointer-events:none;transition:opacity .6s}
-.login-box{text-align:center;max-width:360px;width:90%}
-.login-logo{font-family:'JetBrains Mono',monospace;font-size:10px;color:#4a9eff;line-height:1.4;margin-bottom:24px}
-.login-logo .accent{color:#a78bfa}
-.login-title{font-size:13px;font-weight:600;letter-spacing:3px;background:linear-gradient(90deg,#4a9eff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
-.login-sub{font-size:10px;color:#556;font-family:'JetBrains Mono',monospace;margin-bottom:28px}
-.login-form{display:flex;flex-direction:column;gap:12px;align-items:center}
-.login-input{width:100%;padding:10px 14px;background:rgba(10,15,30,0.6);border:1px solid rgba(74,158,255,0.12);border-radius:8px;color:#c0d0ff;font-size:12px;outline:none;transition:all .2s;font-family:'JetBrains Mono',monospace}
-.login-input:focus{border-color:#4a9eff;box-shadow:0 0 12px rgba(74,158,255,0.08)}
-.login-input::placeholder{color:#334}
-.login-btn{width:100%;padding:10px;background:rgba(74,158,255,0.1);border:1px solid rgba(74,158,255,0.25);border-radius:8px;color:#4a9eff;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:1px;transition:all .2s}
-.login-btn:hover{background:rgba(74,158,255,0.2);border-color:rgba(74,158,255,0.4)}
-.login-error{font-size:10px;color:#ef4444;font-family:'JetBrains Mono',monospace;opacity:0;transition:opacity .3s;height:16px}
-.login-error.show{opacity:1}
-.login-hint{font-size:9px;color:#334;font-family:'JetBrains Mono',monospace;margin-top:4px}
-
 /* === LOADING (z-index high, below login) === */
 #loading{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9998;display:none;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#0a0a1e 0%,#050810 70%);transition:opacity .5s}
 #loading.visible{display:flex}
@@ -207,30 +189,9 @@ canvas#viz:active{cursor:grabbing}
 <script src="integration.js?v=20260908-executor3"></script>
 <link rel="stylesheet" href="chat/chat.css?v=20260908-chat4">
 <script src="chat/core-state.js?v=20260908-chat4"></script>
-<script defer src="chat/chat.js?v=20260908-chat4"></script>
+<script defer src="chat/chat.js?v=20260908-access5"></script>
 </head>
 <body>
-
-<!-- LOGIN OVERLAY -->
-<div id="login-overlay">
-  <div class="login-box">
-    <div class="login-logo">
-      <span class="accent">╔══════════════════════╗</span><br>
-      <span class="accent">║</span>  MICROTECH AI  <span class="accent">║</span><br>
-      <span class="accent">╚══════════════════════╝</span><br>
-       AGENT ORCHESTRATOR
-    </div>
-    <div class="login-title">CENTRO DE MANDO</div>
-    <div class="login-sub">Acceso restringido</div>
-    <div class="login-form">
-      <input type="text" class="login-input" id="loginUser" placeholder="Usuario" autocomplete="off">
-      <input type="password" class="login-input" id="loginPass" placeholder="Contraseña" autocomplete="off">
-      <button class="login-btn" id="loginBtn">ACCEDER</button>
-      <div class="login-error" id="loginError">Credenciales incorrectas</div>
-      <div class="login-hint">admin / admin</div>
-    </div>
-  </div>
-</div>
 
 <!-- LOADING -->
 <div id="loading">
@@ -377,40 +338,7 @@ canvas#viz:active{cursor:grabbing}
 // ═══════════════════════════════════════════
 // LOGIN
 // ═══════════════════════════════════════════
-const loginOverlay = document.getElementById('login-overlay');
-const loginUser = document.getElementById('loginUser');
-const loginPass = document.getElementById('loginPass');
-const loginBtn = document.getElementById('loginBtn');
-const loginError = document.getElementById('loginError');
-
-// Auth check
-if (localStorage.getItem('mc_authed') === 'true') {
-  loginOverlay.style.display = 'none';
-  loginOverlay.classList.add('hidden');
-} else {
-  loginUser.focus();
-}
-
-loginBtn.addEventListener('click', () => {
-  const user = loginUser.value.trim();
-  const pass = loginPass.value.trim();
-  if (user && pass) {
-    loginOverlay.classList.add('hidden');
-    setTimeout(() => {
-      loginOverlay.style.display = 'none';
-      localStorage.setItem('mc_authed', 'true');
-      startLoading();
-    }, 400);
-  } else {
-    loginError.classList.add('show');
-    setTimeout(() => loginError.classList.remove('show'), 2000);
-  }
-});
-
-loginPass.addEventListener('keydown', e => { if(e.key === 'Enter') loginBtn.click(); });
-loginUser.addEventListener('keydown', e => { if(e.key === 'Enter') loginPass.focus(); });
-
-// ═══════════════════════════════════════════
+// Server validates MC before delivering this document.
 // DATA
 // ═══════════════════════════════════════════
 const CAT_COLORS={
@@ -775,15 +703,6 @@ document.querySelectorAll('.sidebar-item[data-page]').forEach(el => {
   });
 });
 
-// Cerrar sesión
-document.querySelectorAll('.sidebar-logout').forEach(el => {
-  el.addEventListener('click', () => {
-    sessionStorage.clear();
-    localStorage.clear();
-    location.reload();
-  });
-});
-
 // Top nav
 document.querySelectorAll('.nav-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -1063,12 +982,8 @@ function updateUI(data) {
 // ═══════════════════════════════════════════
 animate();
 
-// If already authed (sessionStorage), startLoading immediately
-if (localStorage.getItem('mc_authed') !== 'true') {
-  // Login handles startLoading
-} else {
-  startLoading();
-}
+// Delivered only after server authentication.
+startLoading();
 
 // Schedule notification
 setTimeout(() => showNotification('Navega entre secciones · Click en esferas · Rueda zoom'), 5000);
