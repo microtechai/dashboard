@@ -61,7 +61,13 @@ Inspección visual real del PNG: conserva pliegues internos azules y contorno tu
 
 ## Seguridad / entrega
 
-Solo se autorizan `fire/shaders.js` e `index.html`, con hash guard fase5, preservación selectiva fuera del webroot y reemplazo atómico por archivo (shader primero compatible con índice anterior). No restart/reload ni nuevo asset en allowlist. Las rutas protegidas no permiten comparar bytes públicos de assets sin sesión: hashes de origen por SSH y comprobaciones públicas anónimas303/401 son pruebas distintas, no se finge descarga pública autenticada.
+**Desplegado el 2026-09-08 a18:01:19UTC**, fuente `4e648ca52f340df603159392881c85b57f920205`. Solo `fire/shaders.js` e `index.html`, con hash guard fase5 superado, preservación selectiva en `/root/jarvis-phase6-preserved-20260908T180119Z` y reemplazo atómico por archivo (shader primero compatible con índice anterior). Hashes pospublicación comprobados por una segunda conexión SSH y coincidentes con los bytes locales:
+
+- Shader: `90afac07696c5735e417b7b3b9bf1eba3f2ff6066204060ba30a5903bbb3f17e`.
+- Índice: `46bc325cfc4aba60eaf442eb732a26e421872df1e0bc8ad177e0a84cc149cf0e`.
+- Gate y core-state mantienen exactamente sus hashes previos; manifiesto en `docs/evidence/phase6/deployment-manifest.json`.
+
+No restart/reload ni nuevo asset en allowlist. Público anónimo curl: HTML303, shader antiguo/nuevo y assets/API401, login200; CF DYNAMIC/private,no-store. Python urllib recibió403 de Cloudflare, registrado como diferencia de cliente, sin cambiar reglas. Las rutas protegidas no permiten comparar bytes públicos de assets sin sesión: hashes de origen por SSH y comprobaciones públicas anónimas303/401 son pruebas distintas, no se finge descarga pública autenticada.
 
 Evidencia completa en `/home/ddr/jarvis-phase6-artifacts/`: `quality-results.json`, `profile-before.json`, `target-comparison.png`, `baseline/`, `new/`, manifiesto y resultados públicos. Selección versionada en `docs/evidence/phase6/`.
 

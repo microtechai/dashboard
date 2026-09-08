@@ -1,0 +1,57 @@
+[
+  {
+    "command": [
+      "node",
+      "--test",
+      "tests/fire.test.cjs",
+      "tests/fire_volume.cjs",
+      "tests/core_activity.cjs",
+      "tests/stt_core.cjs"
+    ],
+    "exit_code": 0,
+    "output": "\u2714 core state accepts bounded live audio, resets and honors reduced motion (2.709891ms)\n\u2714 classic shader script coexists with legacy inline lexical names (2.796705ms)\n\u2714 full inline classic script has no declaration collision, without running auth (2.408982ms)\n\u2714 explicit controller updates real THREE objects without own RAF; state and disposal (12.936852ms)\n\u2714 changed classic assets are versioned and fire honors reduced motion without hiding (2.651068ms)\n\u2714 page wires one fire controller into its only render loop (0.991829ms)\n\u2714 one bounded volume instead of crossed billboards; coherent camera in object coordinates (13.898621ms)\n\u2714 production integration supplies responsive and reduced-motion quality without an extra loop (0.740848ms)\n\u2714 sustained very slow frames also lower quality; long tab resumes are ignored (17.813937ms)\n\u2714 one local noise atlas amortizes turbulence and is disposed exactly once (4.444032ms)\n\u2714 smoothed state, bounded automatic quality and reduced-motion profile (9.521175ms)\nPASS listening RMS + transcribing state\n\u2714 tests/stt_core.cjs (48.068611ms)\n\u2139 tests 12\n\u2139 suites 0\n\u2139 pass 12\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 159.546901\n"
+  },
+  {
+    "command": [
+      "python3",
+      "tests/access_gate_test.py"
+    ],
+    "exit_code": 0,
+    "output": "test_anonymous_never_gets_private_bytes (__main__.Access.test_anonymous_never_gets_private_bytes) ... ok\ntest_fixture_session_shared_revoked_outage_logout (__main__.Access.test_fixture_session_shared_revoked_outage_logout) ... ok\ntest_nginx_catchall_no_static_or_php_bypass (__main__.Access.test_nginx_catchall_no_static_or_php_bypass) ... ok\ntest_single_public_login_no_local_or_second_form (__main__.Access.test_single_public_login_no_local_or_second_form) ... ok\ntest_authentication_and_request_guards (chat_backend_test.Backend.test_authentication_and_request_guards) ... ok\ntest_global_locks (chat_backend_test.Backend.test_global_locks) ... ok\ntest_history_bound_and_unicode_limit (chat_backend_test.Backend.test_history_bound_and_unicode_limit) ... ok\ntest_missing_private_temp_dir_fails_closed (chat_backend_test.Backend.test_missing_private_temp_dir_fails_closed) ... ok\ntest_multiline_tts_is_one_piper_utterance (chat_backend_test.Backend.test_multiline_tts_is_one_piper_utterance) ... ok\ntest_session_cookie_and_anonymous_state (chat_backend_test.Backend.test_session_cookie_and_anonymous_state) ... ok\ntest_stream_history_limits_and_failure (chat_backend_test.Backend.test_stream_history_limits_and_failure) ... ok\ntest_stream_unlock_and_clear_race (chat_backend_test.Backend.test_stream_unlock_and_clear_race) ... ok\ntest_tts_process_wav_and_cleanup (chat_backend_test.Backend.test_tts_process_wav_and_cleanup) ... ok\ntest_tts_single_cpu_affinity (chat_backend_test.Backend.test_tts_single_cpu_affinity) ... ok\ntest_tts_timeout_reaps_and_unlocks (chat_backend_test.Backend.test_tts_timeout_reaps_and_unlocks) ... ok\n\n----------------------------------------------------------------------\nRan 15 tests in 21.799s\n\nOK\n"
+  },
+  {
+    "command": [
+      "/home/ddr/jarvis-phase6-venv/bin/python",
+      "tests/access_browser_test.py",
+      "BrowserAccess"
+    ],
+    "exit_code": 0,
+    "output": "test_login_once_shared_chat_sidebar_logout_and_denial (__main__.BrowserAccess.test_login_once_shared_chat_sidebar_logout_and_denial) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 2.227s\n\nOK\n"
+  },
+  {
+    "command": [
+      "/home/ddr/jarvis-phase6-venv/bin/python",
+      "tests/fire_target.py"
+    ],
+    "exit_code": 0,
+    "output": "PASS alpha, opaque depth, DPR2 resize, GPU texture release {'alphaClear': True, 'alphaVisible': True, 'resized': True, 'depthOccluded': True, 'disposed': 2, 'removed': True, 'texturesReleased': 2, 'glError': 0}\nPASS real GL: bounded target, original viewport/target/clear restored, idempotent disposal {'calls': 5, 'hasTarget': True, 'width': 400, 'height': 267, 'targetRestored': True, 'clearAlpha': 1, 'autoClear': True, 'viewport': [0, 0, 1200, 800]}\n"
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "fire/shaders.js"
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "output": ""
+  }
+]
