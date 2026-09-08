@@ -92,7 +92,7 @@ if ($action === 'message') {
         header('Content-Type: text/event-stream; charset=utf-8');
         header('X-Accel-Buffering: no');
         echo ": connected\n\n"; flush();
-        $messages = array_merge([['role' => 'system', 'content' => 'Eres Jarvis, un asistente útil. Responde en español con claridad y honestidad. Solo conversas por texto: no tienes herramientas, no ejecutas comandos ni acciones, no accedes a sistemas ni afirmas haberlo hecho.']], $history, [['role' => 'user', 'content' => $text]]);
+        $messages = array_merge([['role' => 'system', 'content' => 'Eres MIA, la asistente de MicrotechAI. Responde en español con claridad y honestidad. Tus respuestas de texto pueden reproducirse con voz local. No tienes herramientas, no ejecutas comandos ni acciones, no accedes a sistemas ni afirmas haberlo hecho.']], $history, [['role' => 'user', 'content' => $text]]);
         $buffer = ''; $full = ''; $done = false; $invalid = false; $lastBeat = microtime(true);
         $ch = curl_init($config['model_url']);
         curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Accept: text/event-stream'],
@@ -151,7 +151,9 @@ try {
     if (!is_dir($tempDir) || !is_writable($tempDir)) throw new RuntimeException('temp');
     $tmp = tempnam($tempDir, 'tts-');
     if ($tmp === false || dirname($tmp) !== realpath($tempDir)) throw new RuntimeException('temp');
-    $process = proc_open(['/usr/bin/taskset', '-c', '0', $config['piper_python'], '-m', 'piper', '--model', $config['piper_model'], '--output_file', $tmp],
+    $speaker = $config['piper_speaker'] ?? 0;
+    if (!is_int($speaker) || $speaker < 0 || $speaker > 255) { unlink($tmp); $tmp = false; fail(503, 'Configuración de voz no válida.'); }
+    $process = proc_open(['/usr/bin/taskset', '-c', '0', $config['piper_python'], '-m', 'piper', '--model', $config['piper_model'], '--speaker', (string)$speaker, '--output_file', $tmp],
         [0 => ['pipe', 'r'], 1 => ['file', '/dev/null', 'w'], 2 => ['file', '/dev/null', 'w']], $pipes,
         null, ['OMP_NUM_THREADS' => '1', 'PATH' => '/usr/bin:/bin', 'LANG' => 'C.UTF-8', 'HOME' => $config['state_dir']]);
     if (!is_resource($process)) throw new RuntimeException('process');

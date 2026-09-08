@@ -1,0 +1,36 @@
+{
+  "rollback_dir": "/root/jarvis-call-rollback-20260908T205803Z",
+  "files": [
+    {
+      "source": "chat/voice/core.mjs",
+      "path": "/var/www/dashboard/chat/voice/core.mjs",
+      "before": "3768755d2d9bf890fb4bbe333c7990868cfd72adb2cacb357450e22a6d810c11",
+      "after": "7c4ed60ffdb693165d23b24a837abafa695b8c1543c38e7d9a3d9133b51ffde6",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "chat/chat.js",
+      "path": "/var/www/dashboard/chat/chat.js",
+      "before": "b9512b975cdad919983741f69239e69289c5efd2d577072ba4cac1c74caf8e8b",
+      "after": "4aede0d6cafe6b64daf2b7145af9971f48abf33a4db480af67642fa3c568966e",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "api/chat.php",
+      "path": "/var/www/dashboard/api/chat.php",
+      "before": "40fa6900bac009c1348bf2fb4d9c69da64125ac57bfa158085b30ebc94c5b728",
+      "after": "2782b60bd07d446cb38e74870a8251a0a99212248088531785c878e1dd479c74",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    }
+  ],
+  "preserved": {
+    "index.html": "46bc325cfc4aba60eaf442eb732a26e421872df1e0bc8ad177e0a84cc149cf0e",
+    "fire/shaders.js": "90afac07696c5735e417b7b3b9bf1eba3f2ff6066204060ba30a5903bbb3f17e"
+  }
+}

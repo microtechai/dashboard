@@ -99,6 +99,7 @@ class Backend(unittest.TestCase):
         upstream=Fixture.requests[-1]
         self.assertEqual(upstream['model'],'qwen3-coder-next'); self.assertEqual(upstream['max_tokens'],1024)
         self.assertTrue(upstream['stream']); self.assertEqual(upstream['messages'][0]['role'],'system')
+        self.assertIn('Eres MIA, la asistente de MicrotechAI',upstream['messages'][0]['content'])
         Fixture.mode='truncated'
         s,h,d=self.req('message',{'text':'hola'})
         self.assertIn('event: error',d); self.assertNotIn('event: done',d)

@@ -222,7 +222,7 @@ class ChatFrontend(unittest.TestCase):
 
     def test_audio_full_queue_and_end_cleanup(self):
         self.login()
-        text = 'Primera frase. ' * 160
+        text = 'Primera frase. ' * 100  # Within the explicit 3-request audible budget.
         self.stream = 'event: done\ndata: ' + json.dumps({'text': text}) + '\n\n'
         self.send()
         self.page.locator('.jarvis-chat-read').wait_for()

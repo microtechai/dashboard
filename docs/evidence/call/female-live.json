@@ -1,0 +1,71 @@
+{
+  "scope": "real CPU0 CLI as www-data from updated live private config; not public authenticated API or TTFA/acoustic acceptance",
+  "model": "/opt/jarvis-tts/models/mia-sharvard/es_ES-sharvard-medium.onnx",
+  "speaker": 1,
+  "speakerMap": {
+    "M": 0,
+    "F": 1
+  },
+  "models": {
+    "es_ES-sharvard-medium.onnx": "40febfb1679c69a4505ff311dc136e121e3419a13a290ef264fdf43ddedd0fb1",
+    "es_ES-sharvard-medium.onnx.json": "7438c9b699c72b0c3388dae1b68d3f364dc66a2150fe554a1c11f03372957b2c"
+  },
+  "configBeforeSHA256": "917abbd58e629ee628e3758cb47b8c239e64c32360e76e8ddc6bb944751d2b8b",
+  "configAfterSHA256": "4fe11cdeed94c1099f55ba3e5c56da722475d8ed235ab1e3cce8f37c7b1b869a",
+  "rollbackDir": "/root/mia-voice-rollback-20260908T205804Z",
+  "measurements": [
+    {
+      "text": "Hola, soy MIA, tu asistente de Microtech AI. Estoy escuchando. Puedes interrumpirme cuando quieras.",
+      "argv": [
+        "/usr/bin/taskset",
+        "-c",
+        "0",
+        "/opt/jarvis-tts/venv/bin/python",
+        "-m",
+        "piper",
+        "--model",
+        "/opt/jarvis-tts/models/mia-sharvard/es_ES-sharvard-medium.onnx",
+        "--speaker",
+        "1",
+        "--output_file",
+        "/tmp/mia-live-5g73lgv7.wav"
+      ],
+      "runAs": "www-data",
+      "secondsCLI": 1.309787344012875,
+      "wav": {
+        "channels": 1,
+        "rate": 22050,
+        "secondsAudio": 5.9675283446712015
+      },
+      "sha256": "ac53b9e8a267dc90e3ae88708c160fb71bc0b57b9da8b7338211fa78c0f555ed",
+      "exit_code": 0
+    },
+    {
+      "text": "Son las 10 y 25. Tienes 3 mensajes y una reuni\u00f3n a las 12.",
+      "argv": [
+        "/usr/bin/taskset",
+        "-c",
+        "0",
+        "/opt/jarvis-tts/venv/bin/python",
+        "-m",
+        "piper",
+        "--model",
+        "/opt/jarvis-tts/models/mia-sharvard/es_ES-sharvard-medium.onnx",
+        "--speaker",
+        "1",
+        "--output_file",
+        "/tmp/mia-live-sj12ow0j.wav"
+      ],
+      "runAs": "www-data",
+      "secondsCLI": 1.2181539320154116,
+      "wav": {
+        "channels": 1,
+        "rate": 22050,
+        "secondsAudio": 4.493061224489796
+      },
+      "sha256": "917c3bd741bf3c5177372a55b3902dafc2da98de0f91c2f7ce8002cabbb140c3",
+      "exit_code": 0
+    }
+  ],
+  "publicAudio": false
+}

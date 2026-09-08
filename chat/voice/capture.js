@@ -8,7 +8,7 @@ class Capture extends AudioWorkletProcessor {
    this.sum+=value;this.count++;this.phase+=16000;
    if(this.phase>=sampleRate){this.phase-=sampleRate;this.frame[this.pos++]=this.sum/this.count;this.sum=0;this.count=0;}
    if(this.pos===512){
-    if(this.pending>=4){this.failed=true;this.port.postMessage({type:'error',message:'VAD sobrecargado. Usa Hablar.'});return false;}
+    if(this.pending>=16){this.failed=true;this.port.postMessage({type:'error',message:'VAD sobrecargado. Usa Hablar.'});return false;}
     this.pending++;this.port.postMessage({type:'frame',frame:this.frame},[this.frame.buffer]);this.frame=new Float32Array(512);this.pos=0;
    }
   }return true;

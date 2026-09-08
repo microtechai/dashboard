@@ -60,7 +60,7 @@ class Access(unittest.TestCase):
 
     def test_all_voice_assets_private_and_exact_mime(self):
         import hashlib
-        assets={ 'session.mjs':'application/javascript','core.mjs':'application/javascript','capture.js':'application/javascript','worker.js':'application/javascript','assets/ort.wasm.min.js':'application/javascript','assets/ort-wasm-simd-threaded.mjs':'application/javascript','assets/ort-wasm-simd-threaded.wasm':'application/wasm','assets/silero_vad_v5.onnx':'application/octet-stream'}
+        assets={ 'speech.mjs':'application/javascript','session.mjs':'application/javascript','core.mjs':'application/javascript','capture.js':'application/javascript','worker.js':'application/javascript','assets/ort.wasm.min.js':'application/javascript','assets/ort-wasm-simd-threaded.mjs':'application/javascript','assets/ort-wasm-simd-threaded.wasm':'application/wasm','assets/silero_vad_v5.onnx':'application/octet-stream'}
         assets.update({'assets-manifest.json':'application/json',**{name:'text/plain' for name in ['onnxruntime-license.txt','onnxruntime-ThirdPartyNotices.txt','silero-license.txt','vad-license.txt']}})
         for name in assets:
             self.assertEqual(self.get('/chat/voice/'+name)[0],401)

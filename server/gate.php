@@ -29,6 +29,7 @@ $files = [
     '/chat/voice/onnxruntime-ThirdPartyNotices.txt' => ['chat/voice/onnxruntime-ThirdPartyNotices.txt', 'text/plain'],
     '/chat/voice/silero-license.txt' => ['chat/voice/silero-license.txt', 'text/plain'],
     '/chat/voice/vad-license.txt' => ['chat/voice/vad-license.txt', 'text/plain'],
+    '/chat/voice/speech.mjs' => ['chat/voice/speech.mjs', 'application/javascript'],
     '/chat/voice/session.mjs' => ['chat/voice/session.mjs', 'application/javascript'],
     '/chat/voice/core.mjs' => ['chat/voice/core.mjs', 'application/javascript'],
     '/chat/voice/capture.js' => ['chat/voice/capture.js', 'application/javascript'],
