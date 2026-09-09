@@ -122,6 +122,19 @@ class ChatFrontend(unittest.TestCase):
                 self.assertEqual(self.page.locator('#jarvis-chat-idea-result').text_content(), '')
                 self.assertFalse(button.is_disabled())
 
+    def test_idea_after_send_uses_last_user_message(self):
+        self.login()
+        text = 'Quiero automatizar presupuestos para comercios locales'
+        self.send(text)
+        self.page.wait_for_function("document.querySelector('#jarvis-chat-history').textContent.includes('Quiero automatizar presupuestos')")
+        self.assertEqual(self.page.locator('#jarvis-chat-input').input_value(), '')
+        self.context()
+        self.page.locator('#jarvis-chat-idea').click()
+        self.page.wait_for_function("document.querySelector('#jarvis-chat-idea-status').dataset.state === 'success'")
+        calls = [c for c in self.calls if c[0] == 'idea']
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0][1], {'text': text})
+
     def test_idea_stop_stale_abort_and_logout(self):
         self.login(); self.context()
         self.page.evaluate('''() => {

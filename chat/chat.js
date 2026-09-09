@@ -137,6 +137,7 @@
     let contextController = null;
     let ideaController = null, analysisController = null, savedIdeaId = null;
     let proposalController = null, savedAnalysis = null;
+    let lastUserText = '';
     function analysisState(value, text) {
       el('analysis-status').dataset.state = value;
       el('analysis-status').textContent = text;
@@ -259,11 +260,12 @@
     el('idea').addEventListener('click', async () => {
       if (!authenticated || authBusy || ideaController || el('panel').hidden ||
           !el('options').open || !el('context').open) return;
-      const text = el('input').value;
+      const text = el('input').value || lastUserText;
       el('idea-result').replaceChildren(); resetAnalysis();
       if (!text.trim()) { ideaState('error', 'Escribe una idea antes de guardarla.'); return; }
+      const source = el('input').value ? 'texto actual' : 'último mensaje enviado';
       const request = new AbortController(); ideaController = request;
-      ideaState('loading', 'Guardando borrador privado…');
+      ideaState('loading', 'Guardando borrador privado desde el ' + source + '…');
       try {
         const data = await (await api('idea', { text }, request.signal)).json();
         if (ideaController !== request || request.signal.aborted) return;
@@ -640,7 +642,7 @@
       if (!authenticated || authBusy || busy || !text || text.length > 4000) return;
       cancelResponse(); cleanupMic(); const id = generation; controller = new AbortController(); busy = true; armResponseDeadline(id);
       el('compose').querySelector('button').disabled = true;
-      el('input').value = ''; addMessage('user', text);
+      lastUserText = text; el('input').value = ''; addMessage('user', text);
       const message = addMessage('assistant', ''); let answer = '';
       const voiceWanted = callOn || (fromVoice && el('autoread').checked);
       let spokenInput = '';
