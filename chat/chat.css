@@ -11,6 +11,9 @@
 #jarvis-chat header{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;border-bottom:1px solid #243654;color:#b9cadd;flex-shrink:0}
 #jarvis-chat small{font-size:10px;color:#a1b3d0;font-weight:400}
 #jarvis-chat-status{margin:0;padding:8px 14px;color:#b3c7e8;font-size:12px;overflow-wrap:anywhere;max-height:66px;overflow:auto;flex-shrink:0}
+#jarvis-chat-status[data-quiet=true]{display:none}
+#jarvis-chat-history:empty{display:none}
+#jarvis-chat-panel:has(#jarvis-chat-history:empty){height:220px;max-height:calc(100dvh - 120px);overflow:visible}
 #jarvis-chat label{display:block;font-size:12px;color:#b3c7e8}
 #jarvis-chat input:not([type=checkbox]),#jarvis-chat textarea{display:block;width:100%;background:#080f1d;border:1px solid #32486a;border-radius:6px;padding:8px;margin-top:4px}
 #jarvis-chat-conversation{display:flex;flex-direction:column;flex:1;min-height:0}

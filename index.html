@@ -188,8 +188,8 @@ canvas#viz:active{cursor:grabbing}
 <script src="reactor/reactor.js?v=20260908-mia1"></script>
 <!-- Legacy voice/speech.js remains private on disk; chat owns microphone and TTS. -->
 <script src="integration.js?v=20260909-redesign2"></script>
-<link rel="stylesheet" href="chat/chat.css?v=20260909-mia-client1">
-<script src="chat/core-state.js?v=20260908-chat4"></script>
+<link rel="stylesheet" href="chat/chat.css?v=20260909-core-visual3">
+<script src="chat/core-state.js?v=20260909-core-visual3"></script>
 <script defer src="chat/chat.js?v=20260909-mia-client1"></script>
 </head>
 <body data-mia-view="dashboard">
@@ -211,9 +211,6 @@ canvas#viz:active{cursor:grabbing}
 <section id="mia-theater" aria-label="MIA · centro de conversación">
   <div class="mia-heading"><span>MICROTECH AI / CENTRO DE OPERACIONES</span><h1>MIA</h1><p>Conversación local. Control a tu alcance.</p></div>
   <div id="mia-reactor-anchor" aria-hidden="true"></div>
-  <ol id="mia-pipeline" aria-label="Etapas observables de conversación">
-    <li data-stage="input"><span>01</span> Entrada</li><li data-stage="stt"><span>02</span> STT</li><li data-stage="mia"><span>03</span> MIA</li><li data-stage="tts"><span>04</span> Salida TTS</li>
-  </ol>
   <details id="mia-context"><summary>Entorno de trabajo <span>17 nodos</span></summary><p>Catálogo de contexto, no etapas de la llamada. Estados no instrumentados.</p><div id="mia-context-groups"></div></details>
 </section>
 <p id="mia-render-status" role="status" hidden>3D no disponible · navegación y chat siguen disponibles.</p>
@@ -564,6 +561,7 @@ for(let i=0; i<3; i++){
 const fireController = window.MiaReactor.create({THREE, coreGroup});
 coreMesh.visible = wireMesh.visible = outerMesh.visible = false;
 window.dashboardFireController = fireController;
+const miaStateVisual = window.JarvisCoreState.createVisualController(fireController.group);
 const fireMotionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
 const miaPosition = new THREE.Vector3();
 let miaFrame = {x:innerWidth/2,y:innerHeight*.31,radius:160};
@@ -579,10 +577,6 @@ for (const [label,categories] of [['Servidores',['server']],['Proyectos',['wp','
  for(const node of NODES.filter(n=>categories.includes(n.cat))){const button=document.createElement('button');button.type='button';button.dataset.miaNode=node.id;button.textContent=node.label;button.addEventListener('click',()=>showNodeDetail(node));section.append(button);}
  document.getElementById('mia-context-groups').append(section);
 }
-window.addEventListener('jarvis-chat-state',event=>{
- const stage={listening:'input',transcribing:'stt',thinking:'mia',speaking:'tts'}[event.detail?.state];
- document.querySelectorAll('#mia-pipeline [data-stage]').forEach(el=>{el.dataset.active=String(el.dataset.stage===stage);});
-});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){document.getElementById('sidePanel').classList.remove('open');const details=document.getElementById('mia-context');if(details.open){details.open=false;details.querySelector('summary').focus();}}});
 
 const nodeMeshes = [];
@@ -893,11 +887,10 @@ Object.entries(CAT_COLORS).forEach(([cat, c]) => {
 });
 
 // ANIMATION
-let fireLastFrame = null;
 function animate(now = performance.now()){
   requestAnimationFrame(animate);
-  if(document.hidden || !miaGLAvailable) { fireLastFrame = null; return; }
-  time += 0.016;
+  if(document.hidden || !miaGLAvailable) { return; }
+  if (!fireMotionPreference.matches) time += 0.016;
   rotX += (targetRotX - rotX) * 0.05;
   rotY += (targetRotY - rotY) * 0.05;
   camDist += (camTargetDist - camDist) * 0.1;
@@ -913,13 +906,8 @@ function animate(now = performance.now()){
   wireMesh.rotation.x = -time * 0.2; wireMesh.rotation.y = time * 0.3;
   outerMesh.rotation.x = time * 0.1; outerMesh.rotation.z = time * 0.15;
 
-  const chatBoost = window.JarvisCoreState ? window.JarvisCoreState.boost(now, time, fireMotionPreference.matches) : 0;
-  coreLight.intensity = 2.5 + (coreIntensity - 0.7) * 3 + Math.sin(time * 2) * 0.5 + chatBoost;
-  coreMesh.scale.setScalar(1 + chatBoost * 0.08);
-  const fireDelta = fireLastFrame === null ? 0 : Math.max(0, (now - fireLastFrame) / 1000);
-  fireLastFrame = now;
-  fireController.setState({intensity: Math.min(2, coreIntensity + chatBoost), speed: fireMotionPreference.matches ? 0.2 : 1 + chatBoost * 0.8, reducedMotion: fireMotionPreference.matches});
-  fireController.update(fireDelta);
+  // The passive state controller reuses reactor materials in this sole render loop.
+  miaStateVisual.update(now, time, fireMotionPreference.matches);
   fireController.group.visible = currentView === 'dashboard';
   // Frame the face above the single chat bar in viewport-relative coordinates.
   const miaRadius = miaFrame.radius;
@@ -927,7 +915,7 @@ function animate(now = performance.now()){
   const halfHeight = camDist * Math.tan(camera.fov * Math.PI / 360);
   miaPosition.set((miaFrame.x / innerWidth * 2 - 1) * halfHeight * camera.aspect, (1 - miaFrame.y / innerHeight * 2) * halfHeight, -camDist).applyQuaternion(camera.quaternion).add(camera.position);
   fireController.group.position.copy(miaPosition);
-  coreMat.emissiveIntensity = 0.5 + Math.sin(time * 1.5) * 0.3 + chatBoost * 0.5;
+
 
   rings3d.forEach((ring, i) => {
     ring.visible = false; // No fictitious infra/call connections.
@@ -969,6 +957,7 @@ function animate(now = performance.now()){
   // Drift particles individually
   const pPos = particleGeo.attributes.position.array;
   for(let i=0; i<particleCount; i++){
+    if (fireMotionPreference.matches) continue;
     pPos[i*3] += particleDrift[i].x;
     pPos[i*3+1] += particleDrift[i].y;
     pPos[i*3+2] += particleDrift[i].z;

@@ -6,7 +6,7 @@ from access_gate_test import Access
 from chat_backend_test import ROOT,RUN
 OUT=ROOT/'docs/evidence/mia/redesign';OUT.mkdir(parents=True,exist_ok=True)
 class Redesign(unittest.TestCase):
- def test_center_context_and_observed_pipeline(self):
+ def test_center_context_and_core_states(self):
   Access.setUpClass()
   try:
    origin=f'http://localhost:{Access.pp}'
@@ -44,14 +44,28 @@ class Redesign(unittest.TestCase):
      page.locator('[data-mia-node="'+nid+'"]').click();self.assertTrue(page.locator('#sidePanel').evaluate('(e)=>e.classList.contains("open")'));page.locator('#closeBtn').click()
     details.locator('summary').focus();page.keyboard.press('Enter')
     page.locator('#jarvis-chat-toggle').click();page.locator('#jarvis-chat-conversation').wait_for()
-    for state,stage in [('listening','input'),('transcribing','stt'),('thinking','mia'),('speaking','tts'),('idle',None)]:
+    self.assertEqual(page.locator('#mia-pipeline').count(),0)
+    for state,color in [('listening',0x22d3ee),('transcribing',0x22d3ee),('thinking',0xd6a343),('speaking',0x2dd4a0),('idle',0x249ac2)]:
      page.evaluate('(state)=>dispatchEvent(new CustomEvent("jarvis-chat-state",{detail:{state,level:0}}))',state)
-     self.assertEqual(page.locator('#mia-pipeline [data-active="true"]').count(),int(stage is not None))
-     if stage:self.assertEqual(page.locator('#mia-pipeline [data-active="true"]').get_attribute('data-stage'),stage)
+     page.wait_for_function('(color)=>{let found=false;fireController.group.traverse(o=>{if(o.geometry?.type==="IcosahedronGeometry")found=o.material.emissive.getHex()===color});return found}',arg=color)
+    page.emulate_media(reduced_motion='reduce')
+    page.evaluate('dispatchEvent(new CustomEvent("jarvis-chat-state",{detail:{state:"thinking",level:0}}))')
+    page.wait_for_timeout(100)
+    snapshot='()=>{const values=[];fireController.group.traverse(o=>{if(o.isMesh)values.push([o.scale.toArray(),o.rotation.toArray(),o.material.emissiveIntensity,o.material.uniforms?.power?.value])});return values}'
+    frozen=page.evaluate(snapshot);page.wait_for_timeout(150)
+    self.assertEqual(page.evaluate(snapshot),frozen)
+    page.emulate_media(reduced_motion='no-preference')
+    self.assertIsNone(page.evaluate('()=>{checkHover(innerWidth/2,innerHeight/3);return hoveredNode}'))
     for w,h,name in [(1440,1120,'desktop-chat'),(768,1024,'tablet-chat'),(390,844,'mobile-chat')]:
      page.set_viewport_size({'width':w,'height':h});page.wait_for_timeout(400)
      page.screenshot(path=str(OUT/('after-'+name+'.png')))
+     if not page.locator('#jarvis-chat-options').evaluate('(e)=>e.open'):
+      page.locator('#jarvis-chat-options > summary').click()
      for sel in ['#jarvis-chat-input','#jarvis-chat-continuous','#jarvis-chat-mute','#jarvis-chat-compose button[type=submit]','#jarvis-chat-logout','#sidebarToggle','#toggle-executor']:
+      needs_options=sel in ['#jarvis-chat-continuous','#jarvis-chat-mute','#jarvis-chat-logout']
+      is_open=page.locator('#jarvis-chat-options').evaluate('(e)=>e.open')
+      if needs_options and not is_open: page.locator('#jarvis-chat-options > summary').click()
+      if not needs_options and is_open: page.locator('#jarvis-chat-options > summary').click()
       hit=page.locator(sel).evaluate('(e)=>{const b=e.getBoundingClientRect();const h=document.elementFromPoint(b.x+b.width/2,b.y+b.height/2);return {ok:e===h||e.contains(h),bounds:b.toJSON(),hit:h?.outerHTML.slice(0,500)}}')
       self.assertTrue(hit['ok'],sel+' reachable '+name+' '+json.dumps(hit))
      self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),w)

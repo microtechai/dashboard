@@ -19,7 +19,10 @@ test('classic shader script coexists with legacy inline lexical names', () => {
 });
 test('full inline classic script has no declaration collision, without running auth', () => {
   const c = context();
+  c.addEventListener = () => {};
   vm.runInContext(read('fire/shaders.js'), c);
+  vm.runInContext(read('reactor/reactor.js'), c);
+  vm.runInContext(read('chat/core-state.js'), c);
   const inline = [...read('index.html').matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');
   const sentinel = {};
   c.stopBeforeRuntime = sentinel;
@@ -67,19 +70,20 @@ test('changed classic assets are versioned and fire honors reduced motion withou
   }
   assert.ok(!html.includes('<script src="voice/speech.js"></script>'), 'legacy file preserved privately but not instantiated beside chat');
   assert.ok(html.includes("window.matchMedia('(prefers-reduced-motion: reduce)')"));
-  const stateCall = html.match(/fireController\.setState\([^;]+;/)?.[0];
+  const stateCall = html.match(/miaStateVisual\.update\([^;]+;/)?.[0];
+  assert.ok(stateCall, 'state visuals must be driven by the existing RAF');
   for (const reduced of [true,false]) {
-    let state;
-    vm.runInNewContext(stateCall, {coreIntensity:1, chatBoost:0, fireMotionPreference:{matches:reduced}, fireController:{setState(s){state=s;}}});
-    assert.equal(state.intensity,1);
-    assert.equal(state.speed,reduced ? 0.2 : 1);
+    let args;
+    vm.runInNewContext(stateCall, {now:100,time:2,fireMotionPreference:{matches:reduced},miaStateVisual:{update(...values){args=values;}}});
+    assert.deepEqual(args,[100,2,reduced]);
   }
 });
 test('page wires one fire controller into its only render loop', () => {
   const html = read('index.html');
   assert.equal((html.match(/new THREE.Scene\(/g)||[]).length,1);
   assert.equal((html.match(/requestAnimationFrame\(/g)||[]).length,1);
-  assert.ok(/fireController\.update\(/.test(html), 'index must call fireController.update');
+  assert.ok(/miaStateVisual\.update\(/.test(html), 'index must update the passive core visual controller');
+  assert.ok(/createVisualController\(fireController.group\)/.test(html), 'reuse the reactor group');
   assert.doesNotMatch(html,/const fireVertexShader|const fireFragmentShader/);
   assert.doesNotMatch(read('integration.js'),/new THREE.Group\(|import\(['"]\.\/fire/);
 });
