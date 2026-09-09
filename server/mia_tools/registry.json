@@ -1,0 +1,165 @@
+{
+  "version": 1,
+  "read_only": true,
+  "notes": "Local adapter roles, not verified MC roles. Trusted caller maps an authenticated session and supplies a session-scoped transport. Empty args only; write payload contracts are intentionally unavailable. Endpoints: project context mia-integration-audit/production.json and README.md.",
+  "tools": {
+    "read_projects": {
+      "kind": "read",
+      "enabled": true,
+      "confirmation_required": false,
+      "method": "GET",
+      "path": "/api/projects",
+      "roles": [
+        "reader",
+        "admin"
+      ],
+      "args_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "timeout_seconds": 5,
+      "max_output_bytes": 65536
+    },
+    "read_clients": {
+      "kind": "read",
+      "enabled": true,
+      "confirmation_required": false,
+      "method": "GET",
+      "path": "/api/clients",
+      "roles": [
+        "reader",
+        "admin"
+      ],
+      "args_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "timeout_seconds": 5,
+      "max_output_bytes": 65536
+    },
+    "read_audits": {
+      "kind": "read",
+      "enabled": true,
+      "confirmation_required": false,
+      "method": "GET",
+      "path": "/api/audits",
+      "roles": [
+        "reader",
+        "admin"
+      ],
+      "args_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "timeout_seconds": 5,
+      "max_output_bytes": 65536
+    },
+    "read_dashboard": {
+      "kind": "read",
+      "enabled": true,
+      "confirmation_required": false,
+      "method": "GET",
+      "path": "/api/dashboard",
+      "roles": [
+        "reader",
+        "admin"
+      ],
+      "args_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "timeout_seconds": 5,
+      "max_output_bytes": 65536
+    },
+    "read_dgx_status": {
+      "kind": "read",
+      "enabled": true,
+      "confirmation_required": false,
+      "method": "GET",
+      "path": "/api/dgx/status",
+      "roles": [
+        "reader",
+        "admin"
+      ],
+      "args_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "timeout_seconds": 5,
+      "max_output_bytes": 65536
+    },
+    "write_projects": {
+      "kind": "write",
+      "enabled": false,
+      "confirmation_required": true,
+      "method": "POST",
+      "path": "/api/projects",
+      "roles": [
+        "admin"
+      ],
+      "args_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "timeout_seconds": 5,
+      "max_output_bytes": 65536
+    },
+    "write_clients": {
+      "kind": "write",
+      "enabled": false,
+      "confirmation_required": true,
+      "method": "POST",
+      "path": "/api/clients",
+      "roles": [
+        "admin"
+      ],
+      "args_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "timeout_seconds": 5,
+      "max_output_bytes": 65536
+    },
+    "run_audit": {
+      "kind": "write",
+      "enabled": false,
+      "confirmation_required": true,
+      "method": "POST",
+      "path": "/api/audit",
+      "roles": [
+        "admin"
+      ],
+      "args_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "timeout_seconds": 5,
+      "max_output_bytes": 65536
+    },
+    "toggle_dgx": {
+      "kind": "write",
+      "enabled": false,
+      "confirmation_required": true,
+      "method": "POST",
+      "path": "/api/dgx/toggle",
+      "roles": [
+        "admin"
+      ],
+      "args_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "timeout_seconds": 5,
+      "max_output_bytes": 65536
+    }
+  }
+}
