@@ -10,18 +10,36 @@
     root.innerHTML = `
       <button id="jarvis-chat-toggle" aria-expanded="false" aria-controls="jarvis-chat-panel">MIA · Chat</button>
       <section id="jarvis-chat-panel" aria-label="Conversación MIA" hidden>
-        <header><strong title="MIA, acrónimo de MicrotechAI">MIA <small>Microtech AI</small></strong><details class="mia-workflow"><summary>Flujo observable</summary><div><p id="jarvis-chat-stage" role="status">Sin petición activa</p><p>STT y modelo: petición pendiente, no porcentaje interno. Audio: reproducción local observada.</p><p>Memoria y herramientas: no instrumentado. Obsidian: concepto sin datos importados.</p></div></details><button id="jarvis-chat-minimize" aria-label="Minimizar chat">−</button></header>
+        <header><strong title="MIA, acrónimo de MicrotechAI">MIA <small>Microtech AI</small></strong><button id="jarvis-chat-minimize" aria-label="Minimizar chat">−</button></header>
         <p id="jarvis-chat-status" role="status" aria-live="polite">Conectando sesión…</p>
         <button type="button" id="jarvis-chat-retry" hidden>Actualizar sesión</button>
         <div id="jarvis-chat-conversation" hidden>
-          <button type="button" id="jarvis-chat-continuous" disabled>Llamar a MIA</button>
-          <button type="button" id="jarvis-chat-mute" disabled>Silenciar micrófono</button>
+          <div id="jarvis-chat-active-controls" hidden></div>
           <p id="jarvis-chat-mic" data-state="off" role="status">Micrófono cerrado</p>
-          <p class="jarvis-voice-notice">Voz continua experimental · usa auriculares. AEC solicitado al navegador; VAD no elimina eco ni garantiza evitar auto-interrupciones con altavoces. Máximo 20 s por frase, 6 envíos/min; sin reintentos automáticos.</p>
           <div id="jarvis-chat-history" role="log" aria-label="Mensajes" aria-live="polite"></div>
-          <form id="jarvis-chat-compose"><label for="jarvis-chat-input">Mensaje</label><textarea id="jarvis-chat-input" maxlength="4000" rows="2" placeholder="Escribe a MIA…"></textarea><div class="jarvis-chat-actions"><button type="submit">Enviar</button><button type="button" id="jarvis-chat-talk" title="Alternativa manual: colgar primero; cada frase requiere pulsar.">Hablar (manual)</button><button type="button" id="jarvis-chat-logout">Salir</button></div></form>
+          <form id="jarvis-chat-compose">
+            <label class="jarvis-chat-sr-only" for="jarvis-chat-input">Mensaje</label>
+            <textarea id="jarvis-chat-input" maxlength="4000" rows="2" placeholder="Escribe a MIA…"></textarea>
+            <button type="submit">Enviar</button>
+            <button type="button" id="jarvis-chat-talk" title="Alternativa manual: colgar primero; cada frase requiere pulsar.">Hablar (manual)</button>
+          </form>
         </div>
-        <footer><label><input id="jarvis-chat-autoread" type="checkbox"> Voz al usar Hablar manual</label><button id="jarvis-chat-stop" type="button">Detener</button></footer>
+        <footer>
+          <details id="jarvis-chat-options">
+            <summary>Opciones</summary>
+            <div class="jarvis-chat-options-body">
+              <div id="jarvis-chat-call-controls">
+                <button type="button" id="jarvis-chat-continuous" disabled>Llamar a MIA</button>
+                <button type="button" id="jarvis-chat-mute" disabled>Silenciar micrófono</button>
+              </div>
+              <label><input id="jarvis-chat-autoread" type="checkbox"> Voz al usar Hablar manual</label>
+              <details class="jarvis-chat-help"><summary>Ayuda de voz</summary><p class="jarvis-voice-notice">Voz continua experimental · usa auriculares. AEC solicitado al navegador; VAD no elimina eco ni garantiza evitar auto-interrupciones con altavoces. Máximo 20 s por frase, 6 envíos/min; sin reintentos automáticos.</p><p>Hablar graba una frase; pulsa de nuevo para enviarla. Detener cancela la respuesta; durante una llamada, Colgar cierra el micrófono.</p></details>
+              <details class="mia-workflow"><summary>Flujo observable</summary><div><p id="jarvis-chat-stage" role="status">Sin petición activa</p><p>STT y modelo: petición pendiente, no porcentaje interno. Audio: reproducción local observada.</p><p>Memoria y herramientas: no instrumentado. Obsidian: concepto sin datos importados.</p></div></details>
+              <button type="button" id="jarvis-chat-logout">Salir</button>
+            </div>
+          </details>
+          <button id="jarvis-chat-stop" type="button">Detener</button>
+        </footer>
       </section>`;
     document.body.append(root);
     const el = name => root.querySelector('#jarvis-chat-' + name);
@@ -283,6 +301,10 @@
       if (value === 'muted') el('mic').textContent = 'Llamada activa · micrófono silenciado y cerrado. No se graba; MIA puede seguir hablando.';
       else if (value !== 'off') el('mic').textContent = 'Llamada activa · ' + el('mic').textContent;
       el('continuous').textContent = callOn ? 'Colgar' : 'Llamar a MIA';
+      // Keep the existing call buttons reachable even when Options is closed.
+      const controls = el(callOn ? 'active-controls' : 'call-controls');
+      if (el('continuous').parentElement !== controls) controls.append(el('continuous'), el('mute'));
+      el('active-controls').hidden = !callOn;
     }
     import('/chat/voice/session.mjs').then(({ ContinuousVoice }) => {
       continuous = new ContinuousVoice({
@@ -446,7 +468,12 @@
     window.addEventListener('mia-view-change', event => {
       if (event.detail?.view !== 'dashboard') expand(false, false);
     });
-    root.addEventListener('keydown', e => { if (e.key === 'Escape') expand(false); });
+    root.addEventListener('keydown', e => {
+      if (e.key !== 'Escape' || e.isComposing) return;
+      const details = e.target.closest('details[open]') || el('options').closest('details[open]');
+      if (details) { details.open = false; details.querySelector('summary').focus(); }
+      else expand(false);
+    });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount, { once: true });
   else mount();

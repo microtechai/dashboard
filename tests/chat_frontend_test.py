@@ -1,5 +1,6 @@
 """Isolated browser component tests. All APIs and credentials are TEST FIXTURES."""
 import json
+import tempfile
 from pathlib import Path
 import unittest
 from playwright.sync_api import sync_playwright
@@ -61,6 +62,11 @@ class ChatFrontend(unittest.TestCase):
         self.open()
         self.page.locator('#jarvis-chat-input').wait_for(state='visible')
 
+    def options(self):
+        details = self.page.locator('#jarvis-chat-options')
+        if not details.evaluate('(el) => el.open'):
+            details.locator(':scope > summary').click()
+
     def send(self, text='test fixture'):
         self.page.locator('#jarvis-chat-input').fill(text)
         self.page.locator('#jarvis-chat-input').press('Enter')
@@ -75,6 +81,7 @@ class ChatFrontend(unittest.TestCase):
         self.assertEqual(self.page.locator('input[type=password]').count(), 0)
         self.assertEqual(self.page.locator('#jarvis-chat-history img').count(), 0)
         self.assertIn('<img', self.page.locator('#jarvis-chat-history').inner_text())
+        self.options()
         self.page.locator('#jarvis-chat-logout').click()
         self.page.wait_for_url('**/login.html')
         self.assertEqual(self.page.locator('#jarvis-chat-history').count(), 0)
@@ -95,7 +102,7 @@ class ChatFrontend(unittest.TestCase):
         self.page.locator('#jarvis-chat-input').fill('two')
         self.page.locator('#jarvis-chat-input').press('Shift+Enter')
         self.assertEqual(self.page.locator('#jarvis-chat-input').input_value(), 'two\n')
-        self.page.screenshot(path=str(ROOT / 'tests/chat_frontend_fixture_desktop.png'))
+        self.page.screenshot(path=str(Path(tempfile.gettempdir()) / 'mia-chat-frontend-desktop.png'))
 
     def test_audio_queue_stop_and_real_wav_analyser(self):
         self.login()
@@ -184,7 +191,9 @@ class ChatFrontend(unittest.TestCase):
         self.history = [{'role': 'assistant', 'content': 'History fixture'}]
         self.login()
         self.assertEqual(self.page.locator('.jarvis-chat-read').count(), 1)
+        self.options()
         self.page.locator('#jarvis-chat-autoread').check()
+        self.page.locator('#jarvis-chat-options > summary').click()
         self.send()
         self.page.wait_for_function("document.querySelectorAll('.jarvis-chat-read').length===2")
         self.assertEqual(len([c for c in self.calls if c[0] == 'tts']), 0)  # Phase4: typed replies never autoread.
@@ -199,6 +208,7 @@ class ChatFrontend(unittest.TestCase):
         }''')
         self.send()
         self.page.evaluate("addEventListener('pagehide',()=>{pending();sessionStorage.setItem('aborted',String(sig.aborted));})")
+        self.options()
         self.page.locator('#jarvis-chat-logout').click()
         self.page.wait_for_url('**/login.html')
         self.assertEqual(self.page.evaluate("sessionStorage.getItem('aborted')"),'true')
@@ -280,6 +290,7 @@ class ChatFrontend(unittest.TestCase):
         self.history = [{'role': 'assistant', 'content': 'Private fixture'}]
         self.login()
         self.page.route('**/api/chat.php?action=session', lambda r: r.fulfill(status=503, json={'error': 'Fixture refresh down'}))
+        self.options()
         self.page.locator('#jarvis-chat-logout').click()
         self.page.wait_for_url('**/login.html')
         self.page.wait_for_function("document.querySelector('#status').textContent.includes('Fixture refresh down')")
@@ -289,10 +300,41 @@ class ChatFrontend(unittest.TestCase):
     def test_no_message_during_logout(self):
         self.login()
         self.page.evaluate('''() => { const original=fetch;window.fetch=(u,o)=>u.includes('action=logout') ? new Promise(()=>{}) : original(u,o) }''')
+        self.options()
         self.page.locator('#jarvis-chat-logout').click()
         self.send('must not send')
         self.page.wait_for_timeout(100)
         self.assertFalse(any(c[0] == 'message' for c in self.calls))
+
+    def test_compact_bar_details_ime_and_dashboard_layout(self):
+        self.login()
+        self.assertEqual(self.page.locator('#jarvis-chat-compose textarea').count(), 1)
+        self.assertFalse(self.page.locator('#jarvis-chat-options').evaluate('(el) => el.open'))
+        self.assertFalse(self.page.locator('.mia-workflow').evaluate('(el) => el.open'))
+        self.assertFalse(self.page.locator('.jarvis-voice-notice').is_visible())
+        self.assertFalse(self.page.locator('#jarvis-chat-continuous').is_visible())
+        self.assertTrue(self.page.locator('#jarvis-chat-stop').is_visible())
+        self.page.locator('#jarvis-chat-input').fill('composición')
+        self.page.locator('#jarvis-chat-input').dispatch_event('keydown', {'key': 'Enter', 'isComposing': True})
+        self.assertFalse(any(c[0] == 'message' for c in self.calls))
+        summary = self.page.locator('#jarvis-chat-options > summary')
+        summary.focus()
+        self.page.keyboard.press('Enter')
+        self.assertTrue(self.page.locator('#jarvis-chat-continuous').is_visible())
+        self.page.keyboard.press('Escape')
+        self.assertFalse(self.page.locator('#jarvis-chat-options').evaluate('(el) => el.open'))
+        self.assertTrue(self.page.locator('#jarvis-chat-panel').is_visible())
+        self.page.evaluate("document.body.dataset.miaView='dashboard'")
+        for width, height in [(1280, 800), (768, 1024), (375, 667), (320, 568), (667, 375)]:
+            self.page.set_viewport_size({'width': width, 'height': height})
+            for selector in ['#jarvis-chat-panel', '#jarvis-chat-input', '#jarvis-chat-talk', '#jarvis-chat-compose button[type=submit]', '#jarvis-chat-stop']:
+                box = self.page.locator(selector).bounding_box()
+                self.assertIsNotNone(box, selector)
+                self.assertGreaterEqual(box['x'], 0, selector)
+                self.assertGreaterEqual(box['y'], 0, selector)
+                self.assertLessEqual(box['x'] + box['width'], width, selector)
+                self.assertLessEqual(box['y'] + box['height'], height, selector)
+        self.assertFalse(any(c[0] in ['message', 'tts', 'transcribe'] for c in self.calls))
 
     def test_minimize_responsive_login(self):
         self.login()
@@ -308,7 +350,7 @@ class ChatFrontend(unittest.TestCase):
         self.assertGreaterEqual(box['x'], 0)
         self.assertLessEqual(box['x'] + box['width'], 375)
         self.assertFalse(self.page.locator('#jarvis-chat-autoread').is_checked())
-        self.page.screenshot(path=str(ROOT / 'tests/chat_frontend_fixture_mobile.png'))
+        self.page.screenshot(path=str(Path(tempfile.gettempdir()) / 'mia-chat-frontend-mobile.png'))
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
