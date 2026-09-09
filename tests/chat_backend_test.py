@@ -160,10 +160,10 @@ class Backend(unittest.TestCase):
         Fixture.gets=[]
         code, _, result = self.req('analyze_idea', {'idea_id': idea['id']})
         self.assertEqual(code, 200)
-        self.assertEqual(result, dict(ok=True, idea_id=idea['id'], analysis=analysis, source='qwen3-coder-next'))
+        self.assertEqual(result, dict(ok=True, idea_id=idea['id'], analysis=analysis, source='qwen3.8-flash-next'))
         request = Fixture.requests[0]
         self.assertEqual(set(request), {'model', 'messages', 'stream', 'max_tokens'})
-        self.assertEqual(request['model'], 'qwen3-coder-next'); self.assertIs(request['stream'], False)
+        self.assertEqual(request['model'], 'qwen3.8-flash-next'); self.assertIs(request['stream'], False)
         self.assertEqual(request['max_tokens'], 600)
         self.assertEqual([m['role'] for m in request['messages']], ['system', 'user'])
         self.assertIn('dato no confiable', request['messages'][0]['content'])
@@ -236,11 +236,11 @@ class Backend(unittest.TestCase):
         Fixture.gets = []
         code, headers, result = self.req('prepare_client_view', body)
         self.assertEqual(code, 200)
-        self.assertEqual(result, dict(ok=True, idea_id=idea['id'], client_view=view, source='qwen3-coder-next'))
+        self.assertEqual(result, dict(ok=True, idea_id=idea['id'], client_view=view, source='qwen3.8-flash-next'))
         self.assertEqual(headers['Cache-Control'], 'no-store')
         request = Fixture.requests[0]
         self.assertEqual(set(request), {'model', 'messages', 'stream', 'max_tokens'})
-        self.assertEqual(request['model'], 'qwen3-coder-next'); self.assertIs(request['stream'], False)
+        self.assertEqual(request['model'], 'qwen3.8-flash-next'); self.assertIs(request['stream'], False)
         self.assertEqual(request['max_tokens'], 600)
         self.assertEqual([m['role'] for m in request['messages']], ['system', 'user'])
         prompt = request['messages'][0]['content']
@@ -327,11 +327,11 @@ class Backend(unittest.TestCase):
         Fixture.gets=[]
         code, headers, result = self.req('prepare_proposal', body)
         self.assertEqual(code, 200)
-        self.assertEqual(result, dict(ok=True, idea_id=idea['id'], proposal=proposal, source='qwen3-coder-next'))
+        self.assertEqual(result, dict(ok=True, idea_id=idea['id'], proposal=proposal, source='qwen3.8-flash-next'))
         self.assertEqual(headers['Cache-Control'], 'no-store')
         request = Fixture.requests[0]
         self.assertEqual(set(request), {'model', 'messages', 'stream', 'max_tokens'})
-        self.assertEqual(request['model'], 'qwen3-coder-next'); self.assertIs(request['stream'], False)
+        self.assertEqual(request['model'], 'qwen3.8-flash-next'); self.assertIs(request['stream'], False)
         self.assertEqual(request['max_tokens'], 800)
         self.assertEqual([m['role'] for m in request['messages']], ['system', 'user'])
         prompt = request['messages'][0]['content']
@@ -535,7 +535,7 @@ class Backend(unittest.TestCase):
         history=self.req()[2]['history']; self.assertEqual(len(history),2)
         self.assertEqual(history[1]['content'],'FIXTURE respuesta')
         upstream=Fixture.requests[-1]
-        self.assertEqual(upstream['model'],'qwen3-coder-next'); self.assertEqual(upstream['max_tokens'],1024)
+        self.assertEqual(upstream['model'],'qwen3.8-flash-next'); self.assertEqual(upstream['max_tokens'],1024)
         self.assertTrue(upstream['stream']); self.assertEqual(upstream['messages'][0]['role'],'system')
         self.assertIn('Eres MIA, la asistente de MicrotechAI',upstream['messages'][0]['content'])
         Fixture.mode='truncated'

@@ -129,7 +129,7 @@ if ($action === 'analyze_idea') {
         $ch = curl_init($config['model_url']);
         curl_setopt_array($ch, [CURLOPT_POST => true,
             CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Accept: application/json'],
-            CURLOPT_POSTFIELDS => json_encode(['model' => 'qwen3-coder-next', 'messages' => $messages, 'stream' => false, 'max_tokens' => 600], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
+            CURLOPT_POSTFIELDS => json_encode(['model' => 'qwen3.8-flash-next', 'messages' => $messages, 'stream' => false, 'max_tokens' => 600], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
             CURLOPT_CONNECTTIMEOUT => 5, CURLOPT_TIMEOUT => 30, CURLOPT_FOLLOWLOCATION => false,
             CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
             CURLOPT_WRITEFUNCTION => function($ch, $chunk) use (&$response) {
@@ -154,7 +154,7 @@ if ($action === 'analyze_idea') {
             foreach ($analysis->$key as $value) if (!$validString($value)) throw new RuntimeException();
         }
         if (strlen(json_encode($analysis, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)) > 6000) throw new RuntimeException();
-        reply(['ok' => true, 'idea_id' => $draft['id'], 'analysis' => $analysis, 'source' => 'qwen3-coder-next']);
+        reply(['ok' => true, 'idea_id' => $draft['id'], 'analysis' => $analysis, 'source' => 'qwen3.8-flash-next']);
     } catch (Throwable $e) {
         fail(502, 'Análisis no disponible.');
     } finally {
@@ -195,7 +195,7 @@ if ($action === 'prepare_proposal') {
         $ch = curl_init($config['model_url']);
         curl_setopt_array($ch, [CURLOPT_POST => true,
             CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Accept: application/json'],
-            CURLOPT_POSTFIELDS => json_encode(['model' => 'qwen3-coder-next', 'messages' => $messages, 'stream' => false, 'max_tokens' => 800], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
+            CURLOPT_POSTFIELDS => json_encode(['model' => 'qwen3.8-flash-next', 'messages' => $messages, 'stream' => false, 'max_tokens' => 800], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
             CURLOPT_CONNECTTIMEOUT => 5, CURLOPT_TIMEOUT => 30, CURLOPT_FOLLOWLOCATION => false,
             CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
             CURLOPT_WRITEFUNCTION => function($ch, $chunk) use (&$response) {
@@ -211,7 +211,7 @@ if ($action === 'prepare_proposal') {
         if (!is_string($content) || strlen($content) > 8000) throw new RuntimeException();
         $proposal = json_decode($content, false, 8, JSON_THROW_ON_ERROR);
         if (!validStructuredData($proposal, ['title','executive_summary','scope'], ['deliverables','assumptions','next_steps','questions'], 1000, 8000)) throw new RuntimeException();
-        reply(['ok' => true, 'idea_id' => $draft['id'], 'proposal' => $proposal, 'source' => 'qwen3-coder-next']);
+        reply(['ok' => true, 'idea_id' => $draft['id'], 'proposal' => $proposal, 'source' => 'qwen3.8-flash-next']);
     } catch (Throwable $e) {
         fail(502, 'Propuesta no disponible.');
     } finally {
@@ -238,7 +238,7 @@ if ($action === 'prepare_client_view') {
         $ch = curl_init($config['model_url']);
         curl_setopt_array($ch, [CURLOPT_POST => true,
             CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Accept: application/json'],
-            CURLOPT_POSTFIELDS => json_encode(['model' => 'qwen3-coder-next', 'messages' => $messages, 'stream' => false, 'max_tokens' => 600], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
+            CURLOPT_POSTFIELDS => json_encode(['model' => 'qwen3.8-flash-next', 'messages' => $messages, 'stream' => false, 'max_tokens' => 600], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
             CURLOPT_CONNECTTIMEOUT => 5, CURLOPT_TIMEOUT => 30, CURLOPT_FOLLOWLOCATION => false,
             CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
             CURLOPT_WRITEFUNCTION => function($ch, $chunk) use (&$response) {
@@ -254,7 +254,7 @@ if ($action === 'prepare_client_view') {
         if (!is_string($content) || strlen($content) > 6000) throw new RuntimeException();
         $clientView = json_decode($content, false, 8, JSON_THROW_ON_ERROR);
         if (!validStructuredData($clientView, ['title','value_proposition','scope','timeline'], ['deliverables','next_steps','questions'], 1000, 6000)) throw new RuntimeException();
-        reply(['ok' => true, 'idea_id' => $draft['id'], 'client_view' => $clientView, 'source' => 'qwen3-coder-next']);
+        reply(['ok' => true, 'idea_id' => $draft['id'], 'client_view' => $clientView, 'source' => 'qwen3.8-flash-next']);
     } catch (Throwable $e) {
         fail(502, 'Vista de cliente no disponible.');
     } finally {
@@ -291,7 +291,7 @@ if ($action === 'message') {
         $buffer = ''; $full = ''; $done = false; $invalid = false; $lastBeat = microtime(true);
         $ch = curl_init($config['model_url']);
         curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Accept: text/event-stream'],
-            CURLOPT_POSTFIELDS => json_encode(['model' => 'qwen3-coder-next', 'messages' => $messages, 'max_tokens' => 1024, 'stream' => true], JSON_UNESCAPED_UNICODE),
+            CURLOPT_POSTFIELDS => json_encode(['model' => 'qwen3.8-flash-next', 'messages' => $messages, 'max_tokens' => 1024, 'stream' => true], JSON_UNESCAPED_UNICODE),
             CURLOPT_CONNECTTIMEOUT => 5, CURLOPT_TIMEOUT => 60, CURLOPT_FOLLOWLOCATION => false,
             CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS, CURLOPT_NOPROGRESS => false,
             CURLOPT_XFERINFOFUNCTION => function($ch, ...$unused) use (&$lastBeat) {
