@@ -47,6 +47,9 @@
                   <button type="button" id="jarvis-chat-proposal" disabled>Preparar propuesta</button>
                   <p id="jarvis-chat-proposal-status" role="status" aria-live="polite"></p>
                   <div id="jarvis-chat-proposal-result" aria-label="Propuesta comercial"></div>
+                  <button type="button" id="jarvis-chat-client-view" disabled>Preparar vista de cliente</button>
+                  <p id="jarvis-chat-client-view-status" role="status" aria-live="polite"></p>
+                  <div id="jarvis-chat-client-view-result" aria-label="Vista de cliente"></div>
                   <p id="jarvis-chat-idea-status" role="status" aria-live="polite">Guarda el texto actual como borrador privado de esta sesión. Se pierde al salir; no ejecuta acciones.</p>
                   <div id="jarvis-chat-idea-result" aria-label="Borrador privado"></div>
                 </div>
@@ -137,6 +140,7 @@
     let contextController = null;
     let ideaController = null, analysisController = null, savedIdeaId = null;
     let proposalController = null, savedAnalysis = null;
+    let clientViewController = null, savedProposal = null;
     let lastUserText = '';
     function analysisState(value, text) {
       el('analysis-status').dataset.state = value;
@@ -204,7 +208,7 @@
       proposalState('idle', 'Propuesta detenida.');
     }
     function resetProposal() {
-      cancelProposal(); savedAnalysis = null;
+      cancelProposal(); resetClientView(); savedAnalysis = null;
       el('proposal-result').replaceChildren(); proposalState('idle', '');
     }
     function renderProposal(data, ideaId) {
@@ -232,11 +236,11 @@
       if (!authenticated || authBusy || ideaController || analysisController || proposalController || !savedIdeaId || !savedAnalysis ||
           el('panel').hidden || !el('options').open || !el('context').open) return;
       const ideaId = savedIdeaId, analysis = savedAnalysis, request = new AbortController(); proposalController = request;
-      el('proposal-result').replaceChildren(); proposalState('loading', 'Preparando propuesta…');
+      resetClientView(); el('proposal-result').replaceChildren(); proposalState('loading', 'Preparando propuesta…');
       try {
         const data = await (await api('prepare_proposal', { idea_id: ideaId, analysis }, request.signal)).json();
         if (proposalController !== request || request.signal.aborted || savedIdeaId !== ideaId || savedAnalysis !== analysis) return;
-        renderProposal(data, ideaId); proposalState('success', 'Propuesta preparada; no se guarda ni se envía.');
+        renderProposal(data, ideaId); savedProposal = data.proposal; clientViewState('idle', ''); proposalState('success', 'Propuesta preparada; no se guarda ni se envía.');
       } catch (error) {
         if (proposalController !== request || request.signal.aborted) return;
         if (error.name === 'AbortError') cancelProposal();
@@ -245,6 +249,60 @@
           showError(safeError); proposalState('error', safeError.message);
         }
       } finally { if (proposalController === request) proposalController = null; }
+    });
+    function clientViewState(value, text) {
+      el('client-view-status').dataset.state = value;
+      el('client-view-status').textContent = text;
+      el('client-view-result').setAttribute('aria-busy', String(value === 'loading'));
+      el('client-view').disabled = !savedProposal || value === 'loading';
+    }
+    function cancelClientView() {
+      if (!clientViewController) return;
+      clientViewController.abort(); clientViewController = null;
+      clientViewState('idle', 'Vista de cliente detenida.');
+    }
+    function resetClientView() {
+      cancelClientView(); savedProposal = null;
+      el('client-view-result').replaceChildren(); clientViewState('idle', '');
+    }
+    function renderClientView(data, ideaId) {
+      const value = data?.client_view;
+      const fields = { title: 'Título', value_proposition: 'Propuesta de valor', scope: 'Alcance', deliverables: 'Entregables', timeline: 'Calendario tentativo', next_steps: 'Próximos pasos', questions: 'Preguntas' };
+      const validString = (text, max = 500) => typeof text === 'string' && Array.from(text).length <= max;
+      if (data?.ok !== true || data.idea_id !== ideaId || data.source !== 'qwen3-coder-next' ||
+          !value || typeof value !== 'object' || Array.isArray(value) ||
+          Object.keys(value).sort().join() !== Object.keys(fields).sort().join() ||
+          new TextEncoder().encode(JSON.stringify(value)).length > 6000) throw new Error('Vista de cliente no válida.');
+      for (const key of Object.keys(fields)) {
+        if (['title', 'value_proposition', 'scope', 'timeline'].includes(key) ? !validString(value[key], 1000) :
+            !Array.isArray(value[key]) || value[key].length > 5 || !value[key].every(text => validString(text))) throw new Error('Vista de cliente no válida.');
+      }
+      const fragment = document.createDocumentFragment();
+      for (const [key, label] of Object.entries(fields)) {
+        const title = document.createElement('strong'); title.textContent = label; fragment.append(title);
+        for (const text of Array.isArray(value[key]) ? value[key] : [value[key]]) {
+          const row = document.createElement('p'); row.textContent = text; fragment.append(row);
+        }
+      }
+      el('client-view-result').replaceChildren(fragment);
+    }
+    el('client-view').addEventListener('click', async () => {
+      if (!authenticated || authBusy || ideaController || analysisController || proposalController || clientViewController || !savedIdeaId || !savedProposal ||
+          el('panel').hidden || !el('options').open || !el('context').open) return;
+      const ideaId = savedIdeaId, proposal = savedProposal, request = new AbortController(); clientViewController = request;
+      el('client-view-result').replaceChildren(); clientViewState('loading', 'Preparando vista de cliente…');
+      try {
+        const data = await (await api('prepare_client_view', { idea_id: ideaId, proposal }, request.signal)).json();
+        if (clientViewController !== request || request.signal.aborted || savedIdeaId !== ideaId || savedProposal !== proposal) return;
+        renderClientView(data, ideaId); clientViewState('success', 'Vista de cliente preparada; pendiente de revisión. No se guarda ni se envía.');
+      } catch (error) {
+        if (clientViewController !== request || request.signal.aborted) return;
+        if (error.name === 'AbortError') cancelClientView();
+        else {
+          const safeError = new Error('Vista de cliente no disponible.'); safeError.status = error.status;
+          showError(safeError); clientViewState('error', safeError.message);
+        }
+      } finally { if (clientViewController === request) clientViewController = null; }
     });
     function ideaState(value, text) {
       el('idea-status').dataset.state = value;
@@ -583,7 +641,7 @@
     }
     function cancelResponse() {
       cancelContext();
-      cancelIdea(); cancelAnalysis(); cancelProposal();
+      cancelIdea(); cancelAnalysis(); cancelProposal(); cancelClientView();
       generation++; ttsEpoch++; speech?.cancel(); speech = null; cleanupAudio();
       sttEpoch++; sttController?.abort(); sttController = null;
       if (controller) controller.abort(); controller = null; busy = false;
