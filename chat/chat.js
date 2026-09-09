@@ -65,7 +65,7 @@
     document.body.append(root);
     const el = name => root.querySelector('#jarvis-chat-' + name);
     let csrf = '', authenticated = false, authBusy = false;
-    const status = text => { el('status').textContent = text; };
+    const status = text => { el('status').textContent = text; el('status').dataset.quiet = /^Sesión MC:/.test(text) ? 'true' : 'false'; };
     async function api(action, body, signal) {
       const response = await fetch('/api/chat.php?action=' + action, {
         method: body === undefined ? 'GET' : 'POST', credentials: 'same-origin', cache: 'no-store', signal,
