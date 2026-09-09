@@ -168,4 +168,4 @@ body[data-mia-view=dashboard] #jarvis-chat-panel{height:min(440px,calc(100dvh - 
 #jarvis-chat-idea-status[data-state=error]{color:#ffb4bc}
 #jarvis-chat-idea-status[data-state=success]{color:#8ef2bd}
 
-#jarvis-chat-analysis-result{max-height:220px;overflow:auto;overflow-wrap:anywhere;white-space:pre-wrap}
+#jarvis-chat-analysis-result,#jarvis-chat-proposal-result{max-height:220px;overflow:auto;overflow-wrap:anywhere;white-space:pre-wrap}

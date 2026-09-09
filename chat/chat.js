@@ -44,6 +44,9 @@
                   <button type="button" id="jarvis-chat-analyze" disabled>Analizar idea</button>
                   <p id="jarvis-chat-analysis-status" role="status" aria-live="polite"></p>
                   <div id="jarvis-chat-analysis-result" aria-label="Análisis de idea"></div>
+                  <button type="button" id="jarvis-chat-proposal" disabled>Preparar propuesta</button>
+                  <p id="jarvis-chat-proposal-status" role="status" aria-live="polite"></p>
+                  <div id="jarvis-chat-proposal-result" aria-label="Propuesta comercial"></div>
                   <p id="jarvis-chat-idea-status" role="status" aria-live="polite">Guarda el texto actual como borrador privado de esta sesión. Se pierde al salir; no ejecuta acciones.</p>
                   <div id="jarvis-chat-idea-result" aria-label="Borrador privado"></div>
                 </div>
@@ -133,6 +136,7 @@
     let generation = 0, controller = null, busy = false;
     let contextController = null;
     let ideaController = null, analysisController = null, savedIdeaId = null;
+    let proposalController = null, savedAnalysis = null;
     function analysisState(value, text) {
       el('analysis-status').dataset.state = value;
       el('analysis-status').textContent = text;
@@ -145,7 +149,7 @@
       analysisState('idle', 'Análisis detenido.');
     }
     function resetAnalysis() {
-      cancelAnalysis(); savedIdeaId = null;
+      cancelAnalysis(); resetProposal(); savedIdeaId = null;
       el('analysis-result').replaceChildren(); analysisState('idle', '');
     }
     function renderAnalysis(data, ideaId) {
@@ -173,11 +177,11 @@
       if (!authenticated || authBusy || ideaController || analysisController || !savedIdeaId ||
           el('panel').hidden || !el('options').open || !el('context').open) return;
       const ideaId = savedIdeaId, request = new AbortController(); analysisController = request;
-      el('analysis-result').replaceChildren(); analysisState('loading', 'Analizando idea…');
+      resetProposal(); el('analysis-result').replaceChildren(); analysisState('loading', 'Analizando idea…');
       try {
         const data = await (await api('analyze_idea', { idea_id: ideaId }, request.signal)).json();
         if (analysisController !== request || request.signal.aborted || savedIdeaId !== ideaId) return;
-        renderAnalysis(data, ideaId); analysisState('success', 'Análisis completado.');
+        renderAnalysis(data, ideaId); savedAnalysis = data.analysis; proposalState('idle', ''); analysisState('success', 'Análisis completado.');
       } catch (error) {
         if (analysisController !== request || request.signal.aborted) return;
         if (error.name === 'AbortError') cancelAnalysis();
@@ -186,6 +190,60 @@
           showError(safeError); analysisState('error', safeError.message);
         }
       } finally { if (analysisController === request) analysisController = null; }
+    });
+    function proposalState(value, text) {
+      el('proposal-status').dataset.state = value;
+      el('proposal-status').textContent = text;
+      el('proposal-result').setAttribute('aria-busy', String(value === 'loading'));
+      el('proposal').disabled = !savedAnalysis || value === 'loading';
+    }
+    function cancelProposal() {
+      if (!proposalController) return;
+      proposalController.abort(); proposalController = null;
+      proposalState('idle', 'Propuesta detenida.');
+    }
+    function resetProposal() {
+      cancelProposal(); savedAnalysis = null;
+      el('proposal-result').replaceChildren(); proposalState('idle', '');
+    }
+    function renderProposal(data, ideaId) {
+      const value = data?.proposal;
+      const fields = { title: 'Título', executive_summary: 'Resumen ejecutivo', scope: 'Alcance', deliverables: 'Entregables', assumptions: 'Supuestos', next_steps: 'Próximos pasos', questions: 'Preguntas' };
+      const validString = (text, max = 500) => typeof text === 'string' && Array.from(text).length <= max;
+      if (data?.ok !== true || data.idea_id !== ideaId || data.source !== 'qwen3-coder-next' ||
+          !value || typeof value !== 'object' || Array.isArray(value) ||
+          Object.keys(value).sort().join() !== Object.keys(fields).sort().join() ||
+          new TextEncoder().encode(JSON.stringify(value)).length > 8000) throw new Error('Propuesta no válida.');
+      for (const key of Object.keys(fields)) {
+        if (['title', 'executive_summary', 'scope'].includes(key) ? !validString(value[key], 1000) :
+            !Array.isArray(value[key]) || value[key].length > 5 || !value[key].every(text => validString(text))) throw new Error('Propuesta no válida.');
+      }
+      const fragment = document.createDocumentFragment();
+      for (const [key, label] of Object.entries(fields)) {
+        const title = document.createElement('strong'); title.textContent = label; fragment.append(title);
+        for (const text of Array.isArray(value[key]) ? value[key] : [value[key]]) {
+          const row = document.createElement('p'); row.textContent = text; fragment.append(row);
+        }
+      }
+      el('proposal-result').replaceChildren(fragment);
+    }
+    el('proposal').addEventListener('click', async () => {
+      if (!authenticated || authBusy || ideaController || analysisController || proposalController || !savedIdeaId || !savedAnalysis ||
+          el('panel').hidden || !el('options').open || !el('context').open) return;
+      const ideaId = savedIdeaId, analysis = savedAnalysis, request = new AbortController(); proposalController = request;
+      el('proposal-result').replaceChildren(); proposalState('loading', 'Preparando propuesta…');
+      try {
+        const data = await (await api('prepare_proposal', { idea_id: ideaId, analysis }, request.signal)).json();
+        if (proposalController !== request || request.signal.aborted || savedIdeaId !== ideaId || savedAnalysis !== analysis) return;
+        renderProposal(data, ideaId); proposalState('success', 'Propuesta preparada; no se guarda ni se envía.');
+      } catch (error) {
+        if (proposalController !== request || request.signal.aborted) return;
+        if (error.name === 'AbortError') cancelProposal();
+        else {
+          const safeError = new Error('Propuesta no disponible.'); safeError.status = error.status;
+          showError(safeError); proposalState('error', safeError.message);
+        }
+      } finally { if (proposalController === request) proposalController = null; }
     });
     function ideaState(value, text) {
       el('idea-status').dataset.state = value;
@@ -523,7 +581,7 @@
     }
     function cancelResponse() {
       cancelContext();
-      cancelIdea(); cancelAnalysis();
+      cancelIdea(); cancelAnalysis(); cancelProposal();
       generation++; ttsEpoch++; speech?.cancel(); speech = null; cleanupAudio();
       sttEpoch++; sttController?.abort(); sttController = null;
       if (controller) controller.abort(); controller = null; busy = false;
