@@ -40,6 +40,9 @@
                   <button type="button" id="jarvis-chat-projects">Ver proyectos</button>
                   <p id="jarvis-chat-context-status" role="status" aria-live="polite">Consulta de solo lectura.</p>
                   <ul id="jarvis-chat-context-result" aria-label="Resumen de Contexto MC"></ul>
+                  <button type="button" id="jarvis-chat-idea">Guardar idea privada</button>
+                  <p id="jarvis-chat-idea-status" role="status" aria-live="polite">Guarda el texto actual como borrador privado de esta sesión. Se pierde al salir; no ejecuta acciones.</p>
+                  <div id="jarvis-chat-idea-result" aria-label="Borrador privado"></div>
                 </div>
               </details>
               <details class="jarvis-chat-help"><summary>Ayuda de voz</summary><p class="jarvis-voice-notice">Voz continua experimental · usa auriculares. AEC solicitado al navegador; VAD no elimina eco ni garantiza evitar auto-interrupciones con altavoces. Máximo 20 s por frase, 6 envíos/min; sin reintentos automáticos.</p><p>Hablar graba una frase; pulsa de nuevo para enviarla. Detener cancela la respuesta; durante una llamada, Colgar cierra el micrófono.</p></details>
@@ -71,6 +74,7 @@
       if (callOn || continuous?.active || continuous?.pending) stop();
       if (error.status === 401) {
         el('context-result').replaceChildren();
+        el('idea-result').replaceChildren();
         stop(); authenticated = false; el('conversation').hidden = true; location.replace('/login.html');
         el('history').replaceChildren(); el('input').value = '';
       }
@@ -110,6 +114,7 @@
     async function logout() {
       if (authBusy) return; authBusy = true;
       stop();
+      el('idea-result').replaceChildren();
       el('context-result').replaceChildren();
       el('compose').querySelector('button').disabled = true;
       try {
@@ -124,6 +129,42 @@
     window.addEventListener('pageshow', event => { if (event.persisted) location.reload(); });
     let generation = 0, controller = null, busy = false;
     let contextController = null;
+    let ideaController = null;
+    function ideaState(value, text) {
+      el('idea-status').dataset.state = value;
+      el('idea-status').textContent = text;
+      el('idea').disabled = value === 'loading';
+      el('idea-result').setAttribute('aria-busy', String(value === 'loading'));
+    }
+    function cancelIdea() {
+      if (!ideaController) return;
+      ideaController.abort(); ideaController = null;
+      ideaState('idle', 'Solicitud detenida; el borrador podría haberse guardado en esta sesión.');
+    }
+    el('idea').addEventListener('click', async () => {
+      if (!authenticated || authBusy || ideaController || el('panel').hidden ||
+          !el('options').open || !el('context').open) return;
+      const text = el('input').value;
+      el('idea-result').replaceChildren();
+      if (!text.trim()) { ideaState('error', 'Escribe una idea antes de guardarla.'); return; }
+      const request = new AbortController(); ideaController = request;
+      ideaState('loading', 'Guardando borrador privado…');
+      try {
+        const data = await (await api('idea', { text }, request.signal)).json();
+        if (ideaController !== request || request.signal.aborted) return;
+        const idea = data?.idea;
+        if (data?.ok !== true || idea?.state !== 'BORRADOR' || typeof idea.text !== 'string' ||
+            typeof idea.id !== 'string' || typeof idea.created_at !== 'string') throw new Error('Respuesta de borrador no válida.');
+        const label = document.createElement('p'); label.textContent = idea.state + ' · ' + idea.id + ' · ' + idea.created_at;
+        const content = document.createElement('p'); content.textContent = idea.text;
+        el('idea-result').append(label, content);
+        ideaState('success', 'Idea guardada como BORRADOR privado de esta sesión.');
+      } catch (error) {
+        if (ideaController !== request || request.signal.aborted) return;
+        if (error.name === 'AbortError') cancelIdea();
+        else { showError(error); ideaState('error', error.message.slice(0, 4000)); }
+      } finally { if (ideaController === request) ideaController = null; }
+    });
     function contextState(value, text) {
       el('context-status').dataset.state = value;
       el('context-status').textContent = text;
@@ -424,6 +465,7 @@
     }
     function cancelResponse() {
       cancelContext();
+      cancelIdea();
       generation++; ttsEpoch++; speech?.cancel(); speech = null; cleanupAudio();
       sttEpoch++; sttController?.abort(); sttController = null;
       if (controller) controller.abort(); controller = null; busy = false;

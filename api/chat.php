@@ -3,7 +3,7 @@ declare(strict_types=1);
 // Overrides are PHP constants defined only by the isolated fixture router.
 require defined('JARVIS_CHAT_CONFIG') ? __DIR__ . '/../server/session.php' : '/opt/jarvis-access/session.php';
 $action = $_GET['action'] ?? 'session';
-if (!is_string($action) || !in_array($action, ['session','login','logout','message','tts','clear','transcribe','tool'], true)) fail(404, 'Acción no disponible.');
+if (!is_string($action) || !in_array($action, ['session','login','logout','message','tts','clear','transcribe','tool','idea'], true)) fail(404, 'Acción no disponible.');
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 if ($method !== ($action === 'session' ? 'GET' : 'POST')) { header('Allow: ' . ($action === 'session' ? 'GET' : 'POST')); fail(405, 'Método no permitido.'); }
 if ($action === 'session') reply(sessionView(authenticated()));
@@ -30,7 +30,7 @@ if ($raw === false || strlen($raw) > 24576) fail(413, 'Solicitud demasiado grand
 $object = json_decode($raw);
 if (!is_object($object)) fail(400, 'JSON inválido.');
 $body = (array)$object;
-$allowed = $action === 'tool' ? ['tool','args'] : ($action === 'login' ? ['username','password'] : (in_array($action, ['message','tts'], true) ? ['text'] : []));
+$allowed = $action === 'tool' ? ['tool','args'] : ($action === 'login' ? ['username','password'] : (in_array($action, ['message','tts','idea'], true) ? ['text'] : []));
 if (array_diff(array_keys($body), $allowed)) fail(400, 'Campos no permitidos.');
 if ($action === 'tool') {
     $paths = ['read_dashboard' => '/api/dashboard', 'read_projects' => '/api/projects',
@@ -41,7 +41,7 @@ if ($action === 'tool') {
     if (!isset($_SESSION['mc_token'])) fail(401, 'authentication_required');
     [$status, $identity, , $error] = authCall('/api/me', null, true);
     if (in_array($status, [401, 403], true)) {
-        unset($_SESSION['mc_token']); $_SESSION['history'] = [];
+        unset($_SESSION['mc_token'], $_SESSION['private_idea_drafts']); $_SESSION['history'] = [];
         fail(401, 'authentication_required');
     }
     if ($error !== null || $status !== 200 || !is_string($identity->user->username ?? null)) fail(503, 'authentication_unavailable');
@@ -70,6 +70,7 @@ if ($action === 'login') {
     if ($status === 401 || $status === 403) fail(401, 'Credenciales no válidas.');
     if ($status !== 200 || ($data['success'] ?? false) !== true || !$token || !is_string($data['username'] ?? null)) fail(503, 'Autenticación no disponible.');
     session_regenerate_id(true);
+    unset($_SESSION['private_idea_drafts']);
     $_SESSION['mc_token'] = $token; $_SESSION['csrf'] = bin2hex(random_bytes(32)); $_SESSION['history'] = [];
     reply(sessionView($data['username']));
 }
@@ -98,6 +99,16 @@ function boundHistory(array $history): array {
     // Never begin the next prompt with an orphaned assistant turn.
     while ($history && $history[0]['role'] !== 'user') array_shift($history);
     return array_values($history);
+}
+if ($action === 'idea') {
+    $text = textInput($body, 4000);
+    // The session lock keeps capacity checks and insertion atomic. Drafts never enter history.
+    $drafts = $_SESSION['private_idea_drafts'] ?? [];
+    $characters = array_sum(array_map(fn($draft) => mb_strlen($draft['text'], 'UTF-8'), $drafts));
+    if (count($drafts) >= 20 || $characters + mb_strlen($text, 'UTF-8') > 40000) fail(409, 'Límite de borradores de sesión alcanzado (20 ideas / 40000 caracteres).');
+    $idea = ['id' => bin2hex(random_bytes(8)), 'state' => 'BORRADOR', 'text' => $text, 'created_at' => gmdate('Y-m-d\\TH:i:s\\Z')];
+    $_SESSION['private_idea_drafts'][] = $idea;
+    reply(['ok' => true, 'idea' => $idea]);
 }
 $text = textInput($body, $action === 'message' ? 4000 : 1000);
 if ($action === 'tts') {

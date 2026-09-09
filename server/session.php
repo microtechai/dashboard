@@ -99,7 +99,7 @@ function authenticated(): ?string {
     if (!isset($_SESSION['mc_token'])) return null;
     [$status, $data] = authCall('/api/me');
     if (in_array($status, [401, 403, 302, 303], true)) {
-        unset($_SESSION['mc_token']); $_SESSION['history'] = []; return null;
+        unset($_SESSION['mc_token'], $_SESSION['private_idea_drafts']); $_SESSION['history'] = []; return null;
     }
     if ($status !== 200 || !is_string($data['user']['username'] ?? null)) fail(503, 'Autenticación no disponible.');
     return $data['user']['username'];

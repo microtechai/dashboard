@@ -162,3 +162,8 @@ body[data-mia-view=dashboard] #jarvis-chat-panel{height:min(440px,calc(100dvh - 
  #jarvis-chat-panel,body[data-mia-view=dashboard] #jarvis-chat-panel{height:calc(100dvh - 24px);max-height:calc(100dvh - 24px)}
  #jarvis-chat-mic{max-height:36px;overflow:auto}
 }
+
+#jarvis-chat-idea-result{max-height:180px;overflow:auto;overflow-wrap:anywhere;white-space:pre-wrap}
+#jarvis-chat-idea-status{overflow-wrap:anywhere}
+#jarvis-chat-idea-status[data-state=error]{color:#ffb4bc}
+#jarvis-chat-idea-status[data-state=success]{color:#8ef2bd}

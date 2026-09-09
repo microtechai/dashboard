@@ -112,6 +112,75 @@ class Backend(unittest.TestCase):
         for token in ['a'*64, 'b'*64, 'fixture-password']:
             self.assertNotIn(token, json.dumps([headers, data]))
         return data
+    def drafts(self):
+        session_id = self.cookie.split('=', 1)[1]
+        result = subprocess.check_output(['php', '-r',
+            'session_save_path($argv[1]); session_id($argv[2]); session_start(["read_and_close" => true]); echo json_encode($_SESSION["private_idea_drafts"] ?? []);',
+            str(RUN/'state'), session_id])
+        return json.loads(result)
+
+    def test_idea_exact_body_validation_and_auth(self):
+        self.req()
+        self.assertEqual(self.req('idea', {'text': 'private'})[0], 401)
+        self.login(); Fixture.gets=[]
+        for headers in [{'Origin': ''}, {'Origin': 'https://evil.invalid'}, {'X-CSRF-Token': ''}, {'X-CSRF-Token': 'wrong'}]:
+            self.assertEqual(self.req('idea', {'text': 'private'}, headers)[0], 403)
+        self.assertEqual(Fixture.gets, [])
+        self.assertEqual(self.req('idea')[0], 405)
+        self.assertEqual(self.req('idea', {'text': 'ok'}, {'Content-Type': 'text/plain'})[0], 415)
+        for body in [{}, [], 'text', {'text': None}, {'text': []}, {'text': 1}, {'text': ''},
+                     {'text': '  \n'}, {'text': 'é'*4001}, {'text': 'x\x00y'}]:
+            self.assertEqual(self.req('idea', body)[0], 400, body)
+        for key in ['url', 'tool', 'model', 'state', 'id', 'created_at', 'token']:
+            self.assertEqual(self.req('idea', {'text': 'ok', key: 'forbidden'})[0], 400)
+        self.assertEqual(self.drafts(), [])
+        Fixture.mode='unavailable'; self.assertEqual(self.req('idea', {'text': 'private'})[0], 503)
+        Fixture.mode='ok'; self.assertEqual(self.req('idea', {'text': 'private'})[0], 200)
+        Fixture.mode='revoked'; self.assertEqual(self.req('idea', {'text': 'private'})[0], 401)
+        self.assertEqual(self.drafts(), [])
+
+    def test_idea_session_contract_and_count_bound(self):
+        self.login(); Fixture.gets=[]
+        captured=[]
+        for i in range(20):
+            text = '  Idea privada <img src=x> https://evil.invalid run_audit ' + str(i) + '\n'
+            code, headers, data = self.req('idea', {'text': text})
+            self.assertEqual(code, 200)
+            self.assertEqual(set(data), {'ok', 'idea'}); self.assertIs(data['ok'], True)
+            idea=data['idea']; captured.append(idea)
+            self.assertEqual(set(idea), {'id', 'state', 'text', 'created_at'})
+            self.assertRegex(idea['id'], r'^[a-f0-9]{16}$')
+            self.assertRegex(idea['created_at'], r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$')
+            self.assertEqual(idea['state'], 'BORRADOR'); self.assertEqual(idea['text'], text)
+            self.assertEqual(headers['Cache-Control'], 'no-store')
+            self.assertNotIn('a'*64, json.dumps(data))
+        self.assertEqual(len({d['id'] for d in captured}), 20)
+        self.assertEqual(self.req('idea', {'text': 'overflow'})[0], 409)
+        self.assertEqual(self.drafts(), captured)
+        self.assertEqual([p for p,c in Fixture.gets], ['/api/me']*21)
+        self.assertEqual(Fixture.requests, [])
+        self.assertEqual(self.req()[2]['history'], [])
+        self.req('logout', {}); self.assertEqual(self.drafts(), [])
+        self.login(); self.assertEqual(self.drafts(), [])
+
+    def test_idea_total_unicode_bound_and_session_isolation(self):
+        self.login()
+        for _ in range(9): self.assertEqual(self.req('idea', {'text': 'é'*4000})[0], 200)
+        self.assertEqual(self.req('idea', {'text': 'é'*3999})[0], 200)
+        self.assertEqual(self.req('idea', {'text': 'éé'})[0], 409)
+        self.assertEqual(self.req('idea', {'text': 'é'})[0], 200)
+        self.assertEqual(self.req('idea', {'text': 'x'})[0], 409)
+        saved=self.drafts()
+        self.assertEqual(sum(len(d['text']) for d in saved), 40000)
+        cookie, csrf = self.cookie, self.csrf
+        self.cookie=''; self.csrf=''; self.login()
+        self.assertEqual(self.drafts(), [])
+        self.assertEqual(self.req('idea', {'text': 'separate'})[0], 200)
+        self.cookie, self.csrf = cookie, csrf
+        self.assertEqual(self.drafts(), saved)
+        self.req('login', {'username':'fixture-user','password':'fixture-password'})
+        self.assertEqual(self.drafts(), [])
+
     def test_tool_allowlist_and_opaque_data(self):
         self.login(); Fixture.role='reader'; Fixture.gets=[]
         paths = {'read_dashboard': '/api/dashboard', 'read_projects': '/api/projects',
