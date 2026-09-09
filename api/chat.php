@@ -3,7 +3,7 @@ declare(strict_types=1);
 // Overrides are PHP constants defined only by the isolated fixture router.
 require defined('JARVIS_CHAT_CONFIG') ? __DIR__ . '/../server/session.php' : '/opt/jarvis-access/session.php';
 $action = $_GET['action'] ?? 'session';
-if (!is_string($action) || !in_array($action, ['session','login','logout','message','tts','clear','transcribe'], true)) fail(404, 'Acción no disponible.');
+if (!is_string($action) || !in_array($action, ['session','login','logout','message','tts','clear','transcribe','tool'], true)) fail(404, 'Acción no disponible.');
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 if ($method !== ($action === 'session' ? 'GET' : 'POST')) { header('Allow: ' . ($action === 'session' ? 'GET' : 'POST')); fail(405, 'Método no permitido.'); }
 if ($action === 'session') reply(sessionView(authenticated()));
@@ -30,8 +30,32 @@ if ($raw === false || strlen($raw) > 24576) fail(413, 'Solicitud demasiado grand
 $object = json_decode($raw);
 if (!is_object($object)) fail(400, 'JSON inválido.');
 $body = (array)$object;
-$allowed = $action === 'login' ? ['username','password'] : (in_array($action, ['message','tts'], true) ? ['text'] : []);
+$allowed = $action === 'tool' ? ['tool','args'] : ($action === 'login' ? ['username','password'] : (in_array($action, ['message','tts'], true) ? ['text'] : []));
 if (array_diff(array_keys($body), $allowed)) fail(400, 'Campos no permitidos.');
+if ($action === 'tool') {
+    $paths = ['read_dashboard' => '/api/dashboard', 'read_projects' => '/api/projects',
+        'read_audits' => '/api/audits', 'read_dgx_status' => '/api/dgx/status', 'read_clients' => '/api/clients'];
+    if (!is_string($body['tool'] ?? null) || !isset($paths[$body['tool']])) fail(400, 'tool_not_allowed');
+    $toolName = $body['tool']; $toolSource = $paths[$toolName];
+    if (!isset($body['args']) || !is_object($body['args']) || (array)$body['args'] !== []) fail(400, 'invalid_args');
+    if (!isset($_SESSION['mc_token'])) fail(401, 'authentication_required');
+    [$status, $identity, , $error] = authCall('/api/me', null, true);
+    if (in_array($status, [401, 403], true)) {
+        unset($_SESSION['mc_token']); $_SESSION['history'] = [];
+        fail(401, 'authentication_required');
+    }
+    if ($error !== null || $status !== 200 || !is_string($identity->user->username ?? null)) fail(503, 'authentication_unavailable');
+    if ($toolName === 'read_clients') {
+        $role = $identity->user->role ?? null;
+        if (!is_string($role) || $role === '') fail(403, 'role_unverified');
+        if (!in_array($role, ['reader', 'admin'], true)) fail(403, 'role_denied');
+    }
+    [$status, $data, , $error] = authCall($toolSource, null, true);
+    // MC JSON is opaque data: never feed it to a model, interpreter, or history.
+    reply(['ok' => $error === null, 'tool' => $toolName, 'source' => $toolSource,
+        'status' => $status ?: null, 'data' => $error === null ? $data : null, 'error' => $error],
+        $error === null ? 200 : ($error === 'timeout' ? 504 : 502));
+}
 if ($action === 'logout') {
     $limits = $_SESSION['rate'] ?? [];
     $_SESSION = ['csrf' => bin2hex(random_bytes(32)), 'history' => [], 'rate' => $limits];
