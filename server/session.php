@@ -17,6 +17,7 @@ function fail(int $status, string $message): never {
     reply(['error' => $message], $status);
 }
 $configFile = defined('JARVIS_CHAT_CONFIG') ? JARVIS_CHAT_CONFIG : '/etc/jarvis-chat/config.php';
+if (function_exists('opcache_invalidate')) @opcache_invalidate($configFile, true);
 if (!is_readable($configFile)) fail(503, 'Servicio no disponible.');
 $config = require $configFile;
 if (!is_array($config)) fail(503, 'Servicio no disponible.');

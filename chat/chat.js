@@ -41,6 +41,9 @@
                   <p id="jarvis-chat-context-status" role="status" aria-live="polite">Consulta de solo lectura.</p>
                   <ul id="jarvis-chat-context-result" aria-label="Resumen de Contexto MC"></ul>
                   <button type="button" id="jarvis-chat-idea">Guardar idea privada</button>
+                  <button type="button" id="jarvis-chat-analyze" disabled>Analizar idea</button>
+                  <p id="jarvis-chat-analysis-status" role="status" aria-live="polite"></p>
+                  <div id="jarvis-chat-analysis-result" aria-label="Análisis de idea"></div>
                   <p id="jarvis-chat-idea-status" role="status" aria-live="polite">Guarda el texto actual como borrador privado de esta sesión. Se pierde al salir; no ejecuta acciones.</p>
                   <div id="jarvis-chat-idea-result" aria-label="Borrador privado"></div>
                 </div>
@@ -74,7 +77,7 @@
       if (callOn || continuous?.active || continuous?.pending) stop();
       if (error.status === 401) {
         el('context-result').replaceChildren();
-        el('idea-result').replaceChildren();
+        el('idea-result').replaceChildren(); resetAnalysis();
         stop(); authenticated = false; el('conversation').hidden = true; location.replace('/login.html');
         el('history').replaceChildren(); el('input').value = '';
       }
@@ -114,7 +117,7 @@
     async function logout() {
       if (authBusy) return; authBusy = true;
       stop();
-      el('idea-result').replaceChildren();
+      el('idea-result').replaceChildren(); resetAnalysis();
       el('context-result').replaceChildren();
       el('compose').querySelector('button').disabled = true;
       try {
@@ -129,7 +132,61 @@
     window.addEventListener('pageshow', event => { if (event.persisted) location.reload(); });
     let generation = 0, controller = null, busy = false;
     let contextController = null;
-    let ideaController = null;
+    let ideaController = null, analysisController = null, savedIdeaId = null;
+    function analysisState(value, text) {
+      el('analysis-status').dataset.state = value;
+      el('analysis-status').textContent = text;
+      el('analysis-result').setAttribute('aria-busy', String(value === 'loading'));
+      el('analyze').disabled = !savedIdeaId || value === 'loading';
+    }
+    function cancelAnalysis() {
+      if (!analysisController) return;
+      analysisController.abort(); analysisController = null;
+      analysisState('idle', 'Análisis detenido.');
+    }
+    function resetAnalysis() {
+      cancelAnalysis(); savedIdeaId = null;
+      el('analysis-result').replaceChildren(); analysisState('idle', '');
+    }
+    function renderAnalysis(data, ideaId) {
+      const value = data?.analysis;
+      const fields = { problem: 'Problema', client: 'Cliente', sector: 'Sector', opportunities: 'Oportunidades', risks: 'Riesgos', questions: 'Preguntas' };
+      const validString = text => typeof text === 'string' && Array.from(text).length <= 500;
+      if (data?.ok !== true || data.idea_id !== ideaId || data.source !== 'qwen3-coder-next' ||
+          !value || typeof value !== 'object' || Array.isArray(value) ||
+          Object.keys(value).sort().join() !== Object.keys(fields).sort().join() ||
+          new TextEncoder().encode(JSON.stringify(value)).length > 6000) throw new Error('Análisis no válido.');
+      for (const key of Object.keys(fields)) {
+        if (['problem', 'client', 'sector'].includes(key) ? !validString(value[key]) :
+            !Array.isArray(value[key]) || value[key].length > 5 || !value[key].every(validString)) throw new Error('Análisis no válido.');
+      }
+      const fragment = document.createDocumentFragment();
+      for (const [key, label] of Object.entries(fields)) {
+        const title = document.createElement('strong'); title.textContent = label; fragment.append(title);
+        for (const text of Array.isArray(value[key]) ? value[key] : [value[key]]) {
+          const row = document.createElement('p'); row.textContent = text; fragment.append(row);
+        }
+      }
+      el('analysis-result').replaceChildren(fragment);
+    }
+    el('analyze').addEventListener('click', async () => {
+      if (!authenticated || authBusy || ideaController || analysisController || !savedIdeaId ||
+          el('panel').hidden || !el('options').open || !el('context').open) return;
+      const ideaId = savedIdeaId, request = new AbortController(); analysisController = request;
+      el('analysis-result').replaceChildren(); analysisState('loading', 'Analizando idea…');
+      try {
+        const data = await (await api('analyze_idea', { idea_id: ideaId }, request.signal)).json();
+        if (analysisController !== request || request.signal.aborted || savedIdeaId !== ideaId) return;
+        renderAnalysis(data, ideaId); analysisState('success', 'Análisis completado.');
+      } catch (error) {
+        if (analysisController !== request || request.signal.aborted) return;
+        if (error.name === 'AbortError') cancelAnalysis();
+        else {
+          const safeError = new Error('Análisis no disponible.'); safeError.status = error.status;
+          showError(safeError); analysisState('error', safeError.message);
+        }
+      } finally { if (analysisController === request) analysisController = null; }
+    });
     function ideaState(value, text) {
       el('idea-status').dataset.state = value;
       el('idea-status').textContent = text;
@@ -145,7 +202,7 @@
       if (!authenticated || authBusy || ideaController || el('panel').hidden ||
           !el('options').open || !el('context').open) return;
       const text = el('input').value;
-      el('idea-result').replaceChildren();
+      el('idea-result').replaceChildren(); resetAnalysis();
       if (!text.trim()) { ideaState('error', 'Escribe una idea antes de guardarla.'); return; }
       const request = new AbortController(); ideaController = request;
       ideaState('loading', 'Guardando borrador privado…');
@@ -154,10 +211,11 @@
         if (ideaController !== request || request.signal.aborted) return;
         const idea = data?.idea;
         if (data?.ok !== true || idea?.state !== 'BORRADOR' || typeof idea.text !== 'string' ||
-            typeof idea.id !== 'string' || typeof idea.created_at !== 'string') throw new Error('Respuesta de borrador no válida.');
+            typeof idea.id !== 'string' || !/^[a-f0-9]{16}$/.test(idea.id) || typeof idea.created_at !== 'string') throw new Error('Respuesta de borrador no válida.');
         const label = document.createElement('p'); label.textContent = idea.state + ' · ' + idea.id + ' · ' + idea.created_at;
         const content = document.createElement('p'); content.textContent = idea.text;
         el('idea-result').append(label, content);
+        savedIdeaId = idea.id; analysisState('idle', '');
         ideaState('success', 'Idea guardada como BORRADOR privado de esta sesión.');
       } catch (error) {
         if (ideaController !== request || request.signal.aborted) return;
@@ -465,7 +523,7 @@
     }
     function cancelResponse() {
       cancelContext();
-      cancelIdea();
+      cancelIdea(); cancelAnalysis();
       generation++; ttsEpoch++; speech?.cancel(); speech = null; cleanupAudio();
       sttEpoch++; sttController?.abort(); sttController = null;
       if (controller) controller.abort(); controller = null; busy = false;
