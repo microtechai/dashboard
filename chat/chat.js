@@ -33,6 +33,15 @@
                 <button type="button" id="jarvis-chat-mute" disabled>Silenciar micrófono</button>
               </div>
               <label><input id="jarvis-chat-autoread" type="checkbox"> Voz al usar Hablar manual</label>
+              <details id="jarvis-chat-context">
+                <summary>Contexto MC</summary>
+                <div>
+                  <button type="button" id="jarvis-chat-dashboard">Ver dashboard</button>
+                  <button type="button" id="jarvis-chat-projects">Ver proyectos</button>
+                  <p id="jarvis-chat-context-status" role="status" aria-live="polite">Consulta de solo lectura.</p>
+                  <ul id="jarvis-chat-context-result" aria-label="Resumen de Contexto MC"></ul>
+                </div>
+              </details>
               <details class="jarvis-chat-help"><summary>Ayuda de voz</summary><p class="jarvis-voice-notice">Voz continua experimental · usa auriculares. AEC solicitado al navegador; VAD no elimina eco ni garantiza evitar auto-interrupciones con altavoces. Máximo 20 s por frase, 6 envíos/min; sin reintentos automáticos.</p><p>Hablar graba una frase; pulsa de nuevo para enviarla. Detener cancela la respuesta; durante una llamada, Colgar cierra el micrófono.</p></details>
               <details class="mia-workflow"><summary>Flujo observable</summary><div><p id="jarvis-chat-stage" role="status">Sin petición activa</p><p>STT y modelo: petición pendiente, no porcentaje interno. Audio: reproducción local observada.</p><p>Memoria y herramientas: no instrumentado. Obsidian: concepto sin datos importados.</p></div></details>
               <button type="button" id="jarvis-chat-logout">Salir</button>
@@ -61,6 +70,7 @@
     function showError(error) {
       if (callOn || continuous?.active || continuous?.pending) stop();
       if (error.status === 401) {
+        el('context-result').replaceChildren();
         stop(); authenticated = false; el('conversation').hidden = true; location.replace('/login.html');
         el('history').replaceChildren(); el('input').value = '';
       }
@@ -100,6 +110,7 @@
     async function logout() {
       if (authBusy) return; authBusy = true;
       stop();
+      el('context-result').replaceChildren();
       el('compose').querySelector('button').disabled = true;
       try {
         await api('logout', {});
@@ -112,6 +123,64 @@
     document.querySelectorAll('.sidebar-logout').forEach(button => button.addEventListener('click', logout));
     window.addEventListener('pageshow', event => { if (event.persisted) location.reload(); });
     let generation = 0, controller = null, busy = false;
+    let contextController = null;
+    function contextState(value, text) {
+      el('context-status').dataset.state = value;
+      el('context-status').textContent = text;
+      el('context-result').setAttribute('aria-busy', String(value === 'loading'));
+      el('dashboard').disabled = el('projects').disabled = value === 'loading';
+    }
+    function cancelContext() {
+      if (!contextController) return;
+      contextController.abort(); contextController = null;
+      contextState('idle', 'Consulta detenida.');
+    }
+    function renderContext(data) {
+      // Opaque MC values are display-only: no HTML, links, model input or history.
+      const result = el('context-result'); result.replaceChildren();
+      let remaining = 4000, count = 0;
+      function visit(value, path, depth) {
+        if (count >= 12 || remaining <= 0) return;
+        if (value === null || ['string', 'number', 'boolean'].includes(typeof value)) {
+          const text = (path + ': ' + String(value).slice(0, remaining)).slice(0, remaining);
+          const row = document.createElement('li'); row.textContent = text; result.append(row);
+          remaining -= text.length; count++;
+        } else if (typeof value === 'object' && depth < 4) {
+          // Bound traversal as well as output, including empty/nested collections.
+          let visited = 0;
+          for (const key in value) {
+            if (!Object.prototype.hasOwnProperty.call(value, key)) continue;
+            if (visited++ >= 12 || count >= 12 || remaining <= 0) break;
+            visit(value[key], (path ? path + ' · ' : '') + key.slice(0, 120), depth + 1);
+          }
+        }
+      }
+      visit(data, '', 0);
+      return count;
+    }
+    async function readContext(tool) {
+      if (!['read_dashboard', 'read_projects'].includes(tool) || !authenticated || authBusy || contextController ||
+          el('panel').hidden || !el('options').open || !el('context').open) return;
+      const request = new AbortController(); contextController = request;
+      el('context-result').replaceChildren();
+      contextState('loading', 'Consultando Contexto MC…');
+      try {
+        const data = await (await api('tool', { tool, args: {} }, request.signal)).json();
+        if (contextController !== request || request.signal.aborted) return;
+        if (data?.ok !== true || data.tool !== tool) throw new Error(typeof data?.error === 'string' ? data.error : 'Respuesta de Contexto MC no válida.');
+        const count = renderContext(data.data);
+        contextState('success', count ? 'Consulta completada · resumen limitado a 12 elementos / 4000 caracteres.' : 'Consulta completada · sin datos resumibles.');
+      } catch (error) {
+        if (contextController !== request || request.signal.aborted) return;
+        if (error.name === 'AbortError') contextState('idle', 'Consulta detenida.');
+        else {
+          showError(error);
+          contextState('error', error.message.slice(0, 4000));
+        }
+      } finally { if (contextController === request) contextController = null; }
+    }
+    el('dashboard').addEventListener('click', () => readContext('read_dashboard'));
+    el('projects').addEventListener('click', () => readContext('read_projects'));
     let audio = null, audioURL = null, audioContext = null, source = null, analyser = null, raf = 0, finishAudio = null;
     let mic = null, recorder = null, micContext = null, micSource = null, micAnalyser = null, micRAF = 0, micTimer = 0;
     function releaseMic() {
@@ -354,6 +423,7 @@
       responseTimer = setTimeout(() => { if (id === generation) { stop(); status('Tiempo de respuesta agotado. Micrófono cerrado; sin reintento automático.'); } }, 65000);
     }
     function cancelResponse() {
+      cancelContext();
       generation++; ttsEpoch++; speech?.cancel(); speech = null; cleanupAudio();
       sttEpoch++; sttController?.abort(); sttController = null;
       if (controller) controller.abort(); controller = null; busy = false;

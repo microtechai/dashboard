@@ -36,6 +36,12 @@
 #jarvis-chat-panel{height:620px}
 @media(max-width:600px){#jarvis-chat{right:12px;bottom:12px}#jarvis-chat-panel{height:min(620px,calc(100dvh - 36px));max-height:calc(100dvh - 36px)}}
 #jarvis-chat summary{cursor:pointer;padding:7px 4px;color:#a7b9cc}
+#jarvis-chat details:not([open])>:not(summary){display:none!important}
+#jarvis-chat-context{font-size:12px;color:#b3c7e8}
+#jarvis-chat-context-result{margin:6px 0;padding-left:20px;max-height:180px;overflow:auto;overflow-wrap:anywhere;white-space:pre-wrap}
+#jarvis-chat-context-status{margin:8px 0;overflow-wrap:anywhere}
+#jarvis-chat-context-status[data-state=error]{color:#ffb4bc}
+#jarvis-chat-context-status[data-state=success]{color:#8ef2bd}
 #jarvis-chat-options>.jarvis-chat-options-body{position:absolute;z-index:3;left:12px;right:12px;bottom:52px;padding:12px;background:#101d2b;border:1px solid #38546b;border-radius:8px;box-shadow:0 8px 24px #0006;max-height:min(300px,calc(100dvh - 190px));overflow:auto;overscroll-behavior:contain}
 #jarvis-chat .jarvis-chat-options-body>label{margin:12px 0}
 #jarvis-chat .mia-workflow,#jarvis-chat .jarvis-chat-help{font-size:11px;color:#9fafc7}
