@@ -129,7 +129,7 @@ if ($action === 'analyze_idea') {
         $ch = curl_init($config['model_url']);
         curl_setopt_array($ch, [CURLOPT_POST => true,
             CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Accept: application/json'],
-            CURLOPT_POSTFIELDS => json_encode(['model' => 'qwen3.8-flash-next', 'messages' => $messages, 'stream' => false, 'max_tokens' => 600], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
+            CURLOPT_POSTFIELDS => json_encode(['model' => 'qwen3.8-flash-next', 'messages' => $messages, 'stream' => false, 'max_tokens' => 256], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
             CURLOPT_CONNECTTIMEOUT => 5, CURLOPT_TIMEOUT => 30, CURLOPT_FOLLOWLOCATION => false,
             CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
             CURLOPT_WRITEFUNCTION => function($ch, $chunk) use (&$response) {
@@ -195,7 +195,7 @@ if ($action === 'prepare_proposal') {
         $ch = curl_init($config['model_url']);
         curl_setopt_array($ch, [CURLOPT_POST => true,
             CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Accept: application/json'],
-            CURLOPT_POSTFIELDS => json_encode(['model' => 'qwen3.8-flash-next', 'messages' => $messages, 'stream' => false, 'max_tokens' => 800], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
+            CURLOPT_POSTFIELDS => json_encode(['model' => 'qwen3.8-flash-next', 'messages' => $messages, 'stream' => false, 'max_tokens' => 384], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
             CURLOPT_CONNECTTIMEOUT => 5, CURLOPT_TIMEOUT => 30, CURLOPT_FOLLOWLOCATION => false,
             CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
             CURLOPT_WRITEFUNCTION => function($ch, $chunk) use (&$response) {
@@ -238,7 +238,7 @@ if ($action === 'prepare_client_view') {
         $ch = curl_init($config['model_url']);
         curl_setopt_array($ch, [CURLOPT_POST => true,
             CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Accept: application/json'],
-            CURLOPT_POSTFIELDS => json_encode(['model' => 'qwen3.8-flash-next', 'messages' => $messages, 'stream' => false, 'max_tokens' => 600], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
+            CURLOPT_POSTFIELDS => json_encode(['model' => 'qwen3.8-flash-next', 'messages' => $messages, 'stream' => false, 'max_tokens' => 256], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
             CURLOPT_CONNECTTIMEOUT => 5, CURLOPT_TIMEOUT => 30, CURLOPT_FOLLOWLOCATION => false,
             CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
             CURLOPT_WRITEFUNCTION => function($ch, $chunk) use (&$response) {
@@ -291,7 +291,7 @@ if ($action === 'message') {
         $buffer = ''; $full = ''; $done = false; $invalid = false; $lastBeat = microtime(true);
         $ch = curl_init($config['model_url']);
         curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Accept: text/event-stream'],
-            CURLOPT_POSTFIELDS => json_encode(['model' => 'qwen3.8-flash-next', 'messages' => $messages, 'max_tokens' => 1024, 'stream' => true], JSON_UNESCAPED_UNICODE),
+            CURLOPT_POSTFIELDS => json_encode(['model' => 'qwen3.8-flash-next', 'messages' => $messages, 'max_tokens' => 512, 'stream' => true], JSON_UNESCAPED_UNICODE),
             CURLOPT_CONNECTTIMEOUT => 5, CURLOPT_TIMEOUT => 60, CURLOPT_FOLLOWLOCATION => false,
             CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS, CURLOPT_NOPROGRESS => false,
             CURLOPT_XFERINFOFUNCTION => function($ch, ...$unused) use (&$lastBeat) {
