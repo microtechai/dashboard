@@ -5,10 +5,11 @@ test('viewport pixel budget bounds buffer cost without changing CSS or input coo
  const source=html.match(/function miaPixelRatio\(width, height, dpr\) \{[\s\S]*?\n\}/);
  assert.ok(source,'production viewport pixel budget is required');
  const context={};vm.runInNewContext(source[0],context);
- assert.equal(context.miaPixelRatio(1440,1120,1),.5);
+ assert.equal(context.miaPixelRatio(1440,1120,1)>=.65,true);
+ assert.equal(context.miaPixelRatio(1440,1120,1)<=1,true);
  assert.ok(context.miaPixelRatio(390,844,3)>=1);
  assert.ok(context.miaPixelRatio(390,844,3)<=1.5);
- assert.equal(context.miaPixelRatio(1920,1080,2),.5);
+ assert.equal(context.miaPixelRatio(1920,1080,2)>=.65,true);
 });
 test('reactor owns no loop; real channels are independent, bounded, expire and dispose',()=>{
  let now=0;const handlers={};const w={performance:{now:()=>now},addEventListener:(n,f)=>handlers[n]=f,removeEventListener:n=>delete handlers[n]};

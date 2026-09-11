@@ -507,7 +507,7 @@ const renderer = (() => {
 // Bound fragment workload to a CSS-viewport budget; DOM text and hit testing
 // remain native resolution. Never detect the test/browser GPU or alter materials.
 function miaPixelRatio(width, height, dpr) {
-  return Math.max(.5, Math.min(dpr || 1, 1.5, Math.sqrt(403200 / Math.max(1, width * height))));
+  return Math.max(.65, Math.min(dpr || 1, 1.5, Math.sqrt(737280 / Math.max(1, width * height))));
 }
 function resizeMiaRenderer() {
   renderer.setPixelRatio(miaPixelRatio(window.innerWidth, window.innerHeight, window.devicePixelRatio));
@@ -957,7 +957,8 @@ function animate(now = performance.now()){
   wireMesh.rotation.x = -time * 0.2; wireMesh.rotation.y = time * 0.3;
   outerMesh.rotation.x = time * 0.1; outerMesh.rotation.z = time * 0.15;
 
-  // The passive state controller reuses reactor materials in this sole render loop.
+  // The live reactor owns scene animation; the host remains the sole RAF owner.
+  fireController.update(0.016);
   miaStateVisual.update(now, time, fireMotionPreference.matches);
   fireController.group.visible = currentView === 'dashboard';
   // Frame the face above the single chat bar in viewport-relative coordinates.
