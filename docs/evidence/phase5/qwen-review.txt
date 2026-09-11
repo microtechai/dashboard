@@ -1,0 +1,40 @@
+Aquí tienes una **revisión de seguridad concisa y enfocada en riesgos concretos** del código PHP y su configuración nginx, sin herramientas ni secretos, y respetando el alcance indicado:
+
+---
+
+### 🔴 **Riesgos críticos / graves**
+
+1. **`session_write_close()` antes de validar rutas y archivos**
+   - Se libera la sesión *antes* de comprobar si el recurso solicitado es seguro (`is_readable`, `in_array` en `$files`).
+   - **Riesgo**: Si `session.php` inicia sesión con `session.use_strict_mode=1`, y hay una race condition (ej. múltiples peticiones concurrentes), podría permitirse acceso a rutas no permitidas si la sesión se reutiliza antes de ser cerrada.
+   - **Recomendación**: Mover `session_write_close()` **después** de la validación final del archivo.
+
+2. **Validación de `$path` insuficiente contra path traversal**
+   - Aunque `$path` se obtiene con `parse_url(..., PHP_URL_PATH)`, **no se normaliza ni se sanitiza** (ej. `..`, `%2e%2e`, `/./`, etc.).
+   - El `in_array($path, [...], true)` es estricto, pero **no protege contra rutas como `/../etc/passwd` si el atacante logra inyectarlas en `REQUEST_URI`** (nginx lo pasa tal cual a PHP).
+   - **Riesgo**: Posible lectura de archivos fuera de `$root` si `$files` se expande en el futuro sin validación adicional.
+   - **Recomendación**: Normalizar `$path` con `realpath()` o `str_replace(['//', '/./', '/../'], '/', $path)` *antes* de comparar, y validar que no contenga `..` ni empiece con `/`.
+
+3. **`$root` configurable vía constante sin validación**
+   - `JARVIS_DOCUMENT_ROOT` puede definirse externamente (ej. por `php-fpm` o `.env`).
+   - Si se sobrescribe con una ruta relativa o insegura (ej. `../../tmp`), `is_readable($file)` podría fallar silenciosamente o leer archivos no deseados.
+   - **Recomendación**: Validar que `$root` sea un directorio absoluto, existente y dentro de un whitelist (ej. `/var/www/dashboard` o `/opt/jarvis-access`).
+
+4. **`readfile()` sin validación de tipo MIME real**
+   - Se sirve `$file` con `$mime` basado en una allowlist estática, pero **no se verifica el contenido real del archivo**.
+   - Si alguien sube un archivo `index.html` con contenido PHP (ej. `<?php ... ?>`) y se incluye en `$files`, se servirá como texto plano, pero si se expande la allowlist en el futuro, podría ejecutarse si nginx no lo bloquea.
+   - **Recomendación**: Asegurar que `readfile()` solo lea archivos estáticos (sin código ejecutable), y usar `finfo_file()` para verificar MIME real si se permite carga dinámica.
+
+---
+
+### 🟡 **Riesgos menores / buenas prácticas**
+
+5. **`fail()` no definido en el snippet**
+   - No se muestra su implementación, pero si no termina con `exit`/`die`, podría continuar la ejecución.
+   - **Recomendación**: Verificar que `fail()` siempre termine el script.
+
+6. **`$_SERVER['REQUEST_METHOD']` no validado antes de `session_write_close()`**
+   - Si la sesión se inicia en `session.php`, y el método es inválido (ej. `POST`), se libera la sesión *antes* de detectar el error.
+   - **Recomendación**: Validar método *antes* de iniciar/terminar sesión.
+
+7. **`etag off; if_modified_since off

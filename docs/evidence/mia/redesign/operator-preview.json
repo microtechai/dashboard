@@ -1,0 +1,249 @@
+{
+  "mode": "operator-preview",
+  "hardwarePerformance": "pending",
+  "technicalRelease": false,
+  "operatorAuthorization": "redise\u00f1o y publicaci\u00f3n directa autorizados",
+  "timestamp": "20260908T232629Z",
+  "backup": "/root/mia-redesign-rollback-20260908T232629Z",
+  "items": [
+    {
+      "local": "chat/voice/speech.mjs",
+      "path": "/var/www/dashboard/chat/voice/speech.mjs",
+      "before": "554d41b57213c6a1a8ee453aa61215ce3888e6c4a96c9f0810e8b36e842cb87b",
+      "after": "e0b49f5394f37f8931b8bc9f7e8c801b2fe2050d5c01edc436777f9a03f2f869",
+      "upload": "0"
+    },
+    {
+      "local": "api/chat.php",
+      "path": "/var/www/dashboard/api/chat.php",
+      "before": "2782b60bd07d446cb38e74870a8251a0a99212248088531785c878e1dd479c74",
+      "after": "dc5db042bf523aa3989ed0d6d43e1ace6c594f8052833b6b1380046fc250ecd3",
+      "upload": "1"
+    },
+    {
+      "local": "chat/chat.css",
+      "path": "/var/www/dashboard/chat/chat.css",
+      "before": "9a61b4ac6ab46254e88e2585af914051d2740dc2b8bbd485388ff48e52ede4d1",
+      "after": "7f33dc6c0df622b76a91ade2b89aac59d15e9b6ce37be4074945fc2c8cc17df6",
+      "upload": "2"
+    },
+    {
+      "local": "chat/chat.js",
+      "path": "/var/www/dashboard/chat/chat.js",
+      "before": "ed5ed905b07e7c239799a896c03c08f9c708760eaef6bbf1a9ae88dddc80a2c6",
+      "after": "c217a70e120217c13cd93ba1f1f7b669c3fe6191c14903da0ffc09cbc771aa39",
+      "upload": "3"
+    },
+    {
+      "local": "integration.js",
+      "path": "/var/www/dashboard/integration.js",
+      "before": "6998514afd19481d9347b171ec9e2389f50badea99de431ae88458dc61377f02",
+      "after": "6c687a9837e0d9bee6e3c34b9e9f39c34eea25a12a47ebf5e4facc3d62b9e553",
+      "upload": "4"
+    },
+    {
+      "local": "index.html",
+      "path": "/var/www/dashboard/index.html",
+      "before": "5b73ee24633b2128c09d26172aea5387a3879c8f1fe7a40099ce6c5c285b8ef0",
+      "after": "ed15d5a598f68f40ada2f352e09f04df89ceb4f5603fccc23356f3a356dcd5d9",
+      "upload": "5"
+    }
+  ],
+  "noRestarts": true,
+  "qaSHA256": "8f5134c30ca56ca9768ecb7bf17c998d15d42561c5fabed2a1b194badbd73ad4",
+  "protectedFilesUnchanged": 12,
+  "verifiedHashes": 18,
+  "probes": [
+    {
+      "origin": false,
+      "path": "/",
+      "status": 303
+    },
+    {
+      "origin": false,
+      "path": "/index.html",
+      "status": 303
+    },
+    {
+      "origin": false,
+      "path": "/login.html",
+      "status": 200
+    },
+    {
+      "origin": false,
+      "path": "/chat/chat.js",
+      "status": 401
+    },
+    {
+      "origin": false,
+      "path": "/chat/chat.js?v=20260908-mia1",
+      "status": 401
+    },
+    {
+      "origin": false,
+      "path": "/chat/chat.js?v=20260909-redesign2",
+      "status": 401
+    },
+    {
+      "origin": false,
+      "path": "/chat/chat.css",
+      "status": 401
+    },
+    {
+      "origin": false,
+      "path": "/chat/chat.css?v=20260908-mia1",
+      "status": 401
+    },
+    {
+      "origin": false,
+      "path": "/chat/chat.css?v=20260909-redesign2",
+      "status": 401
+    },
+    {
+      "origin": false,
+      "path": "/chat/voice/speech.mjs",
+      "status": 401
+    },
+    {
+      "origin": false,
+      "path": "/chat/voice/speech.mjs?v=20260908-mia1",
+      "status": 401
+    },
+    {
+      "origin": false,
+      "path": "/chat/voice/speech.mjs?v=20260909-redesign2",
+      "status": 401
+    },
+    {
+      "origin": false,
+      "path": "/reactor/reactor.js",
+      "status": 401
+    },
+    {
+      "origin": false,
+      "path": "/reactor/reactor.js?v=20260908-mia1",
+      "status": 401
+    },
+    {
+      "origin": false,
+      "path": "/reactor/reactor.js?v=20260909-redesign2",
+      "status": 401
+    },
+    {
+      "origin": false,
+      "path": "/voice/speech.js",
+      "status": 401
+    },
+    {
+      "origin": false,
+      "path": "/voice/speech.js?v=20260908-mia1",
+      "status": 401
+    },
+    {
+      "origin": false,
+      "path": "/voice/speech.js?v=20260909-redesign2",
+      "status": 401
+    },
+    {
+      "origin": false,
+      "path": "/chat/voice/speech.mjs?v=20260909-emoji2",
+      "status": 401
+    },
+    {
+      "origin": true,
+      "path": "/",
+      "status": 303
+    },
+    {
+      "origin": true,
+      "path": "/index.html",
+      "status": 303
+    },
+    {
+      "origin": true,
+      "path": "/login.html",
+      "status": 200
+    },
+    {
+      "origin": true,
+      "path": "/chat/chat.js",
+      "status": 401
+    },
+    {
+      "origin": true,
+      "path": "/chat/chat.js?v=20260908-mia1",
+      "status": 401
+    },
+    {
+      "origin": true,
+      "path": "/chat/chat.js?v=20260909-redesign2",
+      "status": 401
+    },
+    {
+      "origin": true,
+      "path": "/chat/chat.css",
+      "status": 401
+    },
+    {
+      "origin": true,
+      "path": "/chat/chat.css?v=20260908-mia1",
+      "status": 401
+    },
+    {
+      "origin": true,
+      "path": "/chat/chat.css?v=20260909-redesign2",
+      "status": 401
+    },
+    {
+      "origin": true,
+      "path": "/chat/voice/speech.mjs",
+      "status": 401
+    },
+    {
+      "origin": true,
+      "path": "/chat/voice/speech.mjs?v=20260908-mia1",
+      "status": 401
+    },
+    {
+      "origin": true,
+      "path": "/chat/voice/speech.mjs?v=20260909-redesign2",
+      "status": 401
+    },
+    {
+      "origin": true,
+      "path": "/reactor/reactor.js",
+      "status": 401
+    },
+    {
+      "origin": true,
+      "path": "/reactor/reactor.js?v=20260908-mia1",
+      "status": 401
+    },
+    {
+      "origin": true,
+      "path": "/reactor/reactor.js?v=20260909-redesign2",
+      "status": 401
+    },
+    {
+      "origin": true,
+      "path": "/voice/speech.js",
+      "status": 401
+    },
+    {
+      "origin": true,
+      "path": "/voice/speech.js?v=20260908-mia1",
+      "status": 401
+    },
+    {
+      "origin": true,
+      "path": "/voice/speech.js?v=20260909-redesign2",
+      "status": 401
+    },
+    {
+      "origin": true,
+      "path": "/chat/voice/speech.mjs?v=20260909-emoji2",
+      "status": 401
+    }
+  ],
+  "manifestSHA256": "e4aa4cde70eb7d89dfbf1d88a2885f8be2eea61904a840a4324ec92ab622c75c"
+}

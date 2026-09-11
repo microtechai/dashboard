@@ -1,0 +1,1017 @@
+{
+  "backend": "Chromium ANGLE SwiftShader, software only; isolated component, no authentication",
+  "samples": [
+    {
+      "version": "baseline",
+      "profile": "normal",
+      "before": {
+        "time": 1.4999999999999996,
+        "changed": 6478,
+        "outsideCore": 3031,
+        "blue": 6478,
+        "checksum": 441808281,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "after": {
+        "time": 2.499999999999996,
+        "changed": 6748,
+        "outsideCore": 3301,
+        "blue": 6748,
+        "checksum": 445289812,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "cyanClipFraction": 0.2959810214903712,
+      "temporalMeanRGB": [
+        0.06446041666666667,
+        0.12592291666666666,
+        0.12590416666666668
+      ],
+      "renderMsMedian": 11.699999988079071,
+      "renderMsSamples": [
+        11.700000047683716,
+        10.700000047683716,
+        11.900000095367432,
+        13.200000047683716,
+        10.700000047683716,
+        11.699999928474426,
+        10.800000071525574,
+        11.799999952316284
+      ],
+      "screenshots": [
+        "/home/ddr/jarvis-phase6-artifacts/baseline/normal-t0.png",
+        "/home/ddr/jarvis-phase6-artifacts/baseline/normal-t1.png"
+      ]
+    },
+    {
+      "version": "baseline",
+      "profile": "close",
+      "before": {
+        "time": 1.4999999999999996,
+        "changed": 48555,
+        "outsideCore": 17455,
+        "blue": 48555,
+        "checksum": 764846804,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "after": {
+        "time": 2.499999999999996,
+        "changed": 51825,
+        "outsideCore": 20801,
+        "blue": 51825,
+        "checksum": 791797879,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "cyanClipFraction": 0.38483213911923353,
+      "temporalMeanRGB": [
+        0.5001614583333334,
+        1.057059375,
+        1.10531875
+      ],
+      "renderMsMedian": 24.75,
+      "renderMsSamples": [
+        24.299999952316284,
+        25.899999976158142,
+        24.600000023841858,
+        24.5,
+        24.899999976158142,
+        23.199999928474426,
+        27.700000047683716,
+        26
+      ],
+      "screenshots": [
+        "/home/ddr/jarvis-phase6-artifacts/baseline/close-t0.png",
+        "/home/ddr/jarvis-phase6-artifacts/baseline/close-t1.png"
+      ]
+    },
+    {
+      "version": "baseline",
+      "profile": "oblique",
+      "before": {
+        "time": 1.4999999999999996,
+        "changed": 49193,
+        "outsideCore": 18633,
+        "blue": 49193,
+        "checksum": 765296429,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "after": {
+        "time": 2.499999999999996,
+        "changed": 53254,
+        "outsideCore": 22230,
+        "blue": 53254,
+        "checksum": 802745425,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "cyanClipFraction": 0.3876476504111534,
+      "temporalMeanRGB": [
+        0.47132395833333335,
+        1.3541947916666666,
+        1.4350947916666668
+      ],
+      "renderMsMedian": 24.80000001192093,
+      "renderMsSamples": [
+        24.100000023841858,
+        23.899999976158142,
+        24.5,
+        27.399999976158142,
+        25.100000023841858,
+        31,
+        23.399999976158142,
+        25.299999952316284
+      ],
+      "screenshots": [
+        "/home/ddr/jarvis-phase6-artifacts/baseline/oblique-t0.png",
+        "/home/ddr/jarvis-phase6-artifacts/baseline/oblique-t1.png"
+      ]
+    },
+    {
+      "version": "baseline",
+      "profile": "side",
+      "before": {
+        "time": 1.4999999999999996,
+        "changed": 50016,
+        "outsideCore": 19148,
+        "blue": 50016,
+        "checksum": 777633134,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "after": {
+        "time": 2.499999999999996,
+        "changed": 55080,
+        "outsideCore": 23958,
+        "blue": 55080,
+        "checksum": 802730937,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "cyanClipFraction": 0.33932392765836566,
+      "temporalMeanRGB": [
+        0.42768645833333335,
+        1.3798822916666666,
+        1.605225
+      ],
+      "renderMsMedian": 24.19999998807907,
+      "renderMsSamples": [
+        24.399999976158142,
+        24.100000023841858,
+        24.300000071525574,
+        23.59999990463257,
+        23.40000009536743,
+        26.40000009536743,
+        23.299999952316284,
+        24.299999952316284
+      ],
+      "screenshots": [
+        "/home/ddr/jarvis-phase6-artifacts/baseline/side-t0.png",
+        "/home/ddr/jarvis-phase6-artifacts/baseline/side-t1.png"
+      ]
+    },
+    {
+      "version": "baseline",
+      "profile": "back",
+      "before": {
+        "time": 1.4999999999999996,
+        "changed": 50187,
+        "outsideCore": 19106,
+        "blue": 50187,
+        "checksum": 757710957,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "after": {
+        "time": 2.499999999999996,
+        "changed": 51632,
+        "outsideCore": 20675,
+        "blue": 51632,
+        "checksum": 793022601,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "cyanClipFraction": 0.3867166253701577,
+      "temporalMeanRGB": [
+        0.46724375,
+        1.3557760416666667,
+        1.4873583333333333
+      ],
+      "renderMsMedian": 24.649999976158142,
+      "renderMsSamples": [
+        23.399999976158142,
+        24.199999928474426,
+        23.300000071525574,
+        24.59999990463257,
+        24.700000047683716,
+        28.200000047683716,
+        28.699999928474426,
+        27.5
+      ],
+      "screenshots": [
+        "/home/ddr/jarvis-phase6-artifacts/baseline/back-t0.png",
+        "/home/ddr/jarvis-phase6-artifacts/baseline/back-t1.png"
+      ]
+    },
+    {
+      "version": "baseline",
+      "profile": "low",
+      "before": {
+        "time": 1.4999999999999996,
+        "changed": 49193,
+        "outsideCore": 18633,
+        "blue": 49193,
+        "checksum": 765296429,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "after": {
+        "time": 2.499999999999996,
+        "changed": 53254,
+        "outsideCore": 22230,
+        "blue": 53254,
+        "checksum": 802745425,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "cyanClipFraction": 0.3876476504111534,
+      "temporalMeanRGB": [
+        0.47132395833333335,
+        1.3541947916666666,
+        1.4350947916666668
+      ],
+      "renderMsMedian": 25.099999964237213,
+      "renderMsSamples": [
+        24.300000071525574,
+        33.39999997615814,
+        31.199999928474426,
+        24.399999976158142,
+        25.100000023841858,
+        24.200000047683716,
+        25.09999990463257,
+        25.800000071525574
+      ],
+      "screenshots": [
+        "/home/ddr/jarvis-phase6-artifacts/baseline/low-t0.png",
+        "/home/ddr/jarvis-phase6-artifacts/baseline/low-t1.png"
+      ]
+    },
+    {
+      "version": "baseline",
+      "profile": "reduced",
+      "before": {
+        "time": 1.4999999999999996,
+        "changed": 53136,
+        "outsideCore": 22207,
+        "blue": 53136,
+        "checksum": 759483164,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "after": {
+        "time": 2.499999999999996,
+        "changed": 50692,
+        "outsideCore": 19699,
+        "blue": 50692,
+        "checksum": 742795149,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 7,
+        "triangles": 188,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "cyanClipFraction": 0.3244979231790348,
+      "temporalMeanRGB": [
+        0.17678333333333332,
+        1.026928125,
+        1.356371875
+      ],
+      "renderMsMedian": 24.5,
+      "renderMsSamples": [
+        24.700000047683716,
+        24.299999952316284,
+        25.899999976158142,
+        24.800000071525574,
+        23.600000023841858,
+        24,
+        25.200000047683716,
+        23.600000023841858
+      ],
+      "screenshots": [
+        "/home/ddr/jarvis-phase6-artifacts/baseline/reduced-t0.png",
+        "/home/ddr/jarvis-phase6-artifacts/baseline/reduced-t1.png"
+      ]
+    },
+    {
+      "version": "new",
+      "profile": "normal",
+      "before": {
+        "time": 1.4999999999999996,
+        "changed": 8357,
+        "outsideCore": 5278,
+        "blue": 8357,
+        "checksum": 423028051,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 5,
+        "triangles": 204,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "after": {
+        "time": 2.499999999999996,
+        "changed": 7399,
+        "outsideCore": 4327,
+        "blue": 7399,
+        "checksum": 422802655,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 5,
+        "triangles": 204,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "cyanClipFraction": 0.0,
+      "temporalMeanRGB": [
+        0.004832291666666667,
+        0.12576666666666667,
+        0.20317083333333333
+      ],
+      "renderMsMedian": 14.099999964237213,
+      "renderMsSamples": [
+        14.299999952316284,
+        13,
+        13.899999976158142,
+        14.900000095367432,
+        14.799999952316284,
+        13.899999976158142,
+        14.300000071525574,
+        13.199999928474426
+      ],
+      "screenshots": [
+        "/home/ddr/jarvis-phase6-artifacts/new/normal-t0.png",
+        "/home/ddr/jarvis-phase6-artifacts/new/normal-t1.png"
+      ]
+    },
+    {
+      "version": "new",
+      "profile": "close",
+      "before": {
+        "time": 1.4999999999999996,
+        "changed": 73998,
+        "outsideCore": 43178,
+        "blue": 73998,
+        "checksum": 629148285,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 5,
+        "triangles": 204,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "after": {
+        "time": 2.499999999999996,
+        "changed": 64984,
+        "outsideCore": 34152,
+        "blue": 64984,
+        "checksum": 623404260,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 5,
+        "triangles": 204,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "cyanClipFraction": 0.0,
+      "temporalMeanRGB": [
+        0.05215625,
+        1.3732760416666667,
+        2.205715625
+      ],
+      "renderMsMedian": 46.55000001192093,
+      "renderMsSamples": [
+        55.89999997615814,
+        55.39999997615814,
+        45.10000002384186,
+        54.299999952316284,
+        45.800000071525574,
+        45.5,
+        45.39999997615814,
+        47.299999952316284
+      ],
+      "screenshots": [
+        "/home/ddr/jarvis-phase6-artifacts/new/close-t0.png",
+        "/home/ddr/jarvis-phase6-artifacts/new/close-t1.png"
+      ]
+    },
+    {
+      "version": "new",
+      "profile": "oblique",
+      "before": {
+        "time": 1.4999999999999996,
+        "changed": 72288,
+        "outsideCore": 41298,
+        "blue": 72288,
+        "checksum": 625440448,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 5,
+        "triangles": 204,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "after": {
+        "time": 2.499999999999996,
+        "changed": 66368,
+        "outsideCore": 35632,
+        "blue": 66368,
+        "checksum": 623838866,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 5,
+        "triangles": 204,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "cyanClipFraction": 0.0,
+      "temporalMeanRGB": [
+        0.055266666666666665,
+        1.4609104166666667,
+        2.357507291666667
+      ],
+      "renderMsMedian": 47.59999996423721,
+      "renderMsSamples": [
+        50.39999997615814,
+        48.60000002384186,
+        45.200000047683716,
+        46.59999990463257,
+        44.800000071525574,
+        60.199999928474426,
+        52.90000009536743,
+        45.39999997615814
+      ],
+      "screenshots": [
+        "/home/ddr/jarvis-phase6-artifacts/new/oblique-t0.png",
+        "/home/ddr/jarvis-phase6-artifacts/new/oblique-t1.png"
+      ]
+    },
+    {
+      "version": "new",
+      "profile": "side",
+      "before": {
+        "time": 1.4999999999999996,
+        "changed": 72097,
+        "outsideCore": 40951,
+        "blue": 72097,
+        "checksum": 624508249,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 5,
+        "triangles": 204,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "after": {
+        "time": 2.499999999999996,
+        "changed": 65712,
+        "outsideCore": 35114,
+        "blue": 65712,
+        "checksum": 626682248,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 5,
+        "triangles": 204,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "cyanClipFraction": 0.0,
+      "temporalMeanRGB": [
+        0.051715625,
+        1.3924697916666666,
+        2.2106302083333333
+      ],
+      "renderMsMedian": 48.44999998807907,
+      "renderMsSamples": [
+        45.799999952316284,
+        48.700000047683716,
+        53.89999997615814,
+        45.10000002384186,
+        45.89999997615814,
+        52.5,
+        48.199999928474426,
+        54.10000002384186
+      ],
+      "screenshots": [
+        "/home/ddr/jarvis-phase6-artifacts/new/side-t0.png",
+        "/home/ddr/jarvis-phase6-artifacts/new/side-t1.png"
+      ]
+    },
+    {
+      "version": "new",
+      "profile": "back",
+      "before": {
+        "time": 1.4999999999999996,
+        "changed": 72609,
+        "outsideCore": 41562,
+        "blue": 72609,
+        "checksum": 628403963,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 5,
+        "triangles": 204,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "after": {
+        "time": 2.499999999999996,
+        "changed": 66128,
+        "outsideCore": 35227,
+        "blue": 66128,
+        "checksum": 628722254,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 5,
+        "triangles": 204,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "cyanClipFraction": 0.0,
+      "temporalMeanRGB": [
+        0.0510125,
+        1.329909375,
+        2.0933677083333335
+      ],
+      "renderMsMedian": 53.199999928474426,
+      "renderMsSamples": [
+        56.89999997615814,
+        47.10000002384186,
+        46.699999928474426,
+        66.10000002384186,
+        46.60000002384186,
+        52.699999928474426,
+        62.40000009536743,
+        53.699999928474426
+      ],
+      "screenshots": [
+        "/home/ddr/jarvis-phase6-artifacts/new/back-t0.png",
+        "/home/ddr/jarvis-phase6-artifacts/new/back-t1.png"
+      ]
+    },
+    {
+      "version": "new",
+      "profile": "low",
+      "before": {
+        "time": 12.300000000000075,
+        "changed": 72081,
+        "outsideCore": 41762,
+        "blue": 72081,
+        "checksum": 613646703,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 5,
+        "triangles": 204,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "after": {
+        "time": 13.300000000000125,
+        "changed": 65751,
+        "outsideCore": 34840,
+        "blue": 65751,
+        "checksum": 608645629,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 5,
+        "triangles": 204,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "cyanClipFraction": 0.0,
+      "temporalMeanRGB": [
+        0.05704895833333333,
+        1.486078125,
+        2.3869697916666666
+      ],
+      "renderMsMedian": 34.799999952316284,
+      "renderMsSamples": [
+        33,
+        46.199999928474426,
+        36.200000047683716,
+        33.5,
+        32.39999997615814,
+        36.09999990463257,
+        40.200000047683716,
+        33.200000047683716
+      ],
+      "screenshots": [
+        "/home/ddr/jarvis-phase6-artifacts/new/low-t0.png",
+        "/home/ddr/jarvis-phase6-artifacts/new/low-t1.png"
+      ]
+    },
+    {
+      "version": "new",
+      "profile": "reduced",
+      "before": {
+        "time": 0.3,
+        "changed": 74881,
+        "outsideCore": 43926,
+        "blue": 74881,
+        "checksum": 634137639,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 5,
+        "triangles": 204,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "after": {
+        "time": 0.5000000000000012,
+        "changed": 76216,
+        "outsideCore": 45307,
+        "blue": 76216,
+        "checksum": 633951801,
+        "programs": [
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          },
+          {
+            "runnable": true
+          }
+        ],
+        "calls": 5,
+        "triangles": 204,
+        "glError": 0,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "cyanClipFraction": 0.0,
+      "temporalMeanRGB": [
+        0.05263854166666666,
+        1.1927041666666667,
+        1.4211
+      ],
+      "renderMsMedian": 34.5,
+      "renderMsSamples": [
+        41.199999928474426,
+        33.89999997615814,
+        34.300000071525574,
+        34.699999928474426,
+        38.200000047683716,
+        38.89999997615814,
+        34.300000071525574,
+        33.799999952316284
+      ],
+      "screenshots": [
+        "/home/ddr/jarvis-phase6-artifacts/new/reduced-t0.png",
+        "/home/ddr/jarvis-phase6-artifacts/new/reduced-t1.png"
+      ]
+    }
+  ],
+  "errors": [],
+  "visualContracts": "PASS",
+  "performanceFailures": [],
+  "result": "PASS"
+}

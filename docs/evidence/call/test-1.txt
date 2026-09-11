@@ -1,0 +1,24 @@
+test_audio_blocked_explicit_retry (__main__.CallFrontend.test_audio_blocked_explicit_retry) ... ok
+test_audio_full_queue_and_end_cleanup (__main__.CallFrontend.test_audio_full_queue_and_end_cleanup) ... ok
+test_audio_queue_stop_and_real_wav_analyser (__main__.CallFrontend.test_audio_queue_stop_and_real_wav_analyser) ... Audio fixture: generated sine WAV (not Piper)
+ok
+test_audio_stale_play_cannot_stop_new_audio (__main__.CallFrontend.test_audio_stale_play_cannot_stop_new_audio) ... ok
+test_autoread_history_and_tts_error (__main__.CallFrontend.test_autoread_history_and_tts_error) ... ok
+test_byte_split_sse_abort_stale_and_malformed (__main__.CallFrontend.test_byte_split_sse_abort_stale_and_malformed) ... ok
+test_errors_and_auth_expiry (__main__.CallFrontend.test_errors_and_auth_expiry) ... ok
+test_incremental_speech_and_mute_keep_model_separate (__main__.CallFrontend.test_incremental_speech_and_mute_keep_model_separate) ... ok
+test_login_csrf_and_safe_history (__main__.CallFrontend.test_login_csrf_and_safe_history) ... ok
+test_logout_cancels_pending_reply (__main__.CallFrontend.test_logout_cancels_pending_reply) ... ok
+test_logout_clears_private_history_even_if_refresh_fails (__main__.CallFrontend.test_logout_clears_private_history_even_if_refresh_fails) ... ok
+test_long_read_is_bounded_and_never_reads_labels (__main__.CallFrontend.test_long_read_is_bounded_and_never_reads_labels) ... ok
+test_minimize_responsive_login (__main__.CallFrontend.test_minimize_responsive_login) ... ok
+test_muting_pending_stt_drops_it_without_false_listening_status (__main__.CallFrontend.test_muting_pending_stt_drops_it_without_false_listening_status) ... ok
+test_no_message_during_logout (__main__.CallFrontend.test_no_message_during_logout) ... ok
+test_primary_call_and_explicit_fallback (__main__.CallFrontend.test_primary_call_and_explicit_fallback) ... ok
+test_session_retry_after_unavailable (__main__.CallFrontend.test_session_retry_after_unavailable) ... ok
+test_stream_utf8_multiline_and_safe_done (__main__.CallFrontend.test_stream_utf8_multiline_and_safe_done) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 32.163s
+
+OK

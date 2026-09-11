@@ -1,0 +1,7 @@
+{
+  "scope": "controlled local SSE with real muted HTMLAudio/WebAudio, not production E2E",
+  "firstAudioObservedMs": 64.09999990463257,
+  "endSSEObservedMs": 151.39999997615814,
+  "beforeEnd": true,
+  "autoTTSCheckbox": false
+}

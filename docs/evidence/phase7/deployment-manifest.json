@@ -1,0 +1,153 @@
+{
+  "rollback_dir": "/root/jarvis-voice7-rollback-20260908T184623Z",
+  "files": [
+    {
+      "source": "chat/voice/assets/ort-wasm-simd-threaded.mjs",
+      "path": "/var/www/dashboard/chat/voice/assets/ort-wasm-simd-threaded.mjs",
+      "before": null,
+      "after": "30dd851d9c00622940500f71ddd2ff8820c5cb65270816080175b958705385a8",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "chat/voice/assets/ort-wasm-simd-threaded.wasm",
+      "path": "/var/www/dashboard/chat/voice/assets/ort-wasm-simd-threaded.wasm",
+      "before": null,
+      "after": "71aef04959c5c1b6de461b6538e2058e306610034a85aad2742d0c7fd4533fe4",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "chat/voice/assets/ort.wasm.min.js",
+      "path": "/var/www/dashboard/chat/voice/assets/ort.wasm.min.js",
+      "before": null,
+      "after": "65e09376df69107e881b5c34d2d37aed333a366b6d941073ec518168e269b87d",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "chat/voice/assets/silero_vad_v5.onnx",
+      "path": "/var/www/dashboard/chat/voice/assets/silero_vad_v5.onnx",
+      "before": null,
+      "after": "2623a2953f6ff3d2c1e61740c6cdb7168133479b267dfef114a4a3cc5bdd788f",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "chat/voice/assets-manifest.json",
+      "path": "/var/www/dashboard/chat/voice/assets-manifest.json",
+      "before": null,
+      "after": "36c252cc94510000a484cf359e6b43adcbaa8689d405f357c2041384bb0b37e2",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "chat/voice/capture.js",
+      "path": "/var/www/dashboard/chat/voice/capture.js",
+      "before": null,
+      "after": "baa1364740ddbec8f40a89372e7a17daef8b59aff033e1164da104526f5890e0",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "chat/voice/core.mjs",
+      "path": "/var/www/dashboard/chat/voice/core.mjs",
+      "before": null,
+      "after": "3768755d2d9bf890fb4bbe333c7990868cfd72adb2cacb357450e22a6d810c11",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "chat/voice/onnxruntime-ThirdPartyNotices.txt",
+      "path": "/var/www/dashboard/chat/voice/onnxruntime-ThirdPartyNotices.txt",
+      "before": null,
+      "after": "e9e90971a8e75a9a8ac0c6412e29c1202d079998389915aa485f46c816c3b4cc",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "chat/voice/onnxruntime-license.txt",
+      "path": "/var/www/dashboard/chat/voice/onnxruntime-license.txt",
+      "before": null,
+      "after": "2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "chat/voice/session.mjs",
+      "path": "/var/www/dashboard/chat/voice/session.mjs",
+      "before": null,
+      "after": "5321515b07b62599676fa768b7f7de2734dadaec951051a668a4d58c8e593b0f",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "chat/voice/silero-license.txt",
+      "path": "/var/www/dashboard/chat/voice/silero-license.txt",
+      "before": null,
+      "after": "2e63e9a38b6e8fc0c7bc37ce174caca1862870856c6daf5697cfb785e925520b",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "chat/voice/vad-license.txt",
+      "path": "/var/www/dashboard/chat/voice/vad-license.txt",
+      "before": null,
+      "after": "239ebca4207803d3507124517c0dd6324c0d5cf73e1c486ade16bac1788f4a79",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "chat/voice/worker.js",
+      "path": "/var/www/dashboard/chat/voice/worker.js",
+      "before": null,
+      "after": "e3fd5574984a2d1342e8a73ec77d52f4e39caba677d095702fc61309bd10889e",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "server/gate.php",
+      "path": "/opt/jarvis-access/gate.php",
+      "before": "34c0230747fc4d36982c42d5695f1223ff95c6f230cae48712793dae189d8088",
+      "after": "c44d88e9584521ac9ab2768b57e90ffd600e234c9ef700774df1b232ee37880a",
+      "uid": 0,
+      "gid": 33,
+      "mode": 416
+    },
+    {
+      "source": "chat/chat.css",
+      "path": "/var/www/dashboard/chat/chat.css",
+      "before": "f94afcbce026943e635436ce9f039ca21a854951f413ddced3827e77c4ef2df6",
+      "after": "62c2d55b6f1cc25718e45048aacd14936f7e4a7d8970bf1382e46b8498a87adc",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "chat/chat.js",
+      "path": "/var/www/dashboard/chat/chat.js",
+      "before": "1d9d633d6e6794948cc2cd7ba4989c1790d072559a2dc953f9d351520a5828ef",
+      "after": "16fb9438052638fcd37c8db0da421051bf0d5313f8f6e3ea2cfe24807f5fb74f",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    }
+  ],
+  "preserved": {
+    "index.html": "46bc325cfc4aba60eaf442eb732a26e421872df1e0bc8ad177e0a84cc149cf0e",
+    "fire/shaders.js": "90afac07696c5735e417b7b3b9bf1eba3f2ff6066204060ba30a5903bbb3f17e"
+  }
+}

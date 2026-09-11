@@ -1,0 +1,6 @@
+test_real_vad_double_bargein_and_shutdown (__main__.VoiceBargeIn.test_real_vad_double_bargein_and_shutdown) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 60.960s
+
+OK

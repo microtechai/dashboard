@@ -1,0 +1,13 @@
+✔ classic shader script coexists with legacy inline lexical names (2.416429ms)
+✔ full inline classic script has no declaration collision, without running auth (2.3281ms)
+✔ explicit controller updates real THREE objects without own RAF; state and disposal (5.273864ms)
+✔ changed classic assets are versioned and fire honors reduced motion without hiding (2.090383ms)
+✔ page wires one fire controller into its only render loop (0.796571ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 108.7606

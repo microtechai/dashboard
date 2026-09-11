@@ -1,0 +1,5 @@
+# Preserve hash-pinned upstream bytes, including vendor whitespace.
+chat/voice/assets/* -whitespace linguist-vendored=true
+# Raw failure stdout is evidence; preserve its trailing whitespace verbatim.
+docs/evidence/mia/redesign/initial-aborted/call-regression/test-0.txt -whitespace
+docs/evidence/mia/redesign/regression-10.txt -whitespace

@@ -1,0 +1,44 @@
+{
+  "uploads": 3,
+  "sizes": [
+    207075,
+    223459,
+    218339
+  ],
+  "initialMicCalls": 1,
+  "performance": {
+    "maxPending": 3,
+    "frames": 1125,
+    "roundTripP95Ms": 4.800000071525574,
+    "roundTripMaxMs": 84.79999995231628,
+    "syntheticInjectionToPauseMs": [
+      314.5,
+      220.60000002384186
+    ]
+  },
+  "headful": true,
+  "errors": [],
+  "realONNX": true,
+  "realWorklet": true,
+  "physicalMic": false,
+  "AECtested": false,
+  "cases": [
+    "seeded broadband noise + knocks + tone no interruption while playing",
+    "quiet synthetic speech residual rejected; NOT acoustic AEC",
+    "autoTTS checkbox off",
+    "legacy snapshot no UI or physical WebSpeech start",
+    "double barge-in",
+    "native mute closes tracks and discards speech",
+    "explicit unmute reacquires once",
+    "silence no auto-loop",
+    "stale STT",
+    "response deadline",
+    "late permission",
+    "denial",
+    "missing worker",
+    "real PHP 401",
+    "sidebar logout",
+    "mobile controls"
+  ],
+  "backend": "MC/model/STT/TTS fixtures, real PHP auth form and gate"
+}

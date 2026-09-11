@@ -1,0 +1,39 @@
+{
+  "id": "chatcmpl-ba26b2b211385b7d",
+  "object": "chat.completion",
+  "created": 1788889185,
+  "model": "qwen3-coder-next",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "**APPROVE with caveats** \u2014 *functionally correct and robust for r128, but two minor correctness issues and one performance caveat require attention before production.*\n\n---\n\n### \u2705 **Correctness (Alpha, Box Intersection, Camera-Inside, Loop Cost)**\n\n| Aspect | Verdict | Notes |\n|--------|---------|-------|\n| **Alpha blending** | \u2705 Correct | Uses `NormalBlending` + `depthWrite:false`, `depthTest:true`. Final `sum.rgb/max(sum.a,0.001)` avoids additive cyan clipping. Discards low-alpha fragments (`<0.003`). Safe. |\n| **Box intersection** | \u2705 Correct (with caveats) | Slab method with `sign(rd)*max(abs(rd),1e-5)` + epsilon guard avoids division-by-zero. Handles rays parallel to axes. `safe += (1\u2212|sign(rd)|)*1e-5` is redundant but harmless. |\n| **Camera-inside box** | \u2705 Handled | `nearT = max(nearT, 0.0)` ensures forward marching only; if camera inside, `nearT=0`, `farT>0`, and volume renders correctly. |\n| **Loop cost** | \u26a0\ufe0f *Caveat* | Fixed `for(int i=0;i<48;i++)` loop unrolls in GLSL \u2192 **static 48 iterations**, regardless of `uSteps`. `if(float(i)>=uSteps || sum.a>0.97) break;` only exits early *per-fragment*, but **loop unrolling still costs shader compile time & register pressure**. On low-end GPUs (e.g., SwiftShader), this may cause stutter or timeout. *Not a bug, but a performance risk.* |\n\n> \ud83d\udd0d **Fix suggestion**: Replace `for(int i=0;i<48;i++)` with `while(i < int(uSteps) && sum.a <= 0.97)` *and* ensure `#extension GL_GOOGLE_include_directive : enable` or manual loop unrolling control (e.g., `#pragma unroll_loop_start` / `#pragma unroll_loop_end`). In r128, unrolling is default \u2014 dynamic loops are safer.\n\n---\n\n### \u2705 **Lifecycle & State Management**\n\n- `update(delta)`:\n  - \u2705 Handles `delta <= 0`, `NaN`, `Infinity`.\n  - \u2705 Easing (`ease=1\u2212exp(\u2212step*5)`) prevents jitter.\n  - \u2705 Hysteresis (`slowFrames>45`, `fastFrames>240`) avoids thrashing.\n  - \u2705 `reducedMotion` clamps `uSpeed` to `\u22640.2`.\n- `setState()`:\n  - \u2705 Bounds `intensity \u2208 [0,2]`, `speed \u2208 [0,3]`.\n  - \u2705 No-op on `disposed`.\n- `dispose()`:\n  - \u2705 Removes mesh from parent, disposes geometry/material.\n  - \u2705 Idempotent (`if(disposed) return`).\n- \u2705 **No RAF loop** \u2014 caller-driven update is correct and avoids extra loop.\n\n---\n\n### \u2705 **Adaptive Quality & Reduced Motion**\n\n- \u2705 `quality='low'` \u2192 `uSteps=24`.\n- \u2705 `reducedMotion=true` \u2192 `uSpeed \u2264 0.2`, `uSteps=24`.\n- \u2705 Dynamic `uSteps` toggles between 24/40 based on caller delta (proxy for frame pressure).\n- \u2705 Dithering (`jitter`) avoids banding; no temporal coherence needed (noisy per-frame).\n\n---\n\n### \u26a0\ufe0f **Blocking Bugs? None.**\n\n- No WebGL errors expected.\n- No alpha sorting issues (single volume, no interpenetration).\n- No texture/CDN dependencies \u2014 pure procedural noise.\n- SwiftShader + visible blue pixels \u2192 shader compiles and runs.\n\n---\n\n### \ud83d\udcdd **Caveats (Pre-Production)**\n\n1. **Shader loop unrolling**  \n   \u2192 **Risk**: High register pressure on low-end GPUs (SwiftShader, mobile).  \n   \u2192 **Fix**: Replace fixed loop with dynamic `while` + `#pragma optimize(off)` if needed.\n\n2. **`uSteps` clamping is conservative**  \n   \u2192 `uSteps=24` still implies 24\u00d748 fragment ops (due to unrolling). Consider capping at `uSteps=32` max.\n\n3. **No `gl_FragDepth` or early-Z optimization**  \n   \u2192 Not required, but volume rendering would benefit from early fragment tests (`gl_FragDepth` or `EXT_frag_depth`). *Not blocking.*\n\n---\n\n### \u2705 **Test Coverage**\n\n- \u2705 All unit tests pass (as written).\n- \u2705 `onBeforeRender` camera transform verified.\n- \u2705 State easing, hysteresis, disposal, and mobile path validated.\n\n---\n\n**Final**: **APPROVE** \u2014 *ship with shader loop fix in next patch*. No blocking bugs.",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.27.1-5e1afbcf",
+  "usage": {
+    "prompt_tokens": 2748,
+    "total_tokens": 3821,
+    "completion_tokens": 1073,
+    "prompt_tokens_details": null
+  },
+  "prompt_logprobs": null,
+  "prompt_token_ids": null,
+  "prompt_text": null,
+  "kv_transfer_params": null,
+  "ec_transfer_params": null,
+  "metrics": null
+}

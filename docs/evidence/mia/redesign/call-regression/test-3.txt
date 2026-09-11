@@ -1,0 +1,21 @@
+test_all_voice_assets_private_and_exact_mime (__main__.Access.test_all_voice_assets_private_and_exact_mime) ... ok
+test_anonymous_never_gets_private_bytes (__main__.Access.test_anonymous_never_gets_private_bytes) ... ok
+test_fixture_session_shared_revoked_outage_logout (__main__.Access.test_fixture_session_shared_revoked_outage_logout) ... ok
+test_nginx_catchall_no_static_or_php_bypass (__main__.Access.test_nginx_catchall_no_static_or_php_bypass) ... ok
+test_single_public_login_no_local_or_second_form (__main__.Access.test_single_public_login_no_local_or_second_form) ... ok
+test_authentication_and_request_guards (chat_backend_test.Backend.test_authentication_and_request_guards) ... ok
+test_global_locks (chat_backend_test.Backend.test_global_locks) ... ok
+test_history_bound_and_unicode_limit (chat_backend_test.Backend.test_history_bound_and_unicode_limit) ... ok
+test_missing_private_temp_dir_fails_closed (chat_backend_test.Backend.test_missing_private_temp_dir_fails_closed) ... ok
+test_multiline_tts_is_one_piper_utterance (chat_backend_test.Backend.test_multiline_tts_is_one_piper_utterance) ... ok
+test_session_cookie_and_anonymous_state (chat_backend_test.Backend.test_session_cookie_and_anonymous_state) ... ok
+test_stream_history_limits_and_failure (chat_backend_test.Backend.test_stream_history_limits_and_failure) ... ok
+test_stream_unlock_and_clear_race (chat_backend_test.Backend.test_stream_unlock_and_clear_race) ... ok
+test_tts_process_wav_and_cleanup (chat_backend_test.Backend.test_tts_process_wav_and_cleanup) ... ok
+test_tts_single_cpu_affinity (chat_backend_test.Backend.test_tts_single_cpu_affinity) ... ok
+test_tts_timeout_reaps_and_unlocks (chat_backend_test.Backend.test_tts_timeout_reaps_and_unlocks) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 21.984s
+
+OK

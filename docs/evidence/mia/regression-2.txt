@@ -1,0 +1,6 @@
+test_layout_and_navigation (__main__.Reactor.test_layout_and_navigation) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 90.143s
+
+OK

@@ -19,7 +19,10 @@ test('classic shader script coexists with legacy inline lexical names', () => {
 });
 test('full inline classic script has no declaration collision, without running auth', () => {
   const c = context();
+  c.addEventListener = () => {};
   vm.runInContext(read('fire/shaders.js'), c);
+  vm.runInContext(read('reactor/reactor.js'), c);
+  vm.runInContext(read('chat/core-state.js'), c);
   const inline = [...read('index.html').matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');
   const sentinel = {};
   c.stopBeforeRuntime = sentinel;
@@ -38,14 +41,16 @@ test('explicit controller updates real THREE objects without own RAF; state and 
   const meshes = []; parent.traverse(o => { if(o.isMesh) meshes.push(o); });
   assert.ok(meshes.length > 0 && meshes.length <= 12);
   const mat = meshes[0].material;
-  assert.equal(mat.depthWrite, false); assert.equal(mat.blending, THREE.AdditiveBlending);
+  assert.equal(mat.depthWrite, false); assert.equal(mat.blending, THREE.NormalBlending);
   assert.equal(mat.uniforms.uTime.value, 0);
   f.update(0.1); assert.ok(mat.uniforms.uTime.value > 0);
   const t = mat.uniforms.uTime.value; f.update(0); assert.equal(mat.uniforms.uTime.value,t);
   f.update(NaN); f.update(-1); assert.equal(mat.uniforms.uTime.value,t);
   f.setState({intensity:1.4,speed:1.2});
-  assert.equal(mat.uniforms.uIntensity.value,1.4);
-  assert.equal(mat.uniforms.uSpeed.value,1.2);
+  // Phase6 retains the state contract but eases targets instead of abrupt jumps.
+  for(let i=0;i<120;i++) f.update(0.1);
+  assert.ok(Math.abs(mat.uniforms.uIntensity.value-1.4)<1e-6);
+  assert.ok(Math.abs(mat.uniforms.uSpeed.value-1.2)<1e-6);
   const bounds = new THREE.Box3().setFromObject(parent);
   assert.ok(bounds.max.y > 4.5 && bounds.max.x > 4.5, 'flame geometry extends outside core');
   let disposed = 0;
@@ -63,21 +68,22 @@ test('changed classic assets are versioned and fire honors reduced motion withou
     const src = [...html.matchAll(/<script src="([^"]+)"/g)].map(m=>m[1]).find(s=>s.split('?')[0]===asset);
     assert.ok(src?.includes('?v='), asset + ' must have an explicit version');
   }
-  assert.ok(html.includes('<script src="voice/speech.js"></script>'));
+  assert.ok(!html.includes('<script src="voice/speech.js"></script>'), 'legacy file preserved privately but not instantiated beside chat');
   assert.ok(html.includes("window.matchMedia('(prefers-reduced-motion: reduce)')"));
-  const stateCall = html.match(/fireController\.setState\([^;]+;/)?.[0];
+  const stateCall = html.match(/miaStateVisual\.update\([^;]+;/)?.[0];
+  assert.ok(stateCall, 'state visuals must be driven by the existing RAF');
   for (const reduced of [true,false]) {
-    let state;
-    vm.runInNewContext(stateCall, {coreIntensity:1, fireMotionPreference:{matches:reduced}, fireController:{setState(s){state=s;}}});
-    assert.equal(state.intensity,1);
-    assert.equal(state.speed,reduced ? 0.2 : 1);
+    let args;
+    vm.runInNewContext(stateCall, {now:100,time:2,fireMotionPreference:{matches:reduced},miaStateVisual:{update(...values){args=values;}}});
+    assert.deepEqual(args,[100,2,reduced]);
   }
 });
 test('page wires one fire controller into its only render loop', () => {
   const html = read('index.html');
   assert.equal((html.match(/new THREE.Scene\(/g)||[]).length,1);
   assert.equal((html.match(/requestAnimationFrame\(/g)||[]).length,1);
-  assert.ok(/fireController\.update\(/.test(html), 'index must call fireController.update');
+  assert.ok(/miaStateVisual\.update\(/.test(html), 'index must update the passive core visual controller');
+  assert.ok(/createVisualController\(fireController.group\)/.test(html), 'reuse the reactor group');
   assert.doesNotMatch(html,/const fireVertexShader|const fireFragmentShader/);
   assert.doesNotMatch(read('integration.js'),/new THREE.Group\(|import\(['"]\.\/fire/);
 });

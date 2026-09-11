@@ -1,0 +1,128 @@
+{
+  "scope": "Real direct private worker/model benchmark; synthetic input, no owner mic or public login. Qwen heavy review, serial stage timings, not incremental latency claim.",
+  "started": "2026-09-08T20:49:18.036970+00:00",
+  "events": [
+    {
+      "name": "real CPU1 STT",
+      "started": "2026-09-08T20:49:18.036997+00:00",
+      "finished": "2026-09-08T20:49:19.463577+00:00",
+      "seconds": 1.4266042709932663,
+      "exit_code": 0,
+      "stdout": "{\"text\": \"Hola, soy Jardis. El núcleo azul está conectado. Puedes escribirme y escuchar mis respuestas en español.\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "real CPU0 Piper Qwen first sentence",
+      "started": "2026-09-08T20:49:23.519922+00:00",
+      "finished": "2026-09-08T20:49:24.493103+00:00",
+      "seconds": 0.9732072550104931,
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "Piper comparison default",
+      "started": "2026-09-08T20:49:24.493931+00:00",
+      "finished": "2026-09-08T20:49:25.728106+00:00",
+      "seconds": 1.234200452978257,
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "Piper comparison pace-090",
+      "started": "2026-09-08T20:49:25.728139+00:00",
+      "finished": "2026-09-08T20:49:26.919983+00:00",
+      "seconds": 1.1918610769789666,
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "pre_request_metrics": {
+    "timestamp": "2026-09-08T20:49:19.736783+00:00",
+    "lines": [
+      "vllm:num_requests_running{engine=\"0\",model_name=\"qwen3-coder-next\"} 0.0",
+      "vllm:num_requests_waiting{engine=\"0\",model_name=\"qwen3-coder-next\"} 0.0",
+      "vllm:num_requests_waiting_by_reason{engine=\"0\",model_name=\"qwen3-coder-next\",reason=\"capacity\"} 0.0",
+      "vllm:num_requests_waiting_by_reason{engine=\"0\",model_name=\"qwen3-coder-next\",reason=\"deferred\"} 0.0"
+    ]
+  },
+  "qwen": {
+    "model": "qwen3-coder-next",
+    "started": "2026-09-08T20:49:19.736993+00:00",
+    "finished": "2026-09-08T20:49:23.519535+00:00",
+    "seconds": 3.7825404250179417,
+    "first_content_seconds": 3.6003900509676896,
+    "first_sentence_seconds": null,
+    "output": "SIN HALLAZGOS.",
+    "deltas": [
+      {
+        "elapsed": 3.6003932409803383,
+        "timestamp": "2026-09-08T20:49:23.337401+00:00",
+        "delta": "S"
+      },
+      {
+        "elapsed": 3.657770757970866,
+        "timestamp": "2026-09-08T20:49:23.394780+00:00",
+        "delta": "IN"
+      },
+      {
+        "elapsed": 3.720837907982059,
+        "timestamp": "2026-09-08T20:49:23.457863+00:00",
+        "delta": " HALLAZGOS"
+      },
+      {
+        "elapsed": 3.7823636459652334,
+        "timestamp": "2026-09-08T20:49:23.519371+00:00",
+        "delta": "."
+      }
+    ],
+    "source_sha256": "3e6b03c4018dfe0748f001590a4b836666103a875343702b0640b2179d039095"
+  },
+  "tts_input": "SIN HALLAZGOS.",
+  "voices": [
+    "es_ES-davefx-medium.onnx"
+  ],
+  "voice_config": {
+    "audio": {
+      "sample_rate": 22050,
+      "quality": "medium"
+    },
+    "inference": {
+      "noise_scale": 0.667,
+      "length_scale": 1,
+      "noise_w": 0.8
+    },
+    "num_speakers": 1,
+    "language": {
+      "code": "es_ES",
+      "family": "es",
+      "region": "ES",
+      "name_native": "Español",
+      "name_english": "Spanish",
+      "country_english": "Spain"
+    }
+  },
+  "sample_input": "Hola, soy MIA. La llamada está activa. Puedes hablar con calma e interrumpirme cuando quieras.",
+  "wav": [
+    {
+      "file": "/tmp/jarvis-call-qwen.wav",
+      "duration": 0.9752380952380952,
+      "rate": 22050,
+      "sha256": "add23a12879241d565138b6764725638772b03c3052018e45990cbc2d735a4f6"
+    },
+    {
+      "file": "/tmp/jarvis-call-default.wav",
+      "duration": 4.957460317460318,
+      "rate": 22050,
+      "sha256": "b0208589d55372e597420fe07c6c9b4916cd835ee9fa1ce446d00114b133415d"
+    },
+    {
+      "file": "/tmp/jarvis-call-pace-090.wav",
+      "duration": 4.841360544217687,
+      "rate": 22050,
+      "sha256": "a68d5b85bbb299104ebe7266fedbe3a5b30b1a95eabf30e880f00dded0a84df6"
+    }
+  ]
+}

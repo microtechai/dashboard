@@ -1,0 +1,14 @@
+✔ core state accepts bounded live audio, resets and honors reduced motion (2.534269ms)
+✔ classic shader script coexists with legacy inline lexical names (2.454338ms)
+✔ full inline classic script has no declaration collision, without running auth (2.477711ms)
+✔ explicit controller updates real THREE objects without own RAF; state and disposal (5.009391ms)
+✔ changed classic assets are versioned and fire honors reduced motion without hiding (2.213344ms)
+✔ page wires one fire controller into its only render loop (0.828653ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 115.043384

@@ -1,0 +1,96 @@
+{
+  "client": "curl (no cookies, no redirects, no auth)",
+  "otherClientObservation": "Python urllib default request received Cloudflare403 at /. No rules modified.",
+  "checks": [
+    {
+      "url": "https://dashboard.microtechai.es/",
+      "status": 303,
+      "headers": {
+        "location": "/login.html",
+        "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+        "cf-cache-status": "DYNAMIC"
+      }
+    },
+    {
+      "url": "https://dashboard.microtechai.es/index.html",
+      "status": 303,
+      "headers": {
+        "location": "/login.html",
+        "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+        "cf-cache-status": "DYNAMIC"
+      }
+    },
+    {
+      "url": "https://dashboard.microtechai.es/fire/shaders.js?v=20260908-fire2",
+      "status": 401,
+      "headers": {
+        "location": null,
+        "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+        "cf-cache-status": "DYNAMIC"
+      }
+    },
+    {
+      "url": "https://dashboard.microtechai.es/fire/shaders.js?v=20260908-volume6-target",
+      "status": 401,
+      "headers": {
+        "location": null,
+        "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+        "cf-cache-status": "DYNAMIC"
+      }
+    },
+    {
+      "url": "https://dashboard.microtechai.es/chat/chat.js?v=20260908-chat4",
+      "status": 401,
+      "headers": {
+        "location": null,
+        "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+        "cf-cache-status": "DYNAMIC"
+      }
+    },
+    {
+      "url": "https://dashboard.microtechai.es/chat/chat.css?v=20260908-chat4",
+      "status": 401,
+      "headers": {
+        "location": null,
+        "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+        "cf-cache-status": "DYNAMIC"
+      }
+    },
+    {
+      "url": "https://dashboard.microtechai.es/chat/core-state.js?v=20260908-chat4",
+      "status": 401,
+      "headers": {
+        "location": null,
+        "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+        "cf-cache-status": "DYNAMIC"
+      }
+    },
+    {
+      "url": "https://dashboard.microtechai.es/voice/speech.js",
+      "status": 401,
+      "headers": {
+        "location": null,
+        "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+        "cf-cache-status": "DYNAMIC"
+      }
+    },
+    {
+      "url": "https://dashboard.microtechai.es/api/stats.php",
+      "status": 401,
+      "headers": {
+        "location": null,
+        "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+        "cf-cache-status": "DYNAMIC"
+      }
+    },
+    {
+      "url": "https://dashboard.microtechai.es/login.html",
+      "status": 200,
+      "headers": {
+        "location": null,
+        "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+        "cf-cache-status": "DYNAMIC"
+      }
+    }
+  ]
+}

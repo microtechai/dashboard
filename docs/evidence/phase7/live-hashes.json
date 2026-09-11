@@ -1,0 +1,20 @@
+{
+  "/var/www/dashboard/chat/voice/assets/ort-wasm-simd-threaded.mjs": "30dd851d9c00622940500f71ddd2ff8820c5cb65270816080175b958705385a8",
+  "/var/www/dashboard/chat/voice/assets/ort-wasm-simd-threaded.wasm": "71aef04959c5c1b6de461b6538e2058e306610034a85aad2742d0c7fd4533fe4",
+  "/var/www/dashboard/chat/voice/assets/ort.wasm.min.js": "65e09376df69107e881b5c34d2d37aed333a366b6d941073ec518168e269b87d",
+  "/var/www/dashboard/chat/voice/assets/silero_vad_v5.onnx": "2623a2953f6ff3d2c1e61740c6cdb7168133479b267dfef114a4a3cc5bdd788f",
+  "/var/www/dashboard/chat/voice/assets-manifest.json": "36c252cc94510000a484cf359e6b43adcbaa8689d405f357c2041384bb0b37e2",
+  "/var/www/dashboard/chat/voice/capture.js": "baa1364740ddbec8f40a89372e7a17daef8b59aff033e1164da104526f5890e0",
+  "/var/www/dashboard/chat/voice/core.mjs": "3768755d2d9bf890fb4bbe333c7990868cfd72adb2cacb357450e22a6d810c11",
+  "/var/www/dashboard/chat/voice/onnxruntime-ThirdPartyNotices.txt": "e9e90971a8e75a9a8ac0c6412e29c1202d079998389915aa485f46c816c3b4cc",
+  "/var/www/dashboard/chat/voice/onnxruntime-license.txt": "2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c",
+  "/var/www/dashboard/chat/voice/session.mjs": "5321515b07b62599676fa768b7f7de2734dadaec951051a668a4d58c8e593b0f",
+  "/var/www/dashboard/chat/voice/silero-license.txt": "2e63e9a38b6e8fc0c7bc37ce174caca1862870856c6daf5697cfb785e925520b",
+  "/var/www/dashboard/chat/voice/vad-license.txt": "239ebca4207803d3507124517c0dd6324c0d5cf73e1c486ade16bac1788f4a79",
+  "/var/www/dashboard/chat/voice/worker.js": "e3fd5574984a2d1342e8a73ec77d52f4e39caba677d095702fc61309bd10889e",
+  "/opt/jarvis-access/gate.php": "c44d88e9584521ac9ab2768b57e90ffd600e234c9ef700774df1b232ee37880a",
+  "/var/www/dashboard/chat/chat.css": "62c2d55b6f1cc25718e45048aacd14936f7e4a7d8970bf1382e46b8498a87adc",
+  "/var/www/dashboard/chat/chat.js": "16fb9438052638fcd37c8db0da421051bf0d5313f8f6e3ea2cfe24807f5fb74f",
+  "/var/www/dashboard/index.html": "46bc325cfc4aba60eaf442eb732a26e421872df1e0bc8ad177e0a84cc149cf0e",
+  "/var/www/dashboard/fire/shaders.js": "90afac07696c5735e417b7b3b9bf1eba3f2ff6066204060ba30a5903bbb3f17e"
+}

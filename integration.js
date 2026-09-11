@@ -20,37 +20,22 @@ function loadFire() {
     return Boolean(window.dashboardFireController);
 }
 
-// Load voice system
-function loadVoice() {
-    try {
-        // El archivo voice/speech.js se carga como script
-        // Esperar a que se inicie
-        setTimeout(() => {
-            if (window.voiceSystem) {
-                console.log('✅ Sistema de voz cargado');
-            } else {
-                console.warn('⚠️  Voice system no encontrado - Web Speech API no soportado');
-            }
-        }, 1000);
-        return true;
-    } catch (e) {
-        console.error('❌ Error cargando voz:', e);
-        return false;
-    }
-}
+// The authenticated chat is the sole voice owner. Legacy file remains private, not loaded.
+function loadVoice() { return true; }
 
 // Load task executor UI
 function loadTaskExecutor() {
+    if (document.getElementById('task-executor-panel')) return true;
     try {
         // Crear panel de executor
         const panel = document.createElement('div');
         panel.id = 'task-executor-panel';
         panel.innerHTML = `
-            <div style="
+            <div id="executor-window" style="
                 position: fixed;
                 bottom: 20px;
                 left: 20px;
-                width: 300px;
+                width: min(300px, calc(100vw - 40px));
                 background: rgba(10, 15, 30, 0.95);
                 backdrop-filter: blur(12px);
                 border: 1px solid rgba(74, 158, 255, 0.3);
@@ -71,15 +56,16 @@ function loadTaskExecutor() {
                         color: #4a9eff;
                         letter-spacing: 1px;
                         text-transform: uppercase;
-                    ">⚙️ Task Executor</h3>
-                    <button id="close-executor" style="
+                    "><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"><path d="m4 6 6 6-6 6m9 0h7"/></svg> Task Executor</h3>
+                    <button id="toggle-executor" type="button" aria-label="Minimizar Task Executor" title="Minimizar Task Executor" aria-controls="executor-body" aria-expanded="true" style="
                         background: none;
                         border: none;
                         color: #667;
                         font-size: 18px;
                         cursor: pointer;
-                    ">×</button>
+                    ">−</button>
                 </div>
+                <div id="executor-body">
                 <div id="executor-commands" style="
                     max-height: 200px;
                     overflow-y: auto;
@@ -107,7 +93,7 @@ function loadTaskExecutor() {
                     font-size: 10px;
                     cursor: pointer;
                     margin-top: 8px;
-                ">🚀 Ejecutar</button>
+                ">Ejecutar</button>
                 <div id="executor-output" style="
                     margin-top: 10px;
                     padding: 8px;
@@ -119,10 +105,39 @@ function loadTaskExecutor() {
                     max-height: 100px;
                     overflow-y: auto;
                 "></div>
+                </div>
             </div>
         `;
         
         document.body.appendChild(panel);
+        const toggle = panel.querySelector('#toggle-executor');
+        const body = panel.querySelector('#executor-body');
+        const box = panel.querySelector('#executor-window');
+        const desktopStorageKey = 'jarvis.executor.minimized';
+        const mobileLayout = window.matchMedia('(max-width: 1100px)');
+        const storageKey = () => mobileLayout.matches ? 'jarvis.executor.mobile.minimized' : desktopStorageKey;
+        function setMinimized(minimized) {
+            body.hidden = minimized;
+            toggle.textContent = minimized ? '+' : '−';
+            const label = minimized ? 'Restaurar Task Executor' : 'Minimizar Task Executor';
+            toggle.setAttribute('aria-label', label);
+            toggle.title = label;
+            toggle.setAttribute('aria-expanded', String(!minimized));
+            box.style.width = minimized ? 'min(210px, calc(100vw - 40px))' : 'min(300px, calc(100vw - 40px))';
+            toggle.parentElement.style.marginBottom = minimized ? '0' : '12px';
+            try { localStorage.setItem(storageKey(), String(minimized)); } catch (_) {}
+        }
+        function restoreLayout() {
+            let minimized = mobileLayout.matches;
+            try {
+                const saved = localStorage.getItem(storageKey());
+                if (saved !== null) minimized = saved === 'true';
+            } catch (_) {}
+            setMinimized(minimized);
+        }
+        restoreLayout();
+        mobileLayout.addEventListener('change', restoreLayout);
+        toggle.addEventListener('click', () => setMinimized(!body.hidden));
         console.log('✅ Task Executor UI cargado');
         
         // Cargar comandos

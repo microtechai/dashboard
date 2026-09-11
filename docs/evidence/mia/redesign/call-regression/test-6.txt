@@ -1,0 +1,16 @@
+test_real_vad_double_bargein_and_shutdown (__main__.VoiceBargeIn.test_real_vad_double_bargein_and_shutdown) ... BROWSER CALL-TRACE Sesión MC: fixture-user
+FAIL
+
+======================================================================
+FAIL: test_real_vad_double_bargein_and_shutdown (__main__.VoiceBargeIn.test_real_vad_double_bargein_and_shutdown)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ddr/jarvis-phase2-20260908/tests/call_barge_in_test.py", line 47, in test_real_vad_double_bargein_and_shutdown
+    self.assertTrue(page.evaluate('window.voiceSystem!==undefined'))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 1 test in 6.416s
+
+FAILED (failures=1)
