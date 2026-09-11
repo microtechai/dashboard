@@ -1,0 +1,170 @@
+{
+  "entries": [
+    {
+      "tag": "button",
+      "attribute": "data-view",
+      "value": "dashboard",
+      "line": 221
+    },
+    {
+      "tag": "button",
+      "attribute": "data-view",
+      "value": "servers",
+      "line": 222
+    },
+    {
+      "tag": "button",
+      "attribute": "data-view",
+      "value": "projects",
+      "line": 223
+    },
+    {
+      "tag": "button",
+      "attribute": "data-view",
+      "value": "companies",
+      "line": 224
+    },
+    {
+      "tag": "button",
+      "attribute": "data-view",
+      "value": "system",
+      "line": 225
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "dashboard",
+      "line": 248
+    },
+    {
+      "tag": "div",
+      "attribute": "data-target",
+      "value": "proj-sub",
+      "line": 251
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "wp-cielo",
+      "line": 253
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "wp-cotufas2",
+      "line": 254
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "wp-microtechsat",
+      "line": 255
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "wp-audiomania",
+      "line": 256
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "pr-factura",
+      "line": 257
+    },
+    {
+      "tag": "div",
+      "attribute": "data-target",
+      "value": "srv-sub",
+      "line": 261
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "srv-hetzner",
+      "line": 263
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "srv-dgx",
+      "line": 264
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "srv-local",
+      "line": 265
+    },
+    {
+      "tag": "div",
+      "attribute": "data-page",
+      "value": "subvenciones",
+      "line": 269
+    },
+    {
+      "tag": "div",
+      "attribute": "data-page",
+      "value": "auditorias",
+      "line": 270
+    },
+    {
+      "tag": "div",
+      "attribute": "data-page",
+      "value": "informes",
+      "line": 271
+    },
+    {
+      "tag": "div",
+      "attribute": "data-target",
+      "value": "ai-sub",
+      "line": 274
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "ai-qwen",
+      "line": 276
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "ai-glm",
+      "line": 277
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "ai-hermes",
+      "line": 278
+    },
+    {
+      "tag": "div",
+      "attribute": "data-page",
+      "value": "config",
+      "line": 282
+    }
+  ],
+  "nodes": [
+    "srv-hetzner",
+    "srv-microtechsat",
+    "srv-dgx",
+    "srv-local",
+    "wp-cielo",
+    "wp-cotufas2",
+    "wp-microtechsat",
+    "wp-audiomania",
+    "ai-qwen",
+    "ai-glm",
+    "ai-proxy",
+    "ai-hermes",
+    "inf-cloudflare",
+    "inf-github",
+    "inf-ssh",
+    "pr-factura",
+    "pr-jarvis"
+  ],
+  "errors": [],
+  "permissionCalls": 0,
+  "MCendToEnd": false
+}

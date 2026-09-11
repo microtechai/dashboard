@@ -1,0 +1,33 @@
+PASS ['node', '--test', 'tests/call_speech.test.mjs', 'tests/voice_capture.test.mjs', 'tests/voice_core.test.mjs', 'tests/voice_noise.test.mjs', 'tests/voice_session.test.mjs', 'tests/voice_worker.test.mjs', 'tests/core_activity.cjs', 'tests/stt_core.cjs', 'tests/fire.test.cjs']
+PASS ['python3', 'tests/call_frontend_test.py', 'CallFrontend']
+PASS ['python3', 'tests/stt_frontend_test.py']
+PASS ['python3', 'tests/access_gate_test.py']
+PASS ['python3', 'tests/access_browser_test.py', 'BrowserAccess']
+PASS ['python3', 'tests/stt_backend_test.py']
+FAIL ['xvfb-run', '-a', 'python3', 'tests/call_barge_in_test.py', 'VoiceBargeIn']
+test_real_vad_double_bargein_and_shutdown (__main__.VoiceBargeIn.test_real_vad_double_bargein_and_shutdown) ... BROWSER CALL-TRACE Sesión MC: fixture-user
+FAIL
+
+======================================================================
+FAIL: test_real_vad_double_bargein_and_shutdown (__main__.VoiceBargeIn.test_real_vad_double_bargein_and_shutdown)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ddr/jarvis-phase2-20260908/tests/call_barge_in_test.py", line 47, in test_real_vad_double_bargein_and_shutdown
+    self.assertTrue(page.evaluate('window.voiceSystem!==undefined'))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 1 test in 6.416s
+
+FAILED (failures=1)
+
+PASS ['python3', 'tests/call_female_test.py', 'FemaleSpeaker']
+PASS ['php', '-l', 'api/chat.php']
+PASS ['php', '-l', 'server/gate.php']
+PASS ['php', '-l', 'server/session.php']
+PASS ['php', '-l', 'server/transcribe.php']
+PASS ['node', '--check', 'chat/chat.js']
+PASS ['node', '--check', 'chat/voice/speech.mjs']
+PASS ['node', '--check', 'chat/voice/capture.js']
+PASS ['node', '--check', 'chat/voice/worker.js']

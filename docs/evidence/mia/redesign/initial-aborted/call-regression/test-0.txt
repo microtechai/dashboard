@@ -1,0 +1,49 @@
+✔ ordered bounded speech queue starts early and double cancel drops stale requests (13.233084ms)
+✔ TTS network error and 429 cancel without retry (2.31763ms)
+✔ sentence boundaries wait for lookahead and preserve decimal/abbreviation (0.695076ms)
+✔ speech normalizes decorative Markdown without deleting numbers or code operators (1.391103ms)
+✔ core state accepts bounded live audio, resets and honors reduced motion (2.691774ms)
+✔ classic shader script coexists with legacy inline lexical names (2.792901ms)
+✔ full inline classic script has no declaration collision, without running auth (2.786666ms)
+✔ explicit controller updates real THREE objects without own RAF; state and disposal (13.301364ms)
+✖ changed classic assets are versioned and fire honors reduced motion without hiding (6.80476ms)
+✔ page wires one fire controller into its only render loop (1.375731ms)
+PASS listening RMS + transcribing state
+✔ tests/stt_core.cjs (57.774316ms)
+✔ worklet resamples real input; bounded 512ms scheduling cushion then fails closed (13.342749ms)
+✔ continuous segmentation preserves pre-roll, closes once and bounds 20 seconds (44.026121ms)
+✔ neural false positives at noise floor and short knocks do not interrupt; voice twice retains onset (16.844389ms)
+✔ explicit start only; late permission stopped after shutdown; no automatic restart (4.134594ms)
+✔ pending permission deadline fails closed and late stream is stopped (2.035428ms)
+✔ worker rejects frame 17 rather than overlap or accumulate inference (5.921756ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 16
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 305.594753
+
+✖ failing tests:
+
+test at tests/fire.test.cjs:62:1
+✖ changed classic assets are versioned and fire honors reduced motion without hiding (6.80476ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(html.includes('<script src="voice/speech.js"></script>'))
+  
+      at TestContext.<anonymous> (/home/ddr/jarvis-phase2-20260908/tests/fire.test.cjs:68:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

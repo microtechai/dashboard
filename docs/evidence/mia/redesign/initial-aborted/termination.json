@@ -1,0 +1,6 @@
+{
+  "reason": "agent process.kill after fixture query-string 404 and hidden-node raycast diagnosed",
+  "userStop": false,
+  "OOM": false,
+  "completeSuite": false
+}

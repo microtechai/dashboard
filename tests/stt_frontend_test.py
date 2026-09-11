@@ -22,7 +22,7 @@ class Voice(ChatFrontend):
  def test_voice_only_autoread_and_stop_tracks(self):
   self.login(); self.setup_media()
   self.page.route('**/api/chat.php?action=transcribe', lambda r:r.fulfill(json={'text':'<img src=x onerror=alert(1)> voz'}))
-  self.page.locator('#jarvis-chat-autoread').check()
+  self.options(); self.page.locator('#jarvis-chat-autoread').check(); self.page.locator('#jarvis-chat-options > summary').click()
   self.send('texto'); self.page.locator('.jarvis-chat-read').wait_for(); self.page.wait_for_timeout(100)
   self.assertFalse(any(c[0]=='tts' for c in self.calls))
   self.page.locator('#jarvis-chat-talk').click(); self.page.locator('#jarvis-chat-talk').click()

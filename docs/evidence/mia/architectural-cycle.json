@@ -1,0 +1,38 @@
+{
+  "deployed": false,
+  "decision": "NO-GO",
+  "optimization": "Single bounded CSS-viewport pixel budget: 403200 pixels, DPR clamped 0.5..1.5 and device DPR; materials/geometry/input coordinates unchanged",
+  "targetedRun": {
+    "exit_code": 1,
+    "p95": 292.39999997615814,
+    "computedGuard": 290.85000014305115,
+    "synchronization": "readPixels on both candidate and baseline after each RAF"
+  },
+  "completeSuiteRender": {
+    "exit_code": 0,
+    "p95": 275.8000000715256,
+    "baselineP95": 358.7999999523163,
+    "computedGuard": 568.1999999284744
+  },
+  "releaseBudgetMs": 250,
+  "reason": "The inherited max(250,baseline*1.5+30) formula produced a permissive guard with a slow/noisy baseline. Do not treat this automatic PASS as an approved release: candidate remains above 250ms and targeted run failed. No more optimization cycles or attempts to harvest a green run.",
+  "mobile": "Default collapsed drawer and minimized executor; keyboard expansion/restoration, composer unobstructed, separate desktop/mobile preferences PASS",
+  "visual": "Actual desktop, angle and mobile PNG inspected. DOM text remains native-resolution readable; desktop 3D edges visibly softer at DPR0.5. No claim of identical raster quality or owner acceptance.",
+  "productionReadOnlyCheck": {
+    "unchanged": 17,
+    "total": 17,
+    "drift": [],
+    "newAssetAbsent": true
+  },
+  "limits": "No real owner login, physical mic, acoustic acceptance, model restart, MC mutations, private auth injection or new Qwen review. Full regression ledger is regressions.json.",
+  "finalRegression": {
+    "commands": 9,
+    "passed": 9,
+    "exit_code": 0,
+    "callCommands": 16,
+    "callPassed": 16,
+    "sourceHashesCurrent": true,
+    "releaseDecisionStill": "NO-GO",
+    "deployScriptRefusalVerified": true
+  }
+}

@@ -1,0 +1,10 @@
+✔ viewport pixel budget bounds buffer cost without changing CSS or input coordinates (2.635397ms)
+✔ reactor owns no loop; real channels are independent, bounded, expire and dispose (734.838629ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 843.068453

@@ -1,0 +1,456 @@
+[
+  {
+    "target": "edge",
+    "path": "/",
+    "status": 303,
+    "expected": 303,
+    "bytes": 0,
+    "headers": {
+      "content-type": "text/html; charset=UTF-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "location": "/login.html",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/index.html",
+    "status": 303,
+    "expected": 303,
+    "bytes": 0,
+    "headers": {
+      "content-type": "text/html; charset=UTF-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "location": "/login.html",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/login.html",
+    "status": 200,
+    "expected": 200,
+    "bytes": 3145,
+    "headers": {
+      "content-type": "text/html",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/reactor/reactor.js",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/reactor/reactor.js?v=20260908-mia1",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/reactor/reactor.js?v=old",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/chat.js?v=20260908-mia1",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/chat.css?v=20260908-mia1",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/chat.js?v=20260908-access5",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/chat.js?v=20260908-chat4",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/chat.css?v=20260908-chat4",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/core-state.js",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/voice/speech.mjs",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/voice/core.mjs",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/fire/shaders.js?v=20260908-volume6-target",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/voice/speech.js",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/api/stats.php",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/integration.js?v=20260908-executor3",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/",
+    "status": 303,
+    "expected": 303,
+    "bytes": 0,
+    "headers": {
+      "content-type": "text/html; charset=UTF-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "location": "/login.html"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/index.html",
+    "status": 303,
+    "expected": 303,
+    "bytes": 0,
+    "headers": {
+      "content-type": "text/html; charset=UTF-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "location": "/login.html"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/login.html",
+    "status": 200,
+    "expected": 200,
+    "bytes": 3145,
+    "headers": {
+      "content-type": "text/html",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/reactor/reactor.js",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/reactor/reactor.js?v=20260908-mia1",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/reactor/reactor.js?v=old",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/chat.js?v=20260908-mia1",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/chat.css?v=20260908-mia1",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/chat.js?v=20260908-access5",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/chat.js?v=20260908-chat4",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/chat.css?v=20260908-chat4",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/core-state.js",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/voice/speech.mjs",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/voice/core.mjs",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/fire/shaders.js?v=20260908-volume6-target",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/voice/speech.js",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/api/stats.php",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/integration.js?v=20260908-executor3",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  }
+]

@@ -14,7 +14,12 @@ class CallFrontend(ChatFrontend):
    r.fulfill(content_type='audio/wav',body=(ROOT/'tests/fixtures/voice-check.wav').read_bytes())
   self.page.route('**/api/chat.php?action=tts',voice)
   self.page.evaluate('''()=>{const real=fetch;window.fetch=(u,o)=>String(u).includes('action=message')?Promise.resolve(new Response(new ReadableStream({start(c){window.modelSignal=o.signal;window.emit=(text,type='delta')=>c.enqueue(new TextEncoder().encode('event: '+type+'\\ndata: '+JSON.stringify({text})+'\\n\\n'));window.endModel=()=>{emit('## 🟦 Primera frase. Segunda frase.','done');c.close();};}}),{headers:{'Content-Type':'text/event-stream'}})):real(u,o);window.played=[];const NativeAudio=Audio;window.Audio=function(...args){const a=new NativeAudio(...args);a.muted=true;played.push(a);return a;};}''')
+  if not self.page.locator('#jarvis-chat-continuous').is_visible(): self.options()
   self.page.locator('#jarvis-chat-continuous').click()
+  self.page.locator('#jarvis-chat-options > summary').click()
+  self.assertTrue(self.page.locator('#jarvis-chat-continuous').is_visible())
+  self.assertTrue(self.page.locator('#jarvis-chat-mute').is_visible())
+  self.assertTrue(self.page.locator('#jarvis-chat-stop').is_visible())
   self.assertFalse(self.page.locator('#jarvis-chat-autoread').is_checked())
   self.page.locator('#jarvis-chat-input').fill('Texto durante llamada también habla')
   self.page.locator('#jarvis-chat-input').press('Enter')
@@ -34,13 +39,16 @@ class CallFrontend(ChatFrontend):
   end_sse=self.page.evaluate('performance.now()-streamStart')
   from chat_frontend_test import ROOT
   import json
-  (ROOT/'docs/evidence/call/stream-timing.json').write_text(json.dumps({'scope':'controlled local SSE with real muted HTMLAudio/WebAudio, not production E2E','firstAudioObservedMs':first_audio,'endSSEObservedMs':end_sse,'beforeEnd':first_audio<end_sse,'autoTTSCheckbox':False},indent=2))
+  from pathlib import Path
+  import tempfile
+  (Path(tempfile.gettempdir())/'mia-call-stream-timing.json').write_text(json.dumps({'scope':'controlled local SSE with real muted HTMLAudio/WebAudio, not production E2E','firstAudioObservedMs':first_audio,'endSSEObservedMs':end_sse,'beforeEnd':first_audio<end_sse,'autoTTSCheckbox':False},indent=2))
   self.assertLess(first_audio,end_sse)
   self.page.locator('#jarvis-chat-mute').click()
   self.assertTrue(self.page.evaluate('fixtureVoice.active'))
   self.page.evaluate('fixtureVoice.onStart();fixtureVoice.onStart()')
   self.assertTrue(self.page.evaluate('played.every(a=>a.paused)'))
   self.assertTrue(self.page.evaluate('fixtureVoice.active'))
+  if not self.page.locator('#jarvis-chat-continuous').is_visible(): self.options()
   self.page.locator('#jarvis-chat-continuous').click()
   self.assertFalse(self.page.evaluate('fixtureVoice.active'))
  def test_long_read_is_bounded_and_never_reads_labels(self):
@@ -61,6 +69,7 @@ class CallFrontend(ChatFrontend):
   self.page.route('**/chat/voice/session.mjs',lambda r:r.fulfill(content_type='text/javascript',body='''export class ContinuousVoice {constructor(o){Object.assign(this,o);window.fixtureVoice=this;}start(){this.active=true;this.onMic('active');}shutdown(){this.active=false;this.onMic('off');}}'''))
   self.login()
   self.page.evaluate('''()=>{window.states=[];addEventListener('jarvis-chat-state',e=>states.push(e.detail.state));const real=fetch;window.fetch=(u,o)=>String(u).includes('action=transcribe')?new Promise(r=>{window.sttSignal=o.signal;window.releaseSTT=()=>r(new Response(JSON.stringify({text:'MUTED STALE'})));}):real(u,o);}''')
+  if not self.page.locator('#jarvis-chat-continuous').is_visible(): self.options()
   self.page.locator('#jarvis-chat-continuous').click()
   self.page.evaluate("void fixtureVoice.onEnd({wav:new ArrayBuffer(44),reason:'silence'})")
   self.page.wait_for_function('window.releaseSTT!==undefined')
@@ -72,6 +81,7 @@ class CallFrontend(ChatFrontend):
   self.assertNotIn('MUTED STALE',self.page.locator('#jarvis-chat-history').inner_text())
  def test_primary_call_and_explicit_fallback(self):
   self.login()
+  self.options()
   self.assertEqual(self.page.locator('#jarvis-chat-continuous').inner_text(),'Llamar a MIA')
   self.assertEqual(self.page.locator('#jarvis-chat-mute').inner_text(),'Silenciar micrófono')
   self.assertIn('manual',self.page.locator('#jarvis-chat-talk').inner_text().lower())

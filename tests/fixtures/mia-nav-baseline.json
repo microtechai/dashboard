@@ -1,0 +1,376 @@
+{
+  "ids": [
+    {
+      "id": "loading",
+      "line": 197
+    },
+    {
+      "id": "loadingTitle",
+      "line": 204
+    },
+    {
+      "id": "loadingBar",
+      "line": 205
+    },
+    {
+      "id": "loadText",
+      "line": 206
+    },
+    {
+      "id": "viz",
+      "line": 209
+    },
+    {
+      "id": "glitchOverlay",
+      "line": 214
+    },
+    {
+      "id": "mainNav",
+      "line": 220
+    },
+    {
+      "id": "global-status",
+      "line": 229
+    },
+    {
+      "id": "status-text",
+      "line": 230
+    },
+    {
+      "id": "search",
+      "line": 236
+    },
+    {
+      "id": "legend",
+      "line": 240
+    },
+    {
+      "id": "sidebarToggle",
+      "line": 243
+    },
+    {
+      "id": "sidebar",
+      "line": 246
+    },
+    {
+      "id": "proj-sub",
+      "line": 252
+    },
+    {
+      "id": "srv-sub",
+      "line": 262
+    },
+    {
+      "id": "ai-sub",
+      "line": 275
+    },
+    {
+      "id": "metrics-panel",
+      "line": 290
+    },
+    {
+      "id": "cpu-load",
+      "line": 293
+    },
+    {
+      "id": "cpu-bar",
+      "line": 294
+    },
+    {
+      "id": "mem-value",
+      "line": 297
+    },
+    {
+      "id": "mem-bar",
+      "line": 298
+    },
+    {
+      "id": "disk-value",
+      "line": 301
+    },
+    {
+      "id": "disk-bar",
+      "line": 302
+    },
+    {
+      "id": "cpu-cores",
+      "line": 305
+    },
+    {
+      "id": "uptime",
+      "line": 306
+    },
+    {
+      "id": "php-version",
+      "line": 307
+    },
+    {
+      "id": "os-info",
+      "line": 308
+    },
+    {
+      "id": "services-panel",
+      "line": 313
+    },
+    {
+      "id": "panel-header",
+      "line": 314
+    },
+    {
+      "id": "services-list",
+      "line": 315
+    },
+    {
+      "id": "sidePanel",
+      "line": 321
+    },
+    {
+      "id": "closeBtn",
+      "line": 322
+    },
+    {
+      "id": "panelTitle",
+      "line": 323
+    },
+    {
+      "id": "panelSubtitle",
+      "line": 324
+    },
+    {
+      "id": "panelContent",
+      "line": 325
+    },
+    {
+      "id": "last-update",
+      "line": 330
+    },
+    {
+      "id": "update-badge",
+      "line": 333
+    },
+    {
+      "id": "tooltip",
+      "line": 334
+    },
+    {
+      "id": "notification",
+      "line": 335
+    }
+  ],
+  "navigation": [
+    {
+      "tag": "button",
+      "attribute": "data-view",
+      "value": "dashboard",
+      "line": 221
+    },
+    {
+      "tag": "button",
+      "attribute": "data-view",
+      "value": "servers",
+      "line": 222
+    },
+    {
+      "tag": "button",
+      "attribute": "data-view",
+      "value": "projects",
+      "line": 223
+    },
+    {
+      "tag": "button",
+      "attribute": "data-view",
+      "value": "companies",
+      "line": 224
+    },
+    {
+      "tag": "button",
+      "attribute": "data-view",
+      "value": "system",
+      "line": 225
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "dashboard",
+      "line": 248
+    },
+    {
+      "tag": "div",
+      "attribute": "data-target",
+      "value": "proj-sub",
+      "line": 251
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "wp-cielo",
+      "line": 253
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "wp-cotufas2",
+      "line": 254
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "wp-microtechsat",
+      "line": 255
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "wp-audiomania",
+      "line": 256
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "pr-factura",
+      "line": 257
+    },
+    {
+      "tag": "div",
+      "attribute": "data-target",
+      "value": "srv-sub",
+      "line": 261
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "srv-hetzner",
+      "line": 263
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "srv-dgx",
+      "line": 264
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "srv-local",
+      "line": 265
+    },
+    {
+      "tag": "div",
+      "attribute": "data-page",
+      "value": "subvenciones",
+      "line": 269
+    },
+    {
+      "tag": "div",
+      "attribute": "data-page",
+      "value": "auditorias",
+      "line": 270
+    },
+    {
+      "tag": "div",
+      "attribute": "data-page",
+      "value": "informes",
+      "line": 271
+    },
+    {
+      "tag": "div",
+      "attribute": "data-target",
+      "value": "ai-sub",
+      "line": 274
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "ai-qwen",
+      "line": 276
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "ai-glm",
+      "line": 277
+    },
+    {
+      "tag": "div",
+      "attribute": "data-view",
+      "value": "ai-hermes",
+      "line": 278
+    },
+    {
+      "tag": "div",
+      "attribute": "data-page",
+      "value": "config",
+      "line": 282
+    }
+  ],
+  "nodes": [
+    "srv-hetzner",
+    "srv-microtechsat",
+    "srv-dgx",
+    "srv-local",
+    "wp-cielo",
+    "wp-cotufas2",
+    "wp-microtechsat",
+    "wp-audiomania",
+    "ai-qwen",
+    "ai-glm",
+    "ai-proxy",
+    "ai-hermes",
+    "inf-cloudflare",
+    "inf-github",
+    "inf-ssh",
+    "pr-factura",
+    "pr-jarvis"
+  ],
+  "functions": [
+    {
+      "name": "startLoading",
+      "line": 438
+    },
+    {
+      "name": "tick",
+      "line": 448
+    },
+    {
+      "name": "checkHover",
+      "line": 609
+    },
+    {
+      "name": "showNodeDetail",
+      "line": 632
+    },
+    {
+      "name": "showNotification",
+      "line": 653
+    },
+    {
+      "name": "showPage",
+      "line": 716
+    },
+    {
+      "name": "navigateView",
+      "line": 767
+    },
+    {
+      "name": "renderPanel",
+      "line": 790
+    },
+    {
+      "name": "animate",
+      "line": 829
+    },
+    {
+      "name": "updateStatus",
+      "line": 923
+    },
+    {
+      "name": "fetchData",
+      "line": 936
+    },
+    {
+      "name": "updateUI",
+      "line": 948
+    }
+  ],
+  "inline_handlers": []
+}

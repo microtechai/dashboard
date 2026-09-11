@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MicroTech AI — Centro de Mando</title>
+<title>Microtech AI — Centro de Mando</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 /* === RESET & BASE === */
@@ -185,13 +185,14 @@ canvas#viz:active{cursor:grabbing}
 }
 </style>
 <script src="fire/shaders.js?v=20260908-volume6-target"></script>
-<script src="voice/speech.js"></script>
-<script src="integration.js?v=20260908-executor3"></script>
-<link rel="stylesheet" href="chat/chat.css?v=20260908-chat4">
-<script src="chat/core-state.js?v=20260908-chat4"></script>
-<script defer src="chat/chat.js?v=20260908-access5"></script>
+<script src="reactor/reactor.js?v=20260911-galaxy3-context"></script>
+<!-- Legacy voice/speech.js remains private on disk; chat owns microphone and TTS. -->
+<script src="integration.js?v=20260909-redesign2"></script>
+<link rel="stylesheet" href="chat/chat.css?v=20260909-core-visual3">
+<script src="chat/core-state.js?v=20260909-core-visual3"></script>
+<script defer src="chat/chat.js?v=20260911-workflow-intent2"></script>
 </head>
-<body>
+<body data-mia-view="dashboard">
 
 <!-- LOADING -->
 <div id="loading">
@@ -201,12 +202,18 @@ canvas#viz:active{cursor:grabbing}
     <span class="accent">╚══════════════════════╝</span>
        AGENT ORCHESTRATOR
   </pre>
-  <div class="loading-title" id="loadingTitle">CARGANDO JARVIS</div>
+  <div class="loading-title" id="loadingTitle">CARGANDO Microtech AI</div>
   <div class="loading-bar-wrap"><div class="loading-bar-fill" id="loadingBar" style="width:0%"></div></div>
   <div class="loading-text" id="loadText">Inicializando sistema...</div>
 </div>
 
 <canvas id="viz"></canvas>
+<section id="mia-theater" aria-label="MIA · centro de conversación">
+  <div class="mia-heading"><span>MICROTECH AI / CENTRO DE OPERACIONES</span><h1>MIA</h1><p>Conversación local. Control a tu alcance.</p></div>
+  <div id="mia-reactor-anchor" aria-hidden="true"></div>
+  <details id="mia-context"><summary>Entorno de trabajo <span>17 nodos</span></summary><p>Catálogo de contexto, no etapas de la llamada. Estados no instrumentados.</p><div id="mia-context-groups"></div></details>
+</section>
+<p id="mia-render-status" role="status" hidden>3D no disponible · navegación y chat siguen disponibles.</p>
 
 <!-- Post-processing overlays -->
 <div class="vignette"></div>
@@ -216,7 +223,7 @@ canvas#viz:active{cursor:grabbing}
 <!-- HEADER + NAV -->
 <div class="header">
   <div class="header-left">
-    <div class="header-title">MicroTech AI</div>
+    <div class="header-title">Microtech AI</div>
     <div class="nav" id="mainNav">
       <button class="nav-btn active" data-view="dashboard">Dashboard</button>
       <button class="nav-btn" data-view="servers">Servidores</button>
@@ -234,55 +241,56 @@ canvas#viz:active{cursor:grabbing}
 <!-- SEARCH BOX -->
 <div class="search-box">
   <input type="text" id="search" placeholder="Buscar nodos...">
+  <button id="mia-metrics-toggle" type="button" aria-expanded="false" aria-controls="metrics-panel">Métricas</button>
 </div>
 
 <!-- LEGEND -->
 <div class="legend" id="legend"></div>
 
 <!-- SIDEBAR TOGGLE -->
-<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+<button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="Abrir navegación" aria-controls="sidebar" aria-expanded="false">☰</button>
 
 <!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <div class="sidebar-section">
-    <div class="sidebar-item active" data-view="dashboard"><span class="icon">📊</span> Dashboard</div>
+    <div class="sidebar-item active" data-view="dashboard"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 19V5m0 14h16M8 15v-4m5 4V7m5 8V4"/></svg></span> Dashboard</div>
   </div>
   <div class="sidebar-section">
-    <div class="sidebar-item accordion-trigger" data-target="proj-sub"><span class="icon">📁</span> Proyectos <span class="badge">5</span></div>
+    <div class="sidebar-item accordion-trigger" data-target="proj-sub"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M3 7h7l2-3h8v15H3z"/></svg></span> Proyectos <span class="badge">5</span></div>
     <div class="sidebar-sub" id="proj-sub">
-      <div class="sidebar-sub-item" data-view="wp-cielo"><span class="icon">🌐</span> El Cielo de Celia</div>
-      <div class="sidebar-sub-item" data-view="wp-cotufas2"><span class="icon">🛒</span> Cotufas2</div>
-      <div class="sidebar-sub-item" data-view="wp-microtechsat"><span class="icon">🛴</span> MicroTech SAT</div>
-      <div class="sidebar-sub-item" data-view="wp-audiomania"><span class="icon">🎵</span> Audiomania Eventos</div>
-      <div class="sidebar-sub-item" data-view="pr-factura"><span class="icon">📊</span> FacturaScripts</div>
+      <div class="sidebar-sub-item" data-view="wp-cielo"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M3 12h18M12 3v18M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18"/></svg></span> El Cielo de Celia</div>
+      <div class="sidebar-sub-item" data-view="wp-cotufas2"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M2 3h3l3 13h11l3-9H6M8 21h1m9 0h1"/></svg></span> Cotufas2</div>
+      <div class="sidebar-sub-item" data-view="wp-microtechsat"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M3 18h12l3-14h3M3 18a2 2 0 1 0 4 0m10 0a2 2 0 1 0 4 0"/></svg></span> MicroTech SAT</div>
+      <div class="sidebar-sub-item" data-view="wp-audiomania"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M9 18V5l11-2v12M9 18a3 3 0 1 1-3-3m14 0a3 3 0 1 1-3-3"/></svg></span> Audiomania Eventos</div>
+      <div class="sidebar-sub-item" data-view="pr-factura"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 19V5m0 14h16M8 15v-4m5 4V7m5 8V4"/></svg></span> FacturaScripts</div>
     </div>
   </div>
   <div class="sidebar-section">
-    <div class="sidebar-item accordion-trigger" data-target="srv-sub"><span class="icon">🖧</span> Servidores <span class="badge">3</span></div>
+    <div class="sidebar-item accordion-trigger" data-target="srv-sub"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M9 3h6v6H9zM3 15h6v6H3zM15 15h6v6h-6zM12 9v3M6 15v-3h12v3"/></svg></span> Servidores <span class="badge">3</span></div>
     <div class="sidebar-sub" id="srv-sub">
-      <div class="sidebar-sub-item" data-view="srv-hetzner"><span class="icon">🖥</span> Hetzner Prod</div>
-      <div class="sidebar-sub-item" data-view="srv-dgx"><span class="icon">🔬</span> DGX Spark</div>
-      <div class="sidebar-sub-item" data-view="srv-local"><span class="icon">💻</span> Hermes Local</div>
+      <div class="sidebar-sub-item" data-view="srv-hetzner"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M3 4h18v13H3zM8 21h8M12 17v4"/></svg></span> Hetzner Prod</div>
+      <div class="sidebar-sub-item" data-view="srv-dgx"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M9 3h6v8H9zM12 11v4M6 21h14M16 8a7 7 0 0 1 0 13"/></svg></span> DGX Spark</div>
+      <div class="sidebar-sub-item" data-view="srv-local"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 4h14v13H5zM2 20h20"/></svg></span> Hermes Local</div>
     </div>
   </div>
   <div class="sidebar-section">
-    <div class="sidebar-item" data-page="subvenciones"><span class="icon">💶</span> Subvenciones</div>
-    <div class="sidebar-item" data-page="auditorias"><span class="icon">📋</span> Auditorías</div>
-    <div class="sidebar-item" data-page="informes"><span class="icon">📊</span> Informes</div>
+    <div class="sidebar-item" data-page="subvenciones"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M3 5h18v14H3zM16 8h-4l-2 4 2 4h4M7 11h7M7 13h7"/></svg></span> Subvenciones</div>
+    <div class="sidebar-item" data-page="auditorias"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M8 5H4v16h16V5h-4M8 3h8v4H8zM8 12h8M8 16h6"/></svg></span> Auditorías</div>
+    <div class="sidebar-item" data-page="informes"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 19V5m0 14h16M8 15v-4m5 4V7m5 8V4"/></svg></span> Informes</div>
   </div>
   <div class="sidebar-section">
-    <div class="sidebar-item accordion-trigger" data-target="ai-sub"><span class="icon">🤖</span> IA / Modelos <span class="badge">3</span></div>
+    <div class="sidebar-item accordion-trigger" data-target="ai-sub"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 7h14v13H5zM12 3v4M8 11v3m8-3v3M8 17h8"/></svg></span> IA / Modelos <span class="badge">3</span></div>
     <div class="sidebar-sub" id="ai-sub">
-      <div class="sidebar-sub-item" data-view="ai-qwen"><span class="icon">🧠</span> Qwen 3.6-35B</div>
-      <div class="sidebar-sub-item" data-view="ai-glm"><span class="icon">💬</span> GLM-4.7 Flash</div>
-      <div class="sidebar-sub-item" data-view="ai-hermes"><span class="icon">🤖</span> Hermes Agent</div>
+      <div class="sidebar-sub-item" data-view="ai-qwen"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 4v16M10 4C2 2 1 17 10 20M14 4c8-2 9 13 0 16"/></svg></span> Qwen 3.6-35B</div>
+      <div class="sidebar-sub-item" data-view="ai-glm"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M3 4h18v13H9l-6 4z"/></svg></span> GLM-4.7 Flash</div>
+      <div class="sidebar-sub-item" data-view="ai-hermes"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 7h14v13H5zM12 3v4M8 11v3m8-3v3M8 17h8"/></svg></span> Hermes Agent</div>
     </div>
   </div>
   <div class="sidebar-section">
-    <div class="sidebar-item" data-page="config"><span class="icon">⚙</span> Configuración</div>
+    <div class="sidebar-item" data-page="config"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M9 3h6l1 4 4 2v6l-4 2-1 4H9l-1-4-4-2V9l4-2zM9 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0"/></svg></span> Configuración</div>
   </div>
   <div class="sidebar-section">
-    <div class="sidebar-item sidebar-logout"><span class="icon">🚪</span> Cerrar sesión</div>
+    <div class="sidebar-item sidebar-logout"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M13 4H4v16h9M10 12h11m-4-4 4 4-4 4"/></svg></span> Cerrar sesión</div>
   </div>
 </div>
 
@@ -352,7 +360,7 @@ const CAT_COLORS={
 const NODES=[
   {id:'srv-hetzner',label:'Hetzner Prod',cat:'server',status:'online',
    desc:'Debian 12 · 4C/8G · 75GB SSD · Tenerife',
-   url:'https://178.104.253.211',company:'MicroTech AI',
+   url:'https://178.104.253.211',company:'Microtech AI',
    metrics:[['CPU','—'],['RAM','— GB'],['Disco','— / 75 GB'],['Uptime','—']]},
   {id:'srv-microtechsat',label:'MicroTech SAT',cat:'server',status:'online',
    desc:'Hetzner · 8GB · WooCommerce patinetes',
@@ -360,11 +368,11 @@ const NODES=[
    metrics:[['CPU','—'],['RAM','— GB'],['Swap','2 GB'],['Pool','20 proc']]},
   {id:'srv-dgx',label:'DGX Spark',cat:'server',status:'online',
    desc:'GB10 · 128GB UMA · 192.168.1.137',
-   url:'http://192.168.1.137:8008',company:'MicroTech AI',
+   url:'http://192.168.1.137:8008',company:'Microtech AI',
    metrics:[['VRAM','— / 128 GB'],['Temp','—°C'],['Uptime','—'],['Puertos','8008,8010,8011']]},
   {id:'srv-local',label:'Hermes Local',cat:'server',status:'online',
    desc:'Máquina local · 192.168.1.106 · Debian',
-   url:'',company:'MicroTech AI',
+   url:'',company:'Microtech AI',
    metrics:[['IP','192.168.1.106'],['Rol','Agente orquestador']]},
   {id:'wp-cielo',label:'El Cielo de Celia',cat:'wp',status:'online',
    desc:'Restaurante andaluz · La Laguna · TT5 child',
@@ -384,39 +392,39 @@ const NODES=[
    metrics:[['Tema','Audiomania child'],['Estado','✅ Activo']]},
   {id:'ai-qwen',label:'Qwen 3.6-35B',cat:'ai',status:'online',
    desc:'vLLM NVFP4 · MTP=3 · Puerto 8010',
-   url:'http://192.168.1.137:8010',company:'MicroTech AI',
+   url:'http://192.168.1.137:8010',company:'Microtech AI',
    metrics:[['Modelo','Qwen3.6-35B-A3B'],['Formato','NVFP4'],['MTP','3'],['VRAM','~54 GB']]},
   {id:'ai-glm',label:'GLM-4.7 Flash',cat:'ai',status:'online',
    desc:'vLLM Docker · Puerto 8011 · SM120 fix',
-   url:'http://192.168.1.137:8011',company:'MicroTech AI',
+   url:'http://192.168.1.137:8011',company:'Microtech AI',
    metrics:[['Modelo','GLM-4.7-Flash'],['Formato','NVFP4'],['Modo','Docker 26.07'],['VRAM','~31 GB']]},
   {id:'ai-proxy',label:'Proxy Multimodo',cat:'ai',status:'online',
    desc:'Router AI · 8008 · Qwen/GLM/Team',
-   url:'http://192.168.1.137:8008',company:'MicroTech AI',
+   url:'http://192.168.1.137:8008',company:'Microtech AI',
    metrics:[['Puerto','8008'],['Modos','qwen, glm, team'],['Router','Activo']]},
   {id:'ai-hermes',label:'Hermes Agent',cat:'ai',status:'online',
    desc:'Orquestador · CLI/Telegram · Skills 50+',
-   url:'https://github.com/microtechai',company:'MicroTech AI',
+   url:'https://github.com/microtechai',company:'Microtech AI',
    metrics:[['Skills','~50'],['Cron Jobs','8'],['Providers','DeepSeek,Qwen']]},
   {id:'inf-cloudflare',label:'Cloudflare',cat:'infra',status:'online',
    desc:'DNS · SSL · Proxy · CDN · microtechai.es',
-   url:'https://dash.cloudflare.com',company:'MicroTech AI',
+   url:'https://dash.cloudflare.com',company:'Microtech AI',
    metrics:[['Dominios','~6'],['SSL Full',true],['Proxy','Cloudflare-only']]},
   {id:'inf-github',label:'GitHub',cat:'infra',status:'online',
    desc:'Repos microtechai · Themes · Plugins · Infra',
-   url:'https://github.com/microtechai',company:'MicroTech AI',
+   url:'https://github.com/microtechai',company:'Microtech AI',
    metrics:[['Repos','5+'],['Privados','Varios'],['Orgs','microtechai']]},
   {id:'inf-ssh',label:'SSH Key',cat:'infra',status:'online',
    desc:'ed25519 · Hetzner · GitHub · DGX',
-   url:'',company:'MicroTech AI',
+   url:'',company:'Microtech AI',
    metrics:[['Hosts','3'],['Tipo','ed25519'],['Auth','Clave pública']]},
   {id:'pr-factura',label:'FacturaScripts',cat:'project',status:'online',
    desc:'ERP contable · Docker puerto 8081 · MariaDB',
-   url:'https://facturascripts.microtechai.es',company:'MicroTech AI',
+   url:'https://facturascripts.microtechai.es',company:'Microtech AI',
    metrics:[['Puerto','8081'],['DB','MariaDB'],['Stack','Docker'],['Estado','✅ Activo']]},
-  {id:'pr-jarvis',label:'JARVIS 3D',cat:'project',status:'online',
-   desc:'Dashboard 3D · Three.js · MicroTech AI',
-   url:'https://jarvis.microtechai.es',company:'MicroTech AI',
+  {id:'pr-jarvis',label:'Microtech AI · MIA',cat:'project',status:'online',
+   desc:'Dashboard 3D · Three.js · Microtech AI',
+   url:'https://jarvis.microtechai.es',company:'Microtech AI',
    metrics:[['Tecno','Three.js r128'],['Nodos','16'],['Efectos','Partículas, anillos']]}
 ];
 
@@ -474,9 +482,27 @@ scene.fog = new THREE.FogExp2(0x050810, 0.012);
 const camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 0.1, 2000);
 camera.position.set(0, 25, 100);
 
-const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('viz'),antialias:true,alpha:true});
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+let miaGLAvailable = true;
+const renderer = (() => {
+  try { return new THREE.WebGLRenderer({canvas:document.getElementById('viz'),antialias:true,alpha:true}); }
+  catch (_) {
+    miaGLAvailable = false;
+    document.getElementById('mia-render-status').hidden = false;
+    document.getElementById('viz').hidden = true;
+    // Null rendering adapter only; no fabricated telemetry. DOM/nav initialize normally.
+    return {setSize(){},setPixelRatio(){},setClearColor(){},render(){}};
+  }
+})();
+// Bound fragment workload to a CSS-viewport budget; DOM text and hit testing
+// remain native resolution. Never detect the test/browser GPU or alter materials.
+function miaPixelRatio(width, height, dpr) {
+  return Math.max(.5, Math.min(dpr || 1, 1.5, Math.sqrt(403200 / Math.max(1, width * height))));
+}
+function resizeMiaRenderer() {
+  renderer.setPixelRatio(miaPixelRatio(window.innerWidth, window.innerHeight, window.devicePixelRatio));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+resizeMiaRenderer();
 renderer.setClearColor(0x050810, 1);
 
 const ambientLight = new THREE.AmbientLight(0x404060, 0.4);
@@ -485,6 +511,8 @@ const pointLight1 = new THREE.PointLight(0x4a9eff, 2, 200); pointLight1.position
 const pointLight2 = new THREE.PointLight(0xa78bfa, 1.5, 200); pointLight2.position.set(-30,10,-20); scene.add(pointLight2);
 
 const canvas = document.getElementById('viz');
+canvas.addEventListener('webglcontextlost', event => {event.preventDefault();miaGLAvailable=false;document.getElementById('mia-render-status').hidden=false;});
+canvas.addEventListener('webglcontextrestored', () => {miaGLAvailable=true;document.getElementById('mia-render-status').hidden=true;});
 canvas.addEventListener('mousedown', e => { isDragging=true; lastMouse={x:e.clientX,y:e.clientY}; });
 canvas.addEventListener('mousemove', e => {
   if(isDragging){
@@ -530,9 +558,31 @@ for(let i=0; i<3; i++){
 
 // NODE SPHERES
 // The existing scene and animation loop are the sole owners of fire.
-const fireController = window.JarvisFire.createFire({THREE, coreGroup, quality: window.matchMedia('(max-width: 760px)').matches ? 'low' : 'auto'});
+const fireController = window.MiaReactor.create({THREE, coreGroup});
+coreMesh.visible = wireMesh.visible = outerMesh.visible = false;
 window.dashboardFireController = fireController;
+window.addEventListener('mia-workflow-intent', event => {
+  const stage = event.detail?.stage;
+  if (!stage || !window.dashboardFireController?.focusStage) return;
+  if (window.dashboardFireController.focusStage(stage)) { showWorkflowContext(stage); showNotification('MIA enfoca ' + stage.toUpperCase()); }
+});
+const miaStateVisual = window.JarvisCoreState.createVisualController(fireController.group);
 const fireMotionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+const miaPosition = new THREE.Vector3();
+let miaFrame = {x:innerWidth/2,y:innerHeight*.31,radius:160};
+const miaAnchor = document.getElementById('mia-reactor-anchor');
+function measureMiaFrame(){const b=miaAnchor.getBoundingClientRect();miaFrame={x:b.x+b.width/2,y:b.y+b.height/2,radius:b.height/2};}
+new ResizeObserver(measureMiaFrame).observe(miaAnchor);
+new MutationObserver(measureMiaFrame).observe(document.body,{attributes:true,attributeFilter:['style']});
+window.addEventListener('resize',measureMiaFrame);
+measureMiaFrame();
+// Existing node IDs and detail handlers; context is never represented as a call pipeline.
+for (const [label,categories] of [['Servidores',['server']],['Proyectos',['wp','project']],['IA e infraestructura',['ai','infra']]]) {
+ const section=document.createElement('section');const heading=document.createElement('h2');heading.textContent=label;section.append(heading);
+ for(const node of NODES.filter(n=>categories.includes(n.cat))){const button=document.createElement('button');button.type='button';button.dataset.miaNode=node.id;button.textContent=node.label;button.addEventListener('click',()=>showNodeDetail(node));section.append(button);}
+ document.getElementById('mia-context-groups').append(section);
+}
+document.addEventListener('keydown',event=>{if(event.key==='Escape'){document.getElementById('sidePanel').classList.remove('open');const details=document.getElementById('mia-context');if(details.open){details.open=false;details.querySelector('summary').focus();}}});
 
 const nodeMeshes = [];
 const nodeLines = [];
@@ -541,15 +591,11 @@ const nodeRings = [];
 
 NODES.forEach((node, i) => {
   node.visible = true;
-  const phi = Math.random() * Math.PI;
-  const theta = Math.random() * Math.PI * 2;
-  const radius = 32 + Math.random() * 50;
-  node.orbitX = radius * Math.sin(phi) * Math.cos(theta);
-  node.orbitY = radius * Math.sin(phi) * Math.sin(theta);
-  node.orbitZ = radius * Math.cos(phi);
-  node.orbitPhase = Math.random() * Math.PI * 2;
-  node.orbitSpeed = 0.001 + Math.random()*0.002;
-  node.orbitRadius = 1.5 + Math.random()*2;
+  // Stable semantic columns for non-theater catalog views; no random orbits.
+  const group = node.cat === 'server' ? 0 : ['wp','project'].includes(node.cat) ? 1 : 2;
+  const peers=NODES.filter(n=>(n.cat==='server'?0:['wp','project'].includes(n.cat)?1:2)===group);
+  node.orbitX = (group-1)*25; node.orbitY = 25-peers.indexOf(node)*9; node.orbitZ = 0;
+  node.orbitPhase = 0; node.orbitSpeed = 0; node.orbitRadius = 0;
 
   const size = 1.8 + Math.random()*0.8;
   const geo = new THREE.SphereGeometry(size, 16, 16);
@@ -610,7 +656,7 @@ function checkHover(mx, my){
   mouse3d.x = (mx / window.innerWidth) * 2 - 1;
   mouse3d.y = -(my / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse3d, camera);
-  const intersects = raycaster.intersectObjects(nodeMeshes);
+  const intersects = raycaster.intersectObjects(nodeMeshes.filter(mesh=>mesh.visible));
   hoveredNode = null;
   if(intersects.length > 0){
     hoveredNode = intersects[0].object.userData.node;
@@ -628,8 +674,40 @@ function checkHover(mx, my){
 
 canvas.addEventListener('click', e => { if(hoveredNode) showNodeDetail(hoveredNode); });
 
+// Maps the existing 17-node catalog to the seven visible workflow suns.
+function focusMiaWorkflowForNode(node){
+  const text=String(node?.label||'').toLowerCase();
+  const id=String(node?.id||'').toLowerCase();
+  const haystack=text+' '+id;
+  const stage=haystack.includes('subv')||haystack.includes('grant')?'grants':
+    haystack.includes('audit')||haystack.includes('segu')?'followup':
+    haystack.includes('project')||haystack.includes('proyecto')||node?.cat==='project'?'project':
+    haystack.includes('client')||haystack.includes('cliente')?'client':
+    haystack.includes('proposal')||haystack.includes('propuesta')?'proposal':
+    haystack.includes('audit')||haystack.includes('risk')||haystack.includes('anali')?'analysis':
+    haystack.includes('idea')||haystack.includes('draft')?'idea':null;
+  if(stage && window.dashboardFireController?.focusStage) window.dashboardFireController.focusStage(stage);
+  return stage;
+}
+
+function showWorkflowContext(stage){
+  const labels={idea:'Ideas y borradores',analysis:'Análisis y riesgos',proposal:'Propuestas',client:'Clientes y sitios',project:'Proyectos',grants:'Subvenciones',followup:'Seguimiento y auditoría'};
+  const groups={idea:['project'],analysis:['ai'],proposal:['project'],client:['wp'],project:['project'],grants:[],followup:[]};
+  const items=NODES.filter(node=>groups[stage]?.includes(node.cat));
+  const panel=document.getElementById('sidePanel');
+  document.getElementById('panelTitle').textContent=labels[stage]||stage.toUpperCase();
+  document.getElementById('panelSubtitle').textContent='Contexto de solo lectura · catálogo del dashboard';
+  let html='<div class="mia-workflow-context"><p style="font-size:10px;color:#8fa5b8">Vista contextual; no ejecuta acciones ni modifica MC.</p>';
+  if(!items.length) html+='<p style="font-size:11px;color:#8fa5b8">Aún no hay elementos conectados a esta etapa.</p>';
+  items.forEach(node=>{html+='<button type="button" data-mia-context-node="'+esc(node.id)+'" style="display:block;width:100%;text-align:left;margin:6px 0;padding:8px;background:#07121d;border:1px solid #24465d;color:#d9f8ff;border-radius:5px"><strong>'+esc(node.label)+'</strong><br><small style="color:#8fa5b8">'+esc(node.desc)+'</small></button>';});
+  html+='</div>'; document.getElementById('panelContent').innerHTML=html;
+  document.querySelectorAll('[data-mia-context-node]').forEach(button=>button.addEventListener('click',()=>{const node=NODES.find(item=>item.id===button.dataset.miaContextNode);if(node)showNodeDetail(node);}));
+  panel.classList.add('open');
+}
+
 // PANEL RENDERING
 function showNodeDetail(node){
+  focusMiaWorkflowForNode(node);
   const panel = document.getElementById('sidePanel');
   document.getElementById('panelTitle').textContent = node.label;
   document.getElementById('panelSubtitle').textContent = node.desc;
@@ -656,13 +734,30 @@ function showNotification(text){
   setTimeout(() => n.classList.remove('show'), 3500);
 }
 
-// SIDEBAR
+// Independent responsive states: mobile never overwrites desktop choices.
+const miaMobileLayout = window.matchMedia('(max-width: 760px)');
+const miaSidebarState = {desktop:false, mobile:true};
+function applyMiaSidebar() {
+  sidebarCollapsed = miaSidebarState[miaMobileLayout.matches ? 'mobile' : 'desktop'];
+  document.getElementById('sidebar').classList.toggle('collapsed', sidebarCollapsed);
+  document.body.style.setProperty('--mia-inset', sidebarCollapsed || miaMobileLayout.matches ? '0px' : '220px');
+  document.getElementById('metrics-panel').classList.toggle('sidebar-collapsed', sidebarCollapsed);
+  const toggle = document.getElementById('sidebarToggle');
+  toggle.setAttribute('aria-expanded', String(!sidebarCollapsed));
+  toggle.setAttribute('aria-label', sidebarCollapsed ? 'Abrir navegación' : 'Cerrar navegación');
+}
 document.getElementById('sidebarToggle').addEventListener('click', () => {
-  sidebarCollapsed = !sidebarCollapsed;
-  document.getElementById('sidebar').classList.toggle('collapsed');
-  document.getElementById('metrics-panel').classList.toggle('sidebar-collapsed');
+  miaSidebarState[miaMobileLayout.matches ? 'mobile' : 'desktop'] = !sidebarCollapsed;
+  applyMiaSidebar();
 });
+miaMobileLayout.addEventListener('change', applyMiaSidebar);
+applyMiaSidebar();
 
+// Keyboard equivalents for the retained legacy navigation elements.
+document.querySelectorAll('.sidebar-item,.sidebar-sub-item').forEach(el=>{
+ el.tabIndex=0;el.setAttribute('role','button');
+ el.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();el.click();}});
+});
 // Accordion triggers
 document.querySelectorAll('.accordion-trigger').forEach(el => {
   el.addEventListener('click', () => {
@@ -714,7 +809,9 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
 
 // Page views (static content)
 function showPage(page){
-  updateStatus('ok');
+  currentView = page;
+  document.body.dataset.miaView = page;
+  window.dispatchEvent(new CustomEvent('mia-view-change', {detail:{view:page}}));
   // Hide 3D spheres (show nothing in 3D for static pages)
   NODES.forEach(n => { n.visible = false; });
   nodeMeshes.forEach(m => { m.visible = false; });
@@ -760,12 +857,14 @@ function showPage(page){
       <p style="margin-top:12px;color:#334;font-size:9px">Ajustes del sistema y estado del dashboard.</p>
     </div>`
   };
-  list.innerHTML = pages[page] || '<p style="color:#556;padding:8px">Sección en construcción</p>';
+  list.innerHTML = '<p class="mia-placeholder-notice">Vista estática sin conexión a MC: estos marcadores no representan registros, importes ni resultados reales.</p>' + (pages[page] || '<p style="color:#556;padding:8px">Sección en construcción</p>');
 }
 
 // Navigation
 function navigateView(view){
   currentView = view;
+  document.body.dataset.miaView = view;
+  window.dispatchEvent(new CustomEvent('mia-view-change', {detail:{view}}));
   const catFilter = {
     dashboard: 'all', servers: 'server', projects: null, companies: null, system: 'infra'
   } [view] || 'all';
@@ -825,10 +924,10 @@ Object.entries(CAT_COLORS).forEach(([cat, c]) => {
 });
 
 // ANIMATION
-let fireLastFrame = null;
 function animate(now = performance.now()){
   requestAnimationFrame(animate);
-  time += 0.016;
+  if(document.hidden || !miaGLAvailable) { return; }
+  if (!fireMotionPreference.matches) time += 0.016;
   rotX += (targetRotX - rotX) * 0.05;
   rotY += (targetRotY - rotY) * 0.05;
   camDist += (camTargetDist - camDist) * 0.1;
@@ -838,30 +937,35 @@ function animate(now = performance.now()){
   camera.position.z = Math.cos(rotY) * Math.cos(rotX) * camDist;
   camera.lookAt(0, 0, 0);
 
-  if(!isDragging) targetRotY += 0.0015;
+  // Deliberate drag controls the viewing angle; never spin the face away.
 
   coreMesh.rotation.x = time * 0.3; coreMesh.rotation.y = time * 0.2;
   wireMesh.rotation.x = -time * 0.2; wireMesh.rotation.y = time * 0.3;
   outerMesh.rotation.x = time * 0.1; outerMesh.rotation.z = time * 0.15;
 
-  const chatBoost = window.JarvisCoreState ? window.JarvisCoreState.boost(now, time, fireMotionPreference.matches) : 0;
-  coreLight.intensity = 2.5 + (coreIntensity - 0.7) * 3 + Math.sin(time * 2) * 0.5 + chatBoost;
-  coreMesh.scale.setScalar(1 + chatBoost * 0.08);
-  const fireDelta = fireLastFrame === null ? 0 : Math.max(0, (now - fireLastFrame) / 1000);
-  fireLastFrame = now;
-  fireController.setState({intensity: Math.min(2, coreIntensity + chatBoost), speed: fireMotionPreference.matches ? 0.2 : 1 + chatBoost * 0.8, reducedMotion: fireMotionPreference.matches});
-  fireController.update(fireDelta);
-  coreMat.emissiveIntensity = 0.5 + Math.sin(time * 1.5) * 0.3 + chatBoost * 0.5;
+  // The passive state controller reuses reactor materials in this sole render loop.
+  miaStateVisual.update(now, time, fireMotionPreference.matches);
+  fireController.group.visible = currentView === 'dashboard';
+  // Frame the face above the single chat bar in viewport-relative coordinates.
+  const miaRadius = miaFrame.radius;
+  fireController.group.scale.setScalar(miaRadius * camDist * Math.tan(camera.fov * Math.PI / 360) / innerHeight);
+  const halfHeight = camDist * Math.tan(camera.fov * Math.PI / 360);
+  miaPosition.set((miaFrame.x / innerWidth * 2 - 1) * halfHeight * camera.aspect, (1 - miaFrame.y / innerHeight * 2) * halfHeight, -camDist).applyQuaternion(camera.quaternion).add(camera.position);
+  fireController.group.position.copy(miaPosition);
+
 
   rings3d.forEach((ring, i) => {
+    ring.visible = false; // No fictitious infra/call connections.
     ring.rotation.z = time * ring.userData.rotSpeed * 10;
     ring.rotation.x = ring.userData.baseRotX + Math.sin(time * 0.5 + i) * 0.1;
     ring.rotation.y = ring.userData.baseRotY + Math.cos(time * 0.3 + i) * 0.05;
   });
 
+  nodeLines.forEach(item=>{item.line.visible=false;});
   nodeMeshes.forEach((mesh, i) => {
     const node = mesh.userData.node;
-    if(node.visible === false) return;
+    mesh.visible = currentView !== 'dashboard' && node.visible !== false;
+    if(!mesh.visible) return;
     const orbitAngle = time * node.orbitSpeed + node.orbitPhase;
     const floatOffset = Math.sin(time * 0.5 + i) * node.orbitRadius;
     mesh.position.x = node.orbitX + Math.sin(orbitAngle) * node.orbitRadius;
@@ -890,6 +994,7 @@ function animate(now = performance.now()){
   // Drift particles individually
   const pPos = particleGeo.attributes.position.array;
   for(let i=0; i<particleCount; i++){
+    if (fireMotionPreference.matches) continue;
     pPos[i*3] += particleDrift[i].x;
     pPos[i*3+1] += particleDrift[i].y;
     pPos[i*3+2] += particleDrift[i].z;
@@ -912,7 +1017,7 @@ function animate(now = performance.now()){
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  resizeMiaRenderer();
 });
 
 // ═══════════════════════════════════════════
@@ -980,13 +1085,17 @@ function updateUI(data) {
 // ═══════════════════════════════════════════
 // INIT (after Three.js scene is built)
 // ═══════════════════════════════════════════
+document.getElementById('mia-metrics-toggle').addEventListener('click', event => {
+  const open=document.body.classList.toggle('mia-metrics-open');
+  event.currentTarget.setAttribute('aria-expanded',String(open));
+});
 animate();
 
 // Delivered only after server authentication.
 startLoading();
 
 // Schedule notification
-setTimeout(() => showNotification('Navega entre secciones · Click en esferas · Rueda zoom'), 5000);
+setTimeout(() => showNotification('Entorno de trabajo: nodos por grupo · Conversación: Llamar a MIA'), 5000);
 
 fetchData();
 setInterval(fetchData, 10000);

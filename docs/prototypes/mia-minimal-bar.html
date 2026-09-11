@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>MIA · Prototipo de barra mínima</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #090d14; color: #edf3ff; --muted: #a3b0c7; --line: #2c3b52; --blue: #91c5ff; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100svh; background: radial-gradient(ellipse at 50% 28%, #152239 0, #090d14 65%); }
+    button, textarea, select { font: inherit; }
+    button, select, summary { cursor: pointer; }
+    button { min-height: 44px; padding: 9px 14px; border: 1px solid var(--line); border-radius: 10px; background: #172131; color: #edf3ff; }
+    button:hover:not(:disabled) { background: #22344d; border-color: #779bc7; }
+    button:disabled { opacity: .55; cursor: default; }
+    :focus-visible { outline: 3px solid #a8d4ff; outline-offset: 4px; }
+    [hidden] { display: none !important; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .shell { width: min(880px, calc(100% - 40px)); margin: 0 auto; padding: 32px 0; }
+    .brand { display: flex; align-items: center; gap: 10px; font-size: 12px; letter-spacing: .16em; font-weight: 650; }
+    .mark { color: var(--blue); font-size: 22px; letter-spacing: -.12em; }
+    .demo { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 18px; color: var(--muted); font-size: 12px; }
+    .demo p { margin: 0; flex: 1 1 240px; }
+    select { max-width: 100%; min-height: 44px; background: #111a28; color: #d8e5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+    main { margin-top: clamp(36px, 12vh, 124px); }
+    h1 { margin: 0 0 10px; font-size: clamp(26px, 5vw, 38px); font-weight: 550; letter-spacing: -.04em; }
+    .intro { color: var(--muted); margin: 0 0 24px; line-height: 1.6; }
+    .bar { border: 1px solid #354964; border-radius: 18px; background: linear-gradient(130deg, #1a2535, #101722 70%); box-shadow: 0 20px 70px #0005; padding: 18px; }
+    .status-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; font-size: 13px; }
+    .status { display: inline-flex; align-items: center; gap: 7px; color: #c4d1e5; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: #a2b6cd; }
+    [data-state="analizando"] .dot { background: #71b9ff; box-shadow: 0 0 10px #429bff; }
+    [data-state="requiere-confirmacion"] .dot { background: #ffd18a; }
+    [data-state="error"] .dot { background: #ff9fa6; }
+    .local { margin-left: auto; color: var(--muted); font-size: 12px; }
+    .composer { display: flex; align-items: end; gap: 8px; padding: 8px; background: #0b121d; border: 1px solid var(--line); border-radius: 12px; }
+    textarea { resize: vertical; min-height: 48px; max-height: 180px; flex: 1; min-width: 0; width: 100%; border: 0; border-radius: 5px; background: transparent; color: #edf3ff; padding: 12px 8px; line-height: 1.5; }
+    textarea::placeholder { color: #a3b0c7; }
+    .composer-buttons { display: flex; gap: 8px; }
+    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; }
+    .primary { background: #9accff; border-color: #9accff; color: #081426; font-weight: 650; }
+    .primary:hover:not(:disabled) { background: #b9ddff; color: #081426; }
+    .stop { color: #ffd1d5; border-color: #96636e; margin-left: auto; }
+    .notice { margin-top: 14px; padding: 14px; border: 1px solid #425878; border-radius: 10px; background: #111d2c; line-height: 1.55; overflow-wrap: anywhere; }
+    .notice h2 { margin: 0 0 5px; font-size: 15px; }
+    .notice p { margin: 0; color: #c4d1e5; font-size: 14px; }
+    [data-state="error"] .notice { border-color: #a26b77; background: #281920; }
+    [data-state="requiere-confirmacion"] .notice { border-color: #8b744e; }
+    .drawers { margin-top: 14px; }
+    details { border-top: 1px solid var(--line); }
+    summary { padding: 13px 4px; min-height: 44px; color: #c4d1e5; font-size: 13px; }
+    .drawer-body { padding: 0 4px 16px; color: var(--muted); font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+    .drawer-body h3 { color: #e1ebfa; font-size: 13px; margin: 14px 0 4px; }
+    .drawer-body p, .drawer-body ul { margin: 4px 0; }
+    .drawer-body ul { padding-left: 20px; }
+    .help { color: var(--muted); font-size: 12px; line-height: 1.6; margin: 16px 4px 0; }
+    kbd { font: inherit; color: #dbe7fa; }
+    @media (max-width: 560px) {
+      .shell { width: calc(100% - 24px); padding-top: 20px; }
+      main { margin-top: 32px; }
+      .bar { padding: 12px; }
+      .composer { flex-wrap: wrap; }
+      textarea { flex-basis: 100%; }
+      .composer-buttons { width: 100%; }
+      .composer-buttons button { flex: 1; }
+      .actions button { flex: 1 1 auto; }
+      .local { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand"><span class="mark" aria-hidden="true">/M</span> MICROTECH AI</div>
+      <!-- PROTOTYPE ONLY: reviewer controls; never part of the production interaction bar. -->
+      <div class="demo">
+        <p>Prototipo local · Sin conexión a servicios ni micrófono.</p>
+        <label for="demo-state">Demo</label>
+        <select id="demo-state">
+          <option value="idle">idle · En espera</option>
+          <option value="analizando">analizando</option>
+          <option value="requiere-confirmacion">requiere-confirmacion</option>
+          <option value="error">error</option>
+        </select>
+      </div>
+    </header>
+    <main>
+      <h1>¿En qué te ayudo?</h1>
+      <p class="intro">Una idea, una pregunta o el siguiente paso.</p>
+      <section class="bar" id="bar" data-state="idle" aria-label="Barra de interacción MIA">
+        <div class="status-row">
+          <strong>MIA</strong>
+          <span class="status"><span class="dot" aria-hidden="true"></span><span id="status-text">En espera</span></span>
+          <span class="local">Solo demostración</span>
+        </div>
+        <form id="composer-form">
+          <label class="sr-only" for="message">Mensaje para MIA</label>
+          <div class="composer">
+            <textarea id="message" rows="1" maxlength="2000" placeholder="Escribe a MIA…" aria-describedby="keyboard-help"></textarea>
+            <div class="composer-buttons">
+              <button type="button" id="voice" aria-label="Simular entrada de voz, sin usar el micrófono">Voz</button>
+              <button type="submit" id="send" aria-label="Enviar texto a la demostración">Enviar</button>
+            </div>
+          </div>
+        </form>
+        <div id="notice" class="notice" hidden>
+          <h2 id="notice-title" tabindex="-1"></h2>
+          <p id="notice-body"></p>
+        </div>
+        <div class="actions">
+          <button type="button" class="primary" id="primary">Revisar ejemplo</button>
+          <button type="button" id="cancel" hidden>Cancelar</button>
+          <button type="button" class="stop" id="stop" hidden>Detener</button>
+        </div>
+        <div class="drawers">
+          <details id="context">
+            <summary>Contexto</summary>
+            <div class="drawer-body">
+              <p>Ejemplo ficticio: proyecto «Atlas», borrador local «Resumen semanal».</p>
+              <p>Alcance: revisar el título del borrador. Sin archivos, cuentas ni datos reales conectados.</p>
+            </div>
+          </details>
+          <details id="details">
+            <summary>Detalles</summary>
+            <div class="drawer-body">
+              <h3>Transcripción</h3>
+              <p id="transcript">Todavía no hay mensajes en esta demo.</p>
+              <h3>Fuentes</h3>
+              <p>Ficha ficticia de Atlas incluida en este HTML. No se han consultado fuentes externas.</p>
+              <h3>Eventos de herramientas</h3>
+              <ul id="events"><li>No se han ejecutado herramientas.</li></ul>
+            </div>
+          </details>
+        </div>
+      </section>
+      <p class="help" id="keyboard-help"><kbd>Enter</kbd> envía · <kbd>Mayús + Enter</kbd> añade una línea.<br><kbd>Esc</kbd> cierra los paneles; si no hay ninguno abierto, detiene o cancela.</p>
+      <p class="sr-only" id="announcer" role="status" aria-live="polite" aria-atomic="true"></p>
+    </main>
+  </div>
+  <script>
+    'use strict';
+    // PROTOTYPE ONLY: deterministic local state machine. No network, persistence,
+    // microphone capture, model inference or real tool execution takes place.
+    const $ = (id) => document.getElementById(id);
+    const states = {
+      idle: { label: 'En espera', action: 'Revisar ejemplo', title: '', body: '' },
+      analizando: { label: 'Analizando · demo', action: 'Ver propuesta demo', title: 'Análisis simulado', body: 'No hay un análisis en curso en ningún servicio. Puedes ver la propuesta de ejemplo o detener la demo.' },
+      'requiere-confirmacion': { label: 'Requiere confirmación', action: 'Confirmar cambio demo', title: '¿Cambiar el título del borrador?', body: 'Ejemplo Atlas: «Resumen semanal» → «Resumen de avances». Solo se simulará tu aprobación en esta página. No se editará ni enviará ningún documento.' },
+      error: { label: 'Error · demo', action: 'Reintentar demo', title: 'No se pudo completar el análisis (simulado)', body: 'Tu texto sigue en el editor. Reintentar vuelve al análisis de demostración; no contacta con ningún servicio.' }
+    };
+    let state = 'idle';
+    function setState(next, { focus = false, message = '' } = {}) {
+      state = next;
+      const config = states[next];
+      $('bar').dataset.state = next;
+      $('demo-state').value = next;
+      $('status-text').textContent = config.label;
+      $('primary').textContent = config.action;
+      $('notice').hidden = next === 'idle' && !message;
+      $('notice-title').textContent = message ? 'Demo finalizada' : config.title;
+      $('notice-body').textContent = message || config.body;
+      $('stop').hidden = next !== 'analizando';
+      $('cancel').hidden = next !== 'requiere-confirmacion';
+      const locked = next === 'analizando' || next === 'requiere-confirmacion';
+      $('send').disabled = locked;
+      $('voice').disabled = locked;
+      // Keep the draft readable/copyable, and prevent edits from changing a pending proposal.
+      $('message').readOnly = locked;
+      $('announcer').textContent = message || `${config.label}. ${config.body}`;
+      const event = document.createElement('li');
+      event.textContent = `Interfaz de demo: ${config.label.toLowerCase()}. Ninguna herramienta ejecutada.`;
+      $('events').replaceChildren(event);
+      if (focus) (next === 'idle' ? $('message') : $('notice-title')).focus();
+    }
+    $('demo-state').addEventListener('change', (event) => {
+      // Reviewer state changes do not steal focus from the switcher.
+      setState(event.target.value);
+    });
+    $('composer-form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (state === 'analizando' || state === 'requiere-confirmacion') return;
+      const value = $('message').value.trim();
+      if (!value) {
+        $('announcer').textContent = 'Escribe un mensaje antes de enviar.';
+        $('message').focus();
+        return;
+      }
+      $('transcript').textContent = `Tú (texto local): ${value}`;
+      setState('analizando', { focus: true });
+    });
+    $('message').addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+        event.preventDefault();
+        $('composer-form').requestSubmit();
+      }
+    });
+    $('voice').addEventListener('click', () => {
+      $('transcript').textContent = 'Voz de ejemplo (no grabada): «Revisa el título del resumen semanal». No se ha accedido al micrófono.';
+      setState('analizando', { focus: true });
+    });
+    $('primary').addEventListener('click', () => {
+      if (state === 'requiere-confirmacion') {
+        setState('idle', { focus: true, message: 'Confirmación registrada solo en la demo. No se ha modificado ningún documento.' });
+      } else if (state === 'analizando') {
+        setState('requiere-confirmacion', { focus: true });
+      } else {
+        setState('analizando', { focus: true });
+      }
+    });
+    function stop() {
+      setState('idle', { focus: true, message: 'Demo detenida. Tu texto se conserva; no se ha ejecutado ninguna acción.' });
+    }
+    function cancel() {
+      setState('idle', { focus: true, message: 'Cambio cancelado. No se ha registrado la confirmación.' });
+    }
+    $('stop').addEventListener('click', stop);
+    $('cancel').addEventListener('click', cancel);
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || event.isComposing) return;
+      // Leave native select Escape behavior intact; its popup belongs to the browser.
+      if (event.target === $('demo-state')) return;
+      const opened = [$('context'), $('details')].filter((drawer) => drawer.open);
+      if (opened.length) {
+        const target = opened.find((drawer) => drawer.contains(document.activeElement)) || opened[0];
+        opened.forEach((drawer) => { drawer.open = false; });
+        target.querySelector('summary').focus();
+        $('announcer').textContent = 'Paneles cerrados.';
+      } else if (state === 'analizando') stop();
+      else if (state === 'requiere-confirmacion') cancel();
+      else $('message').focus();
+      event.preventDefault();
+    });
+  </script>
+</body>
+</html>

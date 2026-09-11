@@ -1,0 +1,41 @@
+{
+  "mode": "operator-preview",
+  "technicalDecision": "NO-GO",
+  "hardwarePerformance": "pending",
+  "operatorAuthorization": "despliegala para probarla",
+  "candidateManifestSHA256": "2b4db6b7dc55c828c54a97a8cba451364d4d2470b3b001f728a6c2e2d73ad146",
+  "decisionSHA256": "08cf851731fc7d06087678a698883b6c59989fa48d1c0b3149c8bc6c9b7d3bdc",
+  "backup": "/root/mia-integration-rollback-20260908T223615Z",
+  "noRestarts": true,
+  "deployed": true,
+  "timestamp": "2026-09-08T22:36:15Z",
+  "url": "https://dashboard.microtechai.es",
+  "candidateHashes": {
+    "index.html": "5b73ee24633b2128c09d26172aea5387a3879c8f1fe7a40099ce6c5c285b8ef0",
+    "login.html": "d1a3fed72360f03e12ac3184af73be7f3fcd65e8843a684998cab31982ca6e80",
+    "chat/chat.js": "ed5ed905b07e7c239799a896c03c08f9c708760eaef6bbf1a9ae88dddc80a2c6",
+    "chat/chat.css": "9a61b4ac6ab46254e88e2585af914051d2740dc2b8bbd485388ff48e52ede4d1",
+    "reactor/reactor.js": "ff5af77f6b7bf5cda36a5279dd15fbb141a70e4744126d5ed16cc1aa0fdaec87",
+    "server/gate.php": "4cc789ab134720dd1546285f8bf217f1892cd79a2d1e29efd97214b70bc3a02b",
+    "integration.js": "6998514afd19481d9347b171ec9e2389f50badea99de431ae88458dc61377f02"
+  },
+  "remoteChangedHashes": {
+    "/var/www/dashboard/reactor/reactor.js": "ff5af77f6b7bf5cda36a5279dd15fbb141a70e4744126d5ed16cc1aa0fdaec87",
+    "/var/www/dashboard/chat/chat.css": "9a61b4ac6ab46254e88e2585af914051d2740dc2b8bbd485388ff48e52ede4d1",
+    "/var/www/dashboard/chat/chat.js": "ed5ed905b07e7c239799a896c03c08f9c708760eaef6bbf1a9ae88dddc80a2c6",
+    "/var/www/dashboard/integration.js": "6998514afd19481d9347b171ec9e2389f50badea99de431ae88458dc61377f02",
+    "/opt/jarvis-access/gate.php": "4cc789ab134720dd1546285f8bf217f1892cd79a2d1e29efd97214b70bc3a02b",
+    "/var/www/dashboard/login.html": "d1a3fed72360f03e12ac3184af73be7f3fcd65e8843a684998cab31982ca6e80",
+    "/var/www/dashboard/index.html": "5b73ee24633b2128c09d26172aea5387a3879c8f1fe7a40099ce6c5c285b8ef0"
+  },
+  "protectedUnchangedCount": 11,
+  "liveHashesVerifiedCount": 18,
+  "anonymousChecks": 36,
+  "anonymousPassed": 36,
+  "rollback": "CHECK ONLY PASS; not applied",
+  "limitations": [
+    "Physical GPU performance pending; technical NO-GO preserved",
+    "Owner authenticated login/microphone/acoustics pending",
+    "Historical manifests are private local operational evidence, not new public files"
+  ]
+}

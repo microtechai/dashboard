@@ -32,6 +32,9 @@ test('speech normalizes decorative Markdown without deleting numbers or code ope
  const {normalizeSpeech}=await import('../chat/voice/speech.mjs');
  assert.equal(normalizeSpeech('## 🟦 Estado\n**Precio**: 3.14 €, -5% y C++.\n`x < 3 && y > 2`'),'Estado Precio: 3.14 €, -5% y C++. x < 3 && y > 2');
  assert.equal(normalizeSpeech('[Manual](https://example.com) y ![decoración](x)'), 'Manual y');
- assert.equal(normalizeSpeech('Usa icono, icon y symbols. 1️⃣ es uno; 👍 significa sí.'),'Usa icono, icon y symbols. 1️⃣ es uno; 👍 significa sí.');
+ assert.equal(normalizeSpeech('Usa icono, icon y symbols. 1️⃣ es uno; 👍 significa sí.'),'Usa icono, icon y symbols. es uno; significa sí.');
+ assert.equal(normalizeSpeech('Hola 👩🏽‍💻 mundo 🇪🇸 🏳️‍🌈 2️⃣ #️⃣ *️⃣ ❤️ ☀︎ 🫠 fin'),'Hola mundo fin');
+ assert.equal(normalizeSpeech('3.14 € $ £ ¥ −5% π × ÷ ± ∑ ∞ ≤ ≥ = + 42 # * C++ © texto'),'3.14 € $ £ ¥ −5% π × ÷ ± ∑ ∞ ≤ ≥ = + 42 # * C++ texto');
+ assert.equal(normalizeSpeech('A\uFE0FB\u200DC\u{E0067}\u{E007F}D'), 'ABCD');
  assert.equal(normalizeSpeech('<img src=x onerror=alert(1)>'),' <img src=x onerror=alert(1)>'.trim());
 });

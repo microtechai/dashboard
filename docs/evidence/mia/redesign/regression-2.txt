@@ -1,0 +1,6 @@
+test_center_context_and_observed_pipeline (__main__.Redesign.test_center_context_and_observed_pipeline) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 27.068s
+
+OK

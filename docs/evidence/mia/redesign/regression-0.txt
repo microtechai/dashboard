@@ -1,0 +1,13 @@
+✔ ordered bounded speech queue starts early and double cancel drops stale requests (18.020525ms)
+✔ TTS network error and 429 cancel without retry (3.855235ms)
+✔ sentence boundaries wait for lookahead and preserve decimal/abbreviation (0.607868ms)
+✔ speech normalizes decorative Markdown without deleting numbers or code operators (2.828951ms)
+✔ manual read sends complete message to bounded queue, never silently slices (1.911759ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 100.868205
