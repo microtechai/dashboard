@@ -1,0 +1,25 @@
+{
+  "source_commit": "4e648ca52f340df603159392881c85b57f920205",
+  "timestamp_utc": "20260908T180119Z",
+  "backup_path": "/root/jarvis-phase6-preserved-20260908T180119Z",
+  "deployed": true,
+  "files": [
+    {
+      "path": "/var/www/dashboard/fire/shaders.js",
+      "before_sha256": "38951e11d2f4accb384a33b84c33b5eb35ecb51e7b95e20b7da3b0a59c780e39",
+      "after_sha256": "90afac07696c5735e417b7b3b9bf1eba3f2ff6066204060ba30a5903bbb3f17e",
+      "preserved_path": "/root/jarvis-phase6-preserved-20260908T180119Z/fire/shaders.js"
+    },
+    {
+      "path": "/var/www/dashboard/index.html",
+      "before_sha256": "c7ea130641decf235653cbade26614fc214a18bf4e26054854a856963f19ecaa",
+      "after_sha256": "46bc325cfc4aba60eaf442eb732a26e421872df1e0bc8ad177e0a84cc149cf0e",
+      "preserved_path": "/root/jarvis-phase6-preserved-20260908T180119Z/index.html"
+    }
+  ],
+  "gate_before_sha256": "34c0230747fc4d36982c42d5695f1223ff95c6f230cae48712793dae189d8088",
+  "gate_after_sha256": "34c0230747fc4d36982c42d5695f1223ff95c6f230cae48712793dae189d8088",
+  "core_state_sha256": "3245a4eef32f87985b03867c8a0cb7fced9cdd0f151c3f8ed93cb5dad3d57371",
+  "services_changed": false,
+  "gate_changed": false
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "path": "/",
+    "status": 303,
+    "headers": {
+      "location": "/login.html",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    }
+  },
+  {
+    "path": "/index.html",
+    "status": 303,
+    "headers": {
+      "location": "/login.html",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    }
+  },
+  {
+    "path": "/fire/shaders.js?v=20260908-fire2",
+    "status": 401,
+    "headers": {
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    }
+  },
+  {
+    "path": "/fire/shaders.js?v=20260908-volume6",
+    "status": 401,
+    "headers": {
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    }
+  },
+  {
+    "path": "/chat/chat.js?v=20260908-chat4",
+    "status": 401,
+    "headers": {
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    }
+  },
+  {
+    "path": "/chat/chat.css?v=20260908-chat4",
+    "status": 401,
+    "headers": {
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    }
+  },
+  {
+    "path": "/chat/core-state.js?v=20260908-chat4",
+    "status": 401,
+    "headers": {
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    }
+  },
+  {
+    "path": "/voice/speech.js",
+    "status": 401,
+    "headers": {
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    }
+  }
+]

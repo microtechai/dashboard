@@ -38,14 +38,16 @@ test('explicit controller updates real THREE objects without own RAF; state and 
   const meshes = []; parent.traverse(o => { if(o.isMesh) meshes.push(o); });
   assert.ok(meshes.length > 0 && meshes.length <= 12);
   const mat = meshes[0].material;
-  assert.equal(mat.depthWrite, false); assert.equal(mat.blending, THREE.AdditiveBlending);
+  assert.equal(mat.depthWrite, false); assert.equal(mat.blending, THREE.NormalBlending);
   assert.equal(mat.uniforms.uTime.value, 0);
   f.update(0.1); assert.ok(mat.uniforms.uTime.value > 0);
   const t = mat.uniforms.uTime.value; f.update(0); assert.equal(mat.uniforms.uTime.value,t);
   f.update(NaN); f.update(-1); assert.equal(mat.uniforms.uTime.value,t);
   f.setState({intensity:1.4,speed:1.2});
-  assert.equal(mat.uniforms.uIntensity.value,1.4);
-  assert.equal(mat.uniforms.uSpeed.value,1.2);
+  // Phase6 retains the state contract but eases targets instead of abrupt jumps.
+  for(let i=0;i<120;i++) f.update(0.1);
+  assert.ok(Math.abs(mat.uniforms.uIntensity.value-1.4)<1e-6);
+  assert.ok(Math.abs(mat.uniforms.uSpeed.value-1.2)<1e-6);
   const bounds = new THREE.Box3().setFromObject(parent);
   assert.ok(bounds.max.y > 4.5 && bounds.max.x > 4.5, 'flame geometry extends outside core');
   let disposed = 0;

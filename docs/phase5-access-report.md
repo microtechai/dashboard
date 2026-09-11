@@ -1,5 +1,7 @@
 # Fase 5 — acceso único server-side (2026-09-08)
 
+> **Actualización posterior verificada:** el parent resolvió Cloudflare con bypass/purge del hostname; Fase6 repitió las cuatro URLs antiguas y obtuvo401 DYNAMIC, HTML303. También se contuvo la exposición del executor a127.0.0.1:5000, debug/reloaderFalse, health local200 y conexión externa rechazada, según `/home/ddr/jarvis-port5000-containment/REPORT.md`. No certifica executor UI operativo. Login/logout positivo del propietario sigue pendiente. Fase6 tiene candidato WebGL real pero **NO-GO de rendimiento y no se desplegó**; ver [informe Fase6](phase6-fire-report.md). Las secciones siguientes son el registro histórico de Fase5 y sus bloqueos originales, no el estado actual de Cloudflare/puerto.
+
 ## Resultado: origen protegido; **NO-GO global / aceptación pendiente**
 
 Se desplegó directamente en producción, sin staging ni backup completo. No se implementaron fases 6/7. Se mantuvo la estética del núcleo, voz y Task Executor. El único escritor de esta fase trabajó sobre `feat/jarvis-single-login`, apilada sobre `feat/jarvis-chat-tts` (PR3 abierta verificada antes de publicar).
