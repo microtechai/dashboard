@@ -1,0 +1,48 @@
+{
+  "loginUntouched": true,
+  "talkButton": true,
+  "permission": "prompt",
+  "linked": true,
+  "glError": 0,
+  "session": {
+    "authenticated": false,
+    "username": null,
+    "history": []
+  },
+  "guard": {
+    "status": 401,
+    "body": {
+      "error": "Inicia sesión para continuar."
+    }
+  },
+  "public_assets": {
+    "index.html": {
+      "status": 200,
+      "sha256": "12e3e1aa99acac56bc76008a6d10ad0b0b45f7b5cc68ac236ed763f93998cb7e",
+      "matches": true
+    },
+    "chat/chat.js": {
+      "status": 200,
+      "sha256": "554d951ff157c8e921f295f6fa77930df3d436e83faea1d3cb89e7a1648d31d1",
+      "matches": true
+    },
+    "chat/chat.css": {
+      "status": 200,
+      "sha256": "f94afcbce026943e635436ce9f039ca21a854951f413ddced3827e77c4ef2df6",
+      "matches": true
+    },
+    "chat/core-state.js": {
+      "status": 200,
+      "sha256": "3245a4eef32f87985b03867c8a0cb7fced9cdd0f151c3f8ed93cb5dad3d57371",
+      "matches": true
+    },
+    "integration.js": {
+      "status": 200,
+      "sha256": "8cacc2690a8598c949f793a089379ec39049c3f94978084c911be4e8d53e5321",
+      "matches": true
+    }
+  },
+  "pageErrors": [],
+  "requests_intercepted": false,
+  "physical_microphone_used": false
+}

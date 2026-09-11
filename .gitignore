@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+tests/chat_backend_runtime/
+tests/chat_backend_changes.patch
+tests/chat_frontend_fixture_*.png

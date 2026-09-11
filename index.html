@@ -204,7 +204,10 @@ canvas#viz:active{cursor:grabbing}
 </style>
 <script src="fire/shaders.js?v=20260908-fire2"></script>
 <script src="voice/speech.js"></script>
-<script src="integration.js?v=20260908-fire2"></script>
+<script src="integration.js?v=20260908-executor3"></script>
+<link rel="stylesheet" href="chat/chat.css?v=20260908-chat4">
+<script src="chat/core-state.js?v=20260908-chat4"></script>
+<script defer src="chat/chat.js?v=20260908-chat4"></script>
 </head>
 <body>
 
@@ -922,12 +925,14 @@ function animate(now = performance.now()){
   wireMesh.rotation.x = -time * 0.2; wireMesh.rotation.y = time * 0.3;
   outerMesh.rotation.x = time * 0.1; outerMesh.rotation.z = time * 0.15;
 
-  coreLight.intensity = 2.5 + (coreIntensity - 0.7) * 3 + Math.sin(time * 2) * 0.5;
+  const chatBoost = window.JarvisCoreState ? window.JarvisCoreState.boost(now, time, fireMotionPreference.matches) : 0;
+  coreLight.intensity = 2.5 + (coreIntensity - 0.7) * 3 + Math.sin(time * 2) * 0.5 + chatBoost;
+  coreMesh.scale.setScalar(1 + chatBoost * 0.08);
   const fireDelta = fireLastFrame === null ? 0 : Math.max(0, (now - fireLastFrame) / 1000);
   fireLastFrame = now;
-  fireController.setState({intensity: coreIntensity, speed: fireMotionPreference.matches ? 0.2 : 1});
+  fireController.setState({intensity: Math.min(2, coreIntensity + chatBoost), speed: fireMotionPreference.matches ? 0.2 : 1 + chatBoost * 0.8});
   fireController.update(fireDelta);
-  coreMat.emissiveIntensity = 0.5 + Math.sin(time * 1.5) * 0.3;
+  coreMat.emissiveIntensity = 0.5 + Math.sin(time * 1.5) * 0.3 + chatBoost * 0.5;
 
   rings3d.forEach((ring, i) => {
     ring.rotation.z = time * ring.userData.rotSpeed * 10;

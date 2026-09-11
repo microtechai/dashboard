@@ -1,0 +1,43 @@
+..{"file": "phase3-voice-check.wav", "seconds": 1.5164067159639671, "text": "Hola, soy Jardis. El núcleo azul está conectado. Puedes escribirme y escuchar mis respuestas en español."}
+{"file": "phase4-native.webm", "seconds": 1.5979903339757584, "text": "Hola, soy Jardis. El núcleo azul está conectado. Puedes escribirme y escuchar mis respuestas en español. Hola, soy Jardis."}
+
+----------------------------------------------------------------------
+Ran 2 tests in 3.831s
+
+OK
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.100s
+
+OK
+anyio==4.15.1
+av==18.1.0
+certifi==2026.7.22
+click==8.5.0
+ctranslate2==4.8.2
+faster-whisper==1.2.1
+filelock==3.32.5
+flatbuffers==25.12.19
+fsspec==2026.7.0
+h11==0.16.0
+hf-xet==1.6.0
+httpcore==1.0.9
+httpx==0.28.1
+huggingface_hub==1.30.0
+idna==3.19
+numpy==2.5.3
+onnxruntime==1.29.0
+packaging==26.3
+protobuf==7.36.1
+PyYAML==6.0.3
+tokenizers==0.23.2
+tqdm==4.70.0
+typing_extensions==4.16.0
+60035903b2541fae0008de29fac4974bab08b673b409f0b02cfb7b775e2480a8  /opt/jarvis-stt/stt_worker.py
+7e5ae009dc20093fce867135a80244d14109424543a4723a70698325a4dbfa23  /opt/jarvis-stt/transcribe.php
+d01c3014881c9c6f3133c182f3d2887eb6ca1c789a7538c5c007196857a0a6a9  /opt/jarvis-stt/model/model.bin
+               total        used        free      shared  buff/cache   available
+Mem:            3820         994         436         146        2823        2826
+Swap:              0           0           0
+active
+active

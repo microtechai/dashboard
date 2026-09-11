@@ -1,0 +1,11 @@
+{
+  "elapsed": 15.50186992296949,
+  "model": "qwen3-coder-next",
+  "review": "**Security Review — Concise Findings**\n\n✅ **Resource Limits (Worker)**  \n- `RLIMIT_CPU (38s)` + `RLIMIT_AS (2GB)` — appropriate for bounded STT.  \n- File size check (`>2MB`) + duration limit (`320000 samples @16kHz ≈ 20s`) — **blocks excessive CPU/memory**.  \n- `thread_type = 'NONE'`, `cpu_threads=1`, `num_workers=1`, `taskset -c 1` — **prevents thread explosion**.\n\n✅ **Shell Injection**  \n- `proc_open()` uses **array form** (no shell), no user input in args — **safe**.  \n- `PATH`, `LANG`, `HOME`, env vars explicitly set; `local_files_only=True`, `HF_HUB_OFFLINE=1` — **no network/external deps**.\n\n✅ **Cleanup & Temp Files**  \n- `tempnam()` + `realpath()` check — **prevents `../` in path**.  \n- `unlink($tmp)` in `finally` — **ensures cleanup even on failure**.  \n- `proc_terminate(..., 9)` + `proc_close()` — **hard kill + reap zombie**.\n\n✅ **PHP Guard**  \n- `CONTENT_LENGTH` check before upload — **early 413**.  \n- `session_write_close()` + `ignore_user_abort(true)` — **avoids session lock + allows full run**.  \n- `set_time_limit(50)` + 40s deadline — **respects worker CPU limit**.\n\n⚠️ **Minor Concerns (Not Blockers)**  \n- `stream_get_contents()` in loop — could miss partial output if buffer fills; but `32KB` cap + `deadline` mitigates.  \n- No explicit `ulimit` on open files (but `proc_open` uses fixed pipes + temp file, so low risk).\n\n**Verdict: No blockers. Worker/handler is secure and well-constrained.**",
+  "usage": {
+    "prompt_tokens": 1348,
+    "total_tokens": 1779,
+    "completion_tokens": 431,
+    "prompt_tokens_details": null
+  }
+}

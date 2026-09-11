@@ -1,0 +1,29 @@
+#jarvis-chat{position:fixed;right:20px;bottom:20px;z-index:1001;color:#e0e8ff;font:13px/1.45 'Segoe UI',system-ui,sans-serif;max-width:calc(100vw - 24px)}
+#jarvis-chat *{box-sizing:border-box}
+#jarvis-chat [hidden]{display:none!important}
+#jarvis-chat button,#jarvis-chat input,#jarvis-chat textarea{font:inherit;color:inherit}
+#jarvis-chat button{background:#11223c;border:1px solid #375d88;border-radius:7px;padding:7px 11px;cursor:pointer;min-height:34px}
+#jarvis-chat button:hover{background:#193657}
+#jarvis-chat button:disabled{opacity:.5;cursor:wait}
+#jarvis-chat :focus-visible{outline:2px solid #79bbff;outline-offset:2px}
+#jarvis-chat-toggle{box-shadow:0 4px 24px #0008;color:#87c0ff!important;letter-spacing:1px}
+#jarvis-chat-panel{width:400px;max-width:calc(100vw - 24px);height:460px;max-height:calc(100dvh - 88px);display:flex;flex-direction:column;background:rgba(10,15,30,.97);border:1px solid #375d88;border-radius:12px;box-shadow:0 8px 32px #0009;backdrop-filter:blur(12px);overflow:hidden}
+#jarvis-chat header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #243654;color:#79bbff;letter-spacing:1px}
+#jarvis-chat small{font-size:10px;color:#a1b3d0;font-weight:400}
+#jarvis-chat-status{margin:0;padding:8px 14px;color:#b3c7e8;font-size:12px;overflow-wrap:anywhere;max-height:66px;overflow:auto;flex-shrink:0}
+#jarvis-chat-login{padding:8px 14px;display:flex;flex-direction:column;gap:10px;overflow:auto;flex:1}
+#jarvis-chat-login p{margin:0}
+#jarvis-chat label{display:block;font-size:12px;color:#b3c7e8}
+#jarvis-chat input:not([type=checkbox]),#jarvis-chat textarea{display:block;width:100%;background:#080f1d;border:1px solid #32486a;border-radius:6px;padding:8px;margin-top:4px}
+#jarvis-chat-conversation{display:flex;flex-direction:column;flex:1;min-height:0}
+#jarvis-chat-history{overflow:auto;overscroll-behavior:contain;padding:0 14px;flex:1;min-height:50px}
+.jarvis-chat-message{margin:8px 0;padding:8px 10px;border-radius:8px;background:#12233d;overflow-wrap:anywhere}
+.jarvis-chat-message[data-role=user]{background:#172d4c;margin-left:25px}
+.jarvis-chat-message p{white-space:pre-wrap;margin:3px 0 7px}
+.jarvis-chat-message strong{font-size:10px;color:#89baff}
+#jarvis-chat-compose{padding:8px 14px;border-top:1px solid #243654}
+#jarvis-chat textarea{resize:none;max-height:100px}
+.jarvis-chat-actions{display:flex;gap:8px;justify-content:space-between;margin-top:6px}
+#jarvis-chat footer{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-top:1px solid #243654;gap:8px}
+#jarvis-chat footer label{display:flex;align-items:center;gap:6px}
+@media(max-width:600px){#jarvis-chat{right:12px;bottom:12px}#jarvis-chat-panel{height:min(460px,65dvh)}}
