@@ -67,7 +67,7 @@
     let time=0, disposed=false, reduced=false, selected=null, inputLevel=0, outputLevel=0, inputAt=0, outputAt=0;
 
     function inputEvent(event){const detail=event.detail||{};if(detail.channel!=='input')return;inputLevel=clamp(detail.level);inputAt=root.performance.now();}
-    function stateEvent(event){const detail=event.detail||{}; if(!PALETTE[detail.state])return; state=detail.state; level=clamp(detail.level); updated=root.performance.now(); if(detail.state==='listening'){inputLevel=level;inputAt=updated;} if(detail.state==='speaking'){outputLevel=level;outputAt=updated;} }
+    function stateEvent(event){const detail=event.detail||{}; if(!PALETTE[detail.state])return; state=detail.state; level=clamp(detail.level); updated=root.performance.now(); if(detail.state==='listening'){inputLevel=level;inputAt=updated;} else {inputLevel=0;inputAt=0;} if(detail.state==='speaking'){outputLevel=level;outputAt=updated;} else {outputLevel=0;outputAt=0;} if(!['listening','speaking'].includes(detail.state))level=0; }
     root.addEventListener('mia-audio-level',inputEvent);
     root.addEventListener('jarvis-chat-state',stateEvent);
 

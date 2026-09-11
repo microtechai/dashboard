@@ -15,8 +15,11 @@ test('reactor owns no loop; real channels are independent, bounded, expire and d
  vm.runInNewContext(fs.readFileSync('reactor/reactor.js','utf8'),{window:w,requestAnimationFrame(){throw Error('no RAF')},setTimeout(){throw Error('no timers')}});
  const parent=new T.Group(),c=w.MiaReactor.create({THREE:T,coreGroup:parent});
  handlers['mia-audio-level']({detail:{channel:'input',level:.2}});handlers['jarvis-chat-state']({detail:{state:'speaking',level:.4}});c.update(.016);
- assert.equal(c.levels.input,.2);assert.equal(c.levels.output,.4);
- handlers['mia-audio-level']({detail:{channel:'input',level:NaN}});c.update(.016);assert.equal(c.levels.input,0);assert.equal(c.levels.output,.4);
+ assert.equal(c.levels.input,0);assert.equal(c.levels.output,.4);
+ handlers['jarvis-chat-state']({detail:{state:'idle',level:0}});c.update(.016);assert.equal(c.levels.input,0);assert.equal(c.levels.output,0);
+ handlers['jarvis-chat-state']({detail:{state:'listening',level:.3,micActive:true}});c.update(.016);assert.equal(c.levels.input,.3);
+ handlers['jarvis-chat-state']({detail:{state:'thinking',level:0,micActive:false}});c.update(.016);assert.equal(c.levels.input,0);
+ handlers['mia-audio-level']({detail:{channel:'input',level:NaN}});c.update(.016);assert.equal(c.levels.input,0);assert.equal(c.levels.output,0);
  now=1001;c.update(.016);assert.equal(c.levels.output,0);
  const count=parent.children.length;for(let i=0;i<500;i++)c.update(.016);assert.equal(parent.children.length,count);c.dispose();c.dispose();assert.equal(parent.children.length,0);assert.equal(Object.keys(handlers).length,0);
 });

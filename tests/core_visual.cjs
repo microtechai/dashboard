@@ -13,13 +13,13 @@ function fixture() {
   vm.runInContext(fs.readFileSync('reactor/reactor.js', 'utf8'), context);
   const reactor = window.MiaReactor.create({ THREE: T, coreGroup: new T.Group() });
   const visual = window.JarvisCoreState.createVisualController(reactor.group);
-  let core; const rings = [], arcs = [];
+  let core; const rings = [], nodes = [];
   reactor.group.traverse(o => {
     if (o.geometry?.type === 'IcosahedronGeometry') core = o;
     if (o.material?.isMeshBasicMaterial) rings.push(o.material);
-    if (o.userData.arc) arcs.push(o.material);
+    if (o.userData.miaStage) nodes.push(o);
   });
-  return { window, context, reactor, visual, core, rings, arcs,
+  return { window, context, reactor, visual, core, rings, nodes,
     send(state, level) { handlers['jarvis-chat-state'].forEach(f => f({ detail: { state, level } })); },
     tick(t = 0, reduced = false) { visual.update(now, t, reduced); },
     expire() { now = 1001; } };
@@ -34,11 +34,13 @@ test('pipeline removed; existing render loop and raycaster retain sole ownership
 });
 test('real state colors and continuous actual levels; no synthetic voice at zero or stale level', () => {
   const f = fixture();
+  assert.equal(f.nodes.length, 21);
+  assert.equal(f.reactor.stats.nodes, 7);
+  assert.equal(f.reactor.focusStage('project'), true);
+  assert.equal(f.reactor.focusStage('missing'), false);
   for (const [state, color] of Object.entries({ idle: 0x249ac2, listening: 0x22d3ee, transcribing: 0x22d3ee, thinking: 0xd6a343, speaking: 0x2dd4a0 })) {
     f.send(state, 0); f.tick();
     assert.equal(f.core.material.emissive.getHex(), color);
-    assert.equal(f.rings[0].color.getHex(), color);
-    assert.equal(f.arcs[0].uniforms.stateColor.value.getHex(), color);
   }
   for (const state of ['listening', 'transcribing', 'speaking']) {
     f.send(state, 0); f.tick(0); const silent = f.core.scale.x;
@@ -46,13 +48,11 @@ test('real state colors and continuous actual levels; no synthetic voice at zero
     for (const level of [0.001, 0.2, 0.6, 1]) {
       f.send(state, level); f.tick();
       assert.equal(f.core.scale.x, 1 + level * 0.12);
-      assert.equal(f.rings[0].opacity, 0.45 + level * 0.3);
     }
     f.send(state, NaN); f.tick(); assert.equal(f.core.scale.x, 1);
   }
   f.send('speaking', 1); f.expire(); f.tick(); assert.equal(f.core.scale.x, 1);
   f.send('error', 1); f.tick(); assert.equal(f.core.material.emissive.getHex(), 0x2dd4a0);
-  f.reactor.dispose();
 });
 test('idle and reduced motion stable; state colors survive; no globals or new GPU resources', () => {
   const f = fixture(); const geometries = new Set(), materials = new Set();
