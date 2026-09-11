@@ -93,6 +93,8 @@ canvas#viz:active{cursor:grabbing}
 .sidebar-item.active{color:#e0e8ff;background:rgba(74,158,255,0.06);border-left-color:#4a9eff}
 .sidebar-item .icon{font-size:14px;width:20px;text-align:center;flex-shrink:0}
 .sidebar-item .badge{font-size:8px;padding:1px 5px;border-radius:3px;background:rgba(74,158,255,0.08);color:#4a9eff;margin-left:auto;font-family:'JetBrains Mono',monospace}
+.sidebar-logout{border-top:1px solid rgba(255,255,255,0.1);margin-top:6px;padding:12px 16px 12px 18px;color:#ef4444;cursor:pointer}
+.sidebar-logout:hover{background:rgba(239,68,68,0.1);color:#ef4444;border-left-color:#ef4444}
 .sidebar-sub{max-height:0;overflow:hidden;transition:max-height .25s ease}
 .sidebar-sub.open{max-height:200px}
 .sidebar-sub-item{padding:6px 16px 6px 34px;display:flex;align-items:center;gap:8px;cursor:pointer;font-size:10px;color:#556;transition:all .15s;border-left:2px solid transparent}
@@ -200,6 +202,9 @@ canvas#viz:active{cursor:grabbing}
   .search-box input{width:160px}
 }
 </style>
+<script src="fire/shaders.js?v=20260908-fire2"></script>
+<script src="voice/speech.js"></script>
+<script src="integration.js?v=20260908-fire2"></script>
 </head>
 <body>
 
@@ -311,6 +316,9 @@ canvas#viz:active{cursor:grabbing}
   </div>
   <div class="sidebar-section">
     <div class="sidebar-item" data-page="config"><span class="icon">⚙</span> Configuración</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-item sidebar-logout"><span class="icon">🚪</span> Cerrar sesión</div>
   </div>
 </div>
 
@@ -567,7 +575,7 @@ canvas.addEventListener('wheel', e => {
 // CORE
 const coreGroup = new THREE.Group(); scene.add(coreGroup);
 const coreGeo = new THREE.IcosahedronGeometry(4.5, 2);
-const coreMat = new THREE.MeshPhongMaterial({color:0x4a9eff,emissive:0x00ffff,shininess:100,transparent:true,opacity:0.8});
+const coreMat = new THREE.MeshPhongMaterial({color:0x4a9eff,emissive:0x00ffff,shininess:100,transparent:true,opacity:0.28,depthWrite:false});
 const coreMatInt = {val: 0.6};
 const coreMesh = new THREE.Mesh(coreGeo, coreMat); coreGroup.add(coreMesh);
 const wireGeo = new THREE.IcosahedronGeometry(6, 1);
@@ -590,80 +598,10 @@ for(let i=0; i<3; i++){
 }
 
 // NODE SPHERES
-  // === FIRE SHADER SIMPLIFICADO (GLSL) ===
-  
-  const fireVertexShader = `
-    varying vec2 vUv;
-    varying vec3 vNormal;
-    
-    void main() {
-      vUv = uv;
-      vNormal = normalize(normalMatrix * normal);
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-  `;
-  
-  const fireFragmentShader = `
-    uniform float uTime;
-    uniform vec3 uColor1;
-    uniform vec3 uColor2;
-    uniform vec3 uColor3;
-    uniform float uSpeed;
-    uniform float uIntensity;
-    
-    varying vec2 vUv;
-    varying vec3 vNormal;
-    
-    float simpleNoise(float x) {
-      return sin(x * 3.14159 * 2.0 + uTime) * 0.5 + 0.5;
-    }
-    
-    void main() {
-      float time = uTime * uSpeed;
-      float n1 = simpleNoise(vUv.x * 3.0);
-      float n2 = simpleNoise(vUv.y * 3.0 + time * 0.5);
-      float fireNoise = (n1 + n2) * 0.5;
-      float dist = distance(vUv, vec2(0.5));
-      float mask = 1.0 - smoothstep(0.4, 0.5, dist);
-      vec3 color = mix(uColor1, uColor2, smoothstep(0.0, 0.6, fireNoise));
-      color = mix(color, uColor3, smoothstep(0.3, 0.9, fireNoise));
-      float electric = smoothstep(0.0, 0.5, fireNoise) * (1.0 - dist) * 0.3;
-      color += vec3(0.2, 0.6, 1.0) * electric;
-      float normalIntensity = dot(vNormal, vec3(0.0, 0.0, 1.0));
-      color *= (0.3 + 0.7 * normalIntensity);
-      float alpha = mask * 0.8;
-      gl_FragColor = vec4(color, alpha);
-    }
-  `;
-  
-  const fireMaterial = new THREE.ShaderMaterial({
-    vertexShader: fireVertexShader,
-    fragmentShader: fireFragmentShader,
-    uniforms: {
-      uTime: { value: 0 },
-      uColor1: { value: new THREE.Color(0xffcc00) },
-      uColor2: { value: new THREE.Color(0xff6600) },
-      uColor3: { value: new THREE.Color(0xff0000) },
-      uSpeed: { value: 2.0 },
-      uIntensity: { value: 1.5 }
-    },
-    transparent: true,
-    side: THREE.DoubleSide,
-    depthWrite: false
-  });
-  
-  const fireGeo = new THREE.SphereGeometry(4.5, 32, 32);
-  const fireMesh = new THREE.Mesh(fireGeo, fireMaterial);
-  fireMesh.position.set(0, 0, 0);
-  coreGroup.add(fireMesh);
-  
-  const fireLight = new THREE.PointLight(0xffcc00, 4, 150);
-  fireLight.position.set(0, 0, 0);
-  coreGroup.add(fireLight);
-  
-  const electricLight = new THREE.PointLight(0x00ccff, 2, 100);
-  electricLight.position.set(5, 5, 5);
-  coreGroup.add(electricLight);
+// The existing scene and animation loop are the sole owners of fire.
+const fireController = window.JarvisFire.createFire({THREE, coreGroup});
+window.dashboardFireController = fireController;
+const fireMotionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 const nodeMeshes = [];
 const nodeLines = [];
@@ -834,6 +772,15 @@ document.querySelectorAll('.sidebar-item[data-page]').forEach(el => {
   });
 });
 
+// Cerrar sesión
+document.querySelectorAll('.sidebar-logout').forEach(el => {
+  el.addEventListener('click', () => {
+    sessionStorage.clear();
+    localStorage.clear();
+    location.reload();
+  });
+});
+
 // Top nav
 document.querySelectorAll('.nav-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -956,7 +903,8 @@ Object.entries(CAT_COLORS).forEach(([cat, c]) => {
 });
 
 // ANIMATION
-function animate(){
+let fireLastFrame = null;
+function animate(now = performance.now()){
   requestAnimationFrame(animate);
   time += 0.016;
   rotX += (targetRotX - rotX) * 0.05;
@@ -975,7 +923,10 @@ function animate(){
   outerMesh.rotation.x = time * 0.1; outerMesh.rotation.z = time * 0.15;
 
   coreLight.intensity = 2.5 + (coreIntensity - 0.7) * 3 + Math.sin(time * 2) * 0.5;
-  fireMaterial.uniforms.uTime.value = time;
+  const fireDelta = fireLastFrame === null ? 0 : Math.max(0, (now - fireLastFrame) / 1000);
+  fireLastFrame = now;
+  fireController.setState({intensity: coreIntensity, speed: fireMotionPreference.matches ? 0.2 : 1});
+  fireController.update(fireDelta);
   coreMat.emissiveIntensity = 0.5 + Math.sin(time * 1.5) * 0.3;
 
   rings3d.forEach((ring, i) => {

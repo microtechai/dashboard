@@ -1,0 +1,46 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Isolated JARVIS fire — no dashboard/auth/API</title>
+<style>body{margin:0;background:#050810}canvas{display:block}</style>
+<script src="/three.js"></script><script src="/fire/shaders.js"></script></head><body><canvas></canvas><script>
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(55, 1200/800, 0.1, 2000);
+const renderer = new THREE.WebGLRenderer({canvas:document.querySelector('canvas'), antialias:true,preserveDrawingBuffer:true});
+renderer.setSize(1200,800); renderer.setClearColor(0x050810,1);
+const coreGroup = new THREE.Group(); scene.add(coreGroup);
+const core = new THREE.Mesh(new THREE.IcosahedronGeometry(4.5,2),new THREE.MeshPhongMaterial({color:0x4a9eff,emissive:0x00ffff,shininess:100,transparent:true,opacity:0.28,depthWrite:false}));
+coreGroup.add(core);
+scene.add(new THREE.AmbientLight(0x404060,0.4));
+const light = new THREE.PointLight(0x4a9eff,3,100); coreGroup.add(light);
+for(const [radius,opacity] of [[6,0.25],[7.5,0.1]]) coreGroup.add(new THREE.Mesh(new THREE.IcosahedronGeometry(radius,1),new THREE.MeshBasicMaterial({color:0x4a9eff,wireframe:true,transparent:true,opacity})));
+const fire = JarvisFire.createFire({THREE,coreGroup});
+const flames = coreGroup.children.filter(o=>o.name.startsWith('jarvis-fire'));
+function pixels() {
+  const gl=renderer.getContext(), data=new Uint8Array(1200*800*4);
+  gl.readPixels(0,0,1200,800,gl.RGBA,gl.UNSIGNED_BYTE,data); return data;
+}
+window.sample = function(distance,angle,steps=0) {
+  camera.position.set(Math.sin(angle)*distance,Math.sin(0.3)*distance*0.4+20,Math.cos(angle)*distance);
+  camera.lookAt(0,0,0);
+  for(let i=0;i<steps;i++) fire.update(1/60);
+  flames.forEach(m=>m.visible=false); renderer.render(scene,camera); const base=pixels();
+  flames.forEach(m=>m.visible=true); renderer.render(scene,camera); const data=pixels();
+  const center=new THREE.Vector3().project(camera);
+  const cx=(center.x+1)*600,cy=(center.y+1)*400;
+  // Conservative projected core radius: measured in screen plane at nearest surface.
+  const radius=4.5/(camera.position.length()-4.5)/Math.tan(55*Math.PI/360)*400;
+  let changed=0,outsideCore=0,checksum=0,blue=0;
+  for(let j=0;j<data.length;j+=4){
+    checksum=(checksum+data[j+1]*((j/4)%97+1)+data[j+2])>>>0;
+    if(data[j+2]-base[j+2]>8 || data[j+1]-base[j+1]>8){
+      changed++; const x=(j/4)%1200,y=Math.floor(j/4/1200);
+      if(Math.hypot(x-cx,y-cy)>radius) outsideCore++;
+      if(data[j+2]>data[j]) blue++;
+    }
+  }
+  const gl=renderer.getContext(), ext=gl.getExtension('WEBGL_debug_renderer_info');
+  return {time:flames[0].material.uniforms.uTime.value,changed,outsideCore,blue,checksum,
+    programs:renderer.info.programs.map(p=>({runnable:gl.getProgramParameter(p.program,gl.LINK_STATUS)})),
+    calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,
+    glError:gl.getError(),renderer:ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER)};
+};
+window.sample(100,0,0);
+</script></body></html>
