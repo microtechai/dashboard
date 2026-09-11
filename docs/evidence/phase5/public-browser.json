@@ -1,0 +1,21 @@
+{
+  "url": "https://dashboard.microtechai.es/login.html",
+  "title": "JARVIS \u00b7 Acceso MC",
+  "forms": 1,
+  "private_dashboard": 0,
+  "errors": [],
+  "responses": [
+    {
+      "url": "https://dashboard.microtechai.es/",
+      "status": 303
+    },
+    {
+      "url": "https://dashboard.microtechai.es/login.html",
+      "status": 200
+    },
+    {
+      "url": "https://dashboard.microtechai.es/api/chat.php?action=session",
+      "status": 200
+    }
+  ]
+}

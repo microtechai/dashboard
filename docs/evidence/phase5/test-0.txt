@@ -1,0 +1,9 @@
+test_anonymous_never_gets_private_bytes (__main__.Access.test_anonymous_never_gets_private_bytes) ... ok
+test_fixture_session_shared_revoked_outage_logout (__main__.Access.test_fixture_session_shared_revoked_outage_logout) ... ok
+test_nginx_catchall_no_static_or_php_bypass (__main__.Access.test_nginx_catchall_no_static_or_php_bypass) ... ok
+test_single_public_login_no_local_or_second_form (__main__.Access.test_single_public_login_no_local_or_second_form) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.590s
+
+OK

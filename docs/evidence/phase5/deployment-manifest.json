@@ -1,0 +1,52 @@
+{
+  "rollback_dir": "/root/jarvis-access5-rollback-20260908T134249Z",
+  "files": [
+    {
+      "path": "/etc/nginx/sites-available/microtechai",
+      "before": "b6f7dc349ed53ad6d688a381819d4c5d5e1cb0e1ba18c4005648701e4c6592c3",
+      "after": "220065b5182a0578c92e1b70309ff3bc42ada563bab29d9a3f2832269077c3b9",
+      "mode": "0o644",
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "path": "/var/www/dashboard/index.html",
+      "before": "12e3e1aa99acac56bc76008a6d10ad0b0b45f7b5cc68ac236ed763f93998cb7e",
+      "after": "c7ea130641decf235653cbade26614fc214a18bf4e26054854a856963f19ecaa",
+      "mode": "0o644",
+      "uid": 33,
+      "gid": 33
+    },
+    {
+      "path": "/var/www/dashboard/api/chat.php",
+      "before": "fcefcfb24b8577a2d2b2b326c8b44fa29129de7f557d382057255512727626c4",
+      "after": "40fa6900bac009c1348bf2fb4d9c69da64125ac57bfa158085b30ebc94c5b728",
+      "mode": "0o644",
+      "uid": 0,
+      "gid": 33
+    },
+    {
+      "path": "/var/www/dashboard/chat/chat.js",
+      "before": "554d951ff157c8e921f295f6fa77930df3d436e83faea1d3cb89e7a1648d31d1",
+      "after": "1d9d633d6e6794948cc2cd7ba4989c1790d072559a2dc953f9d351520a5828ef",
+      "mode": "0o644",
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "path": "/var/www/dashboard/login.html",
+      "before": null,
+      "after": "d9339612246e60c081a45251e1172a7b82ff7e3c9619c17ae3144740f32a6744"
+    },
+    {
+      "path": "/opt/jarvis-access/session.php",
+      "before": null,
+      "after": "a02be8635ea03c3469164a0d3558a5f76bf05f28721ac57c49e5e1e1fea98608"
+    },
+    {
+      "path": "/opt/jarvis-access/gate.php",
+      "before": null,
+      "after": "34c0230747fc4d36982c42d5695f1223ff95c6f230cae48712793dae189d8088"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+[
+  {
+    "url": "https://178.104.253.211/index.html",
+    "status": "404",
+    "private_dashboard_marker": false,
+    "bytes": 62083,
+    "sha256": "c1fc38bd964bdec6a8b8ec61cc20e48470f1aa1bb80c2bcd4b633fee725d3bd7"
+  },
+  {
+    "url": "http://178.104.253.211/dashboard/index.html",
+    "status": "404",
+    "private_dashboard_marker": false,
+    "bytes": 146,
+    "sha256": "55f7d9e99b8e2d4e0e193b2f0275501e6d9c1ebd29cadbea6a0da48a8587e3e0"
+  },
+  {
+    "url": "https://dashboard.microtechai.es/index.html",
+    "status": "421",
+    "private_dashboard_marker": false,
+    "bytes": 166,
+    "sha256": "6823ca59909caa756c0390769fe892622a3fa93b3ba7d5dadc925a5cd5a5a624"
+  },
+  {
+    "url": "http://178.104.253.211:9090/api/me",
+    "status": "302",
+    "private_dashboard_marker": false,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "url": "http://178.104.253.211:5000/api/health",
+    "status": "200",
+    "private_dashboard_marker": false,
+    "bytes": 51,
+    "sha256": "321ac79ddb29426cd44454b3f3394f3d10f9eaf68cb3c24847b44b6279d21015"
+  }
+]

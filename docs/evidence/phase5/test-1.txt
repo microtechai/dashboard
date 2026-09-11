@@ -1,0 +1,6 @@
+test_login_once_shared_chat_sidebar_logout_and_denial (__main__.BrowserAccess.test_login_once_shared_chat_sidebar_logout_and_denial) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.201s
+
+OK

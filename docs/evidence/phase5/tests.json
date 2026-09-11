@@ -1,0 +1,47 @@
+[
+  {
+    "command": [
+      "python3",
+      "tests/access_gate_test.py",
+      "Access"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "python3",
+      "tests/access_browser_test.py",
+      "BrowserAccess"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "python3",
+      "tests/chat_backend_test.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "node",
+      "--test",
+      "tests/fire.test.cjs"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "node",
+      "tests/core_activity.cjs"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "node",
+      "tests/stt_core.cjs"
+    ],
+    "exit_code": 0
+  }
+]
