@@ -188,7 +188,7 @@ canvas#viz:active{cursor:grabbing}
 <script src="reactor/reactor.js?v=20260911-galaxy3-context"></script>
 <!-- Legacy voice/speech.js remains private on disk; chat owns microphone and TTS. -->
 <script src="integration.js?v=20260909-redesign2"></script>
-<link rel="stylesheet" href="chat/chat.css?v=20260909-core-visual3">
+<link rel="stylesheet" href="chat/chat.css?v=20260911-dark-cyberpunk-live1">
 <script src="chat/core-state.js?v=20260909-core-visual3"></script>
 <script defer src="chat/chat.js?v=20260911-workflow-intent2"></script>
 </head>
@@ -209,9 +209,20 @@ canvas#viz:active{cursor:grabbing}
 
 <canvas id="viz"></canvas>
 <section id="mia-theater" aria-label="MIA · centro de conversación">
-  <div class="mia-heading"><span>MICROTECH AI / CENTRO DE OPERACIONES</span><h1>MIA</h1><p>Conversación local. Control a tu alcance.</p></div>
-  <div id="mia-reactor-anchor" aria-hidden="true"></div>
-  <details id="mia-context"><summary>Entorno de trabajo <span>17 nodos</span></summary><p>Catálogo de contexto, no etapas de la llamada. Estados no instrumentados.</p><div id="mia-context-groups"></div></details>
+ <div class="mia-cyber-brand">MICROTECH AI / MIA <small>GALAXIA OPERATIVA</small></div>
+ <div class="mia-cyber-legend"><b>LECTURA VISUAL</b><span>Estrella central: MIA</span><span>Soles: workflow</span><span>Ruta: contexto activo</span></div>
+ <div id="mia-cyber-telemetry" class="mia-cyber-telemetry">LINK // CORE<br>MODE // IDLE<br>SIGNAL // 00%</div>
+ <nav id="mia-workflow-nav" class="mia-workflow-nav" aria-label="Workflow MIA">
+  <button type="button" data-mia-stage="idea">IDEA<small>Captura y borrador</small></button>
+  <button type="button" data-mia-stage="analysis">ANÁLISIS<small>Hechos y riesgos</small></button>
+  <button type="button" data-mia-stage="proposal">PROPUESTA<small>Alcance</small></button>
+  <button type="button" data-mia-stage="client">CLIENTE<small>Valor</small></button>
+  <button type="button" data-mia-stage="project">PROYECTO<small>Ejecución MC</small></button>
+  <button type="button" data-mia-stage="grants">SUBVENCIÓN<small>Oportunidades</small></button>
+  <button type="button" data-mia-stage="followup">SEGUIMIENTO<small>Hitos y auditoría</small></button>
+ </nav>
+ <div id="mia-reactor-anchor" aria-hidden="true"></div>
+ <details id="mia-context"><summary>Entorno de trabajo <span>17 nodos</span></summary><p>Catálogo de contexto, no etapas de la llamada. Estados no instrumentados.</p><div id="mia-context-groups"></div></details>
 </section>
 <p id="mia-render-status" role="status" hidden>3D no disponible · navegación y chat siguen disponibles.</p>
 
@@ -564,8 +575,11 @@ window.dashboardFireController = fireController;
 window.addEventListener('mia-workflow-intent', event => {
   const stage = event.detail?.stage;
   if (!stage || !window.dashboardFireController?.focusStage) return;
+  document.querySelectorAll('[data-mia-stage]').forEach(button=>button.setAttribute('data-active',String(button.dataset.miaStage===stage)));
+  const telemetry=document.getElementById('mia-cyber-telemetry'); if(telemetry) telemetry.innerHTML='LINK // '+stage.toUpperCase()+'<br>MODE // FOCUS<br>SIGNAL // 00%';
   if (window.dashboardFireController.focusStage(stage)) { showWorkflowContext(stage); showNotification('MIA enfoca ' + stage.toUpperCase()); }
 });
+document.querySelectorAll('[data-mia-stage]').forEach(button=>button.addEventListener('click',()=>window.dispatchEvent(new CustomEvent('mia-workflow-intent',{detail:{stage:button.dataset.miaStage,source:'hud'}}))));
 const miaStateVisual = window.JarvisCoreState.createVisualController(fireController.group);
 const fireMotionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
 const miaPosition = new THREE.Vector3();
