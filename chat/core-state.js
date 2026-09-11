@@ -4,7 +4,7 @@
   let state = 'idle', level = 0, updated = 0;
   root.addEventListener('jarvis-chat-state', function (event) {
     const detail = event.detail;
-    if (!detail || !['idle', 'thinking', 'speaking', 'listening', 'transcribing'].includes(detail.state)) return;
+    if (!detail || !['idle', 'thinking', 'speaking', 'listening', 'transcribing', 'error'].includes(detail.state)) return;
     state = detail.state;
     level = Number.isFinite(detail.level) ? Math.max(0, Math.min(1, detail.level)) : 0;
     updated = root.performance.now();
@@ -14,6 +14,7 @@
     createVisualController(group) {
       const emissive = new Set(), rings = new Set(), arcs = new Set(), nuclei = [];
       group.traverse(object => {
+        if (object.userData?.miaStage) return;
         const material = object.material;
         if (!material) return;
         if (material.emissive && material.emissive.getHex() !== 0) emissive.add(material);
@@ -31,8 +32,8 @@
         }
       });
       const firstArc = arcs.values().next().value;
-      const palette = { idle: 0x249ac2, listening: 0x22d3ee, transcribing: 0x22d3ee,
-        thinking: 0xd6a343, speaking: 0x2dd4a0 };
+      const palette = { idle: 0x00a6bd, listening: 0x00c7d9, transcribing: 0x00c7d9,
+        thinking: 0xd7a63a, speaking: 0x2fbf8a, error:0xe83b5b };
       return Object.freeze({
         update(now, time, reducedMotion) {
           const color = palette[state] ?? palette.idle;
