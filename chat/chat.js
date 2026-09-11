@@ -14,7 +14,10 @@
         <p id="jarvis-chat-status" role="status" aria-live="polite">Conectando sesión…</p>
         <button type="button" id="jarvis-chat-retry" hidden>Actualizar sesión</button>
         <div id="jarvis-chat-conversation" hidden>
-          <div id="jarvis-chat-active-controls" hidden></div>
+          <div id="jarvis-chat-active-controls"><div id="jarvis-chat-call-controls">
+            <button type="button" id="jarvis-chat-continuous" disabled>Llamar a MIA</button>
+            <button type="button" id="jarvis-chat-mute" disabled>Silenciar micrófono</button>
+          </div></div>
           <p id="jarvis-chat-mic" data-state="off" role="status">Micrófono cerrado</p>
           <div id="jarvis-chat-history" role="log" aria-label="Mensajes" aria-live="polite"></div>
           <form id="jarvis-chat-compose">
@@ -28,10 +31,7 @@
           <details id="jarvis-chat-options">
             <summary>Opciones</summary>
             <div class="jarvis-chat-options-body">
-              <div id="jarvis-chat-call-controls">
-                <button type="button" id="jarvis-chat-continuous" disabled>Llamar a MIA</button>
-                <button type="button" id="jarvis-chat-mute" disabled>Silenciar micrófono</button>
-              </div>
+              <div id="jarvis-chat-call-controls-placeholder"></div>
               <label><input id="jarvis-chat-autoread" type="checkbox"> Voz al usar Hablar manual</label>
               <details id="jarvis-chat-context">
                 <summary>Contexto MC</summary>
@@ -590,7 +590,7 @@
       // Keep the existing call buttons reachable even when Options is closed.
       const controls = el(callOn ? 'active-controls' : 'call-controls');
       if (el('continuous').parentElement !== controls) controls.append(el('continuous'), el('mute'));
-      el('active-controls').hidden = !callOn;
+      el('active-controls').hidden = false;
     }
     import('/chat/voice/session.mjs').then(({ ContinuousVoice }) => {
       continuous = new ContinuousVoice({
@@ -696,11 +696,20 @@
         return true;
       } finally { await reader.cancel().catch(() => {}); reader.releaseLock(); }
     }
+    function workflowIntent(text) {
+      const normalized = String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const match = normalized.match(/(?:ir|lleva(?:me)?|llevame|acercame|acercar|muestra(?:me)?|muestrame|abre|abrir|ver)\s+(?:(?:a|al|el|la|los|las)\s+)?(proyecto|analisis|propuesta|cliente|idea|subvencion|seguimiento|auditoria)/);
+      if (!match) return null;
+      const aliases = { proyecto:'project', analisis:'analysis', propuesta:'proposal', cliente:'client', idea:'idea', subvencion:'grants', seguimiento:'followup', auditoria:'followup' };
+      const stage = aliases[match[1]];
+      window.dispatchEvent(new CustomEvent('mia-workflow-intent', { detail: { stage, source: 'user-text' } }));
+      return stage;
+    }
     async function sendText(text, fromVoice = false) {
       if (!authenticated || authBusy || busy || !text || text.length > 4000) return;
       cancelResponse(); cleanupMic(); const id = generation; controller = new AbortController(); busy = true; armResponseDeadline(id);
       el('compose').querySelector('button').disabled = true;
-      lastUserText = text; el('input').value = ''; addMessage('user', text);
+      lastUserText = text; workflowIntent(text); el('input').value = ''; addMessage('user', text);
       const message = addMessage('assistant', ''); let answer = '';
       const voiceWanted = callOn || (fromVoice && el('autoread').checked);
       let spokenInput = '';

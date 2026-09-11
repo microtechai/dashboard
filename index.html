@@ -185,12 +185,12 @@ canvas#viz:active{cursor:grabbing}
 }
 </style>
 <script src="fire/shaders.js?v=20260908-volume6-target"></script>
-<script src="reactor/reactor.js?v=20260908-mia1"></script>
+<script src="reactor/reactor.js?v=20260911-galaxy3-context"></script>
 <!-- Legacy voice/speech.js remains private on disk; chat owns microphone and TTS. -->
 <script src="integration.js?v=20260909-redesign2"></script>
 <link rel="stylesheet" href="chat/chat.css?v=20260909-core-visual3">
 <script src="chat/core-state.js?v=20260909-core-visual3"></script>
-<script defer src="chat/chat.js?v=20260909-mia-client1"></script>
+<script defer src="chat/chat.js?v=20260911-workflow-intent2"></script>
 </head>
 <body data-mia-view="dashboard">
 
@@ -561,6 +561,11 @@ for(let i=0; i<3; i++){
 const fireController = window.MiaReactor.create({THREE, coreGroup});
 coreMesh.visible = wireMesh.visible = outerMesh.visible = false;
 window.dashboardFireController = fireController;
+window.addEventListener('mia-workflow-intent', event => {
+  const stage = event.detail?.stage;
+  if (!stage || !window.dashboardFireController?.focusStage) return;
+  if (window.dashboardFireController.focusStage(stage)) { showWorkflowContext(stage); showNotification('MIA enfoca ' + stage.toUpperCase()); }
+});
 const miaStateVisual = window.JarvisCoreState.createVisualController(fireController.group);
 const fireMotionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
 const miaPosition = new THREE.Vector3();
@@ -669,8 +674,40 @@ function checkHover(mx, my){
 
 canvas.addEventListener('click', e => { if(hoveredNode) showNodeDetail(hoveredNode); });
 
+// Maps the existing 17-node catalog to the seven visible workflow suns.
+function focusMiaWorkflowForNode(node){
+  const text=String(node?.label||'').toLowerCase();
+  const id=String(node?.id||'').toLowerCase();
+  const haystack=text+' '+id;
+  const stage=haystack.includes('subv')||haystack.includes('grant')?'grants':
+    haystack.includes('audit')||haystack.includes('segu')?'followup':
+    haystack.includes('project')||haystack.includes('proyecto')||node?.cat==='project'?'project':
+    haystack.includes('client')||haystack.includes('cliente')?'client':
+    haystack.includes('proposal')||haystack.includes('propuesta')?'proposal':
+    haystack.includes('audit')||haystack.includes('risk')||haystack.includes('anali')?'analysis':
+    haystack.includes('idea')||haystack.includes('draft')?'idea':null;
+  if(stage && window.dashboardFireController?.focusStage) window.dashboardFireController.focusStage(stage);
+  return stage;
+}
+
+function showWorkflowContext(stage){
+  const labels={idea:'Ideas y borradores',analysis:'Análisis y riesgos',proposal:'Propuestas',client:'Clientes y sitios',project:'Proyectos',grants:'Subvenciones',followup:'Seguimiento y auditoría'};
+  const groups={idea:['project'],analysis:['ai'],proposal:['project'],client:['wp'],project:['project'],grants:[],followup:[]};
+  const items=NODES.filter(node=>groups[stage]?.includes(node.cat));
+  const panel=document.getElementById('sidePanel');
+  document.getElementById('panelTitle').textContent=labels[stage]||stage.toUpperCase();
+  document.getElementById('panelSubtitle').textContent='Contexto de solo lectura · catálogo del dashboard';
+  let html='<div class="mia-workflow-context"><p style="font-size:10px;color:#8fa5b8">Vista contextual; no ejecuta acciones ni modifica MC.</p>';
+  if(!items.length) html+='<p style="font-size:11px;color:#8fa5b8">Aún no hay elementos conectados a esta etapa.</p>';
+  items.forEach(node=>{html+='<button type="button" data-mia-context-node="'+esc(node.id)+'" style="display:block;width:100%;text-align:left;margin:6px 0;padding:8px;background:#07121d;border:1px solid #24465d;color:#d9f8ff;border-radius:5px"><strong>'+esc(node.label)+'</strong><br><small style="color:#8fa5b8">'+esc(node.desc)+'</small></button>';});
+  html+='</div>'; document.getElementById('panelContent').innerHTML=html;
+  document.querySelectorAll('[data-mia-context-node]').forEach(button=>button.addEventListener('click',()=>{const node=NODES.find(item=>item.id===button.dataset.miaContextNode);if(node)showNodeDetail(node);}));
+  panel.classList.add('open');
+}
+
 // PANEL RENDERING
 function showNodeDetail(node){
+  focusMiaWorkflowForNode(node);
   const panel = document.getElementById('sidePanel');
   document.getElementById('panelTitle').textContent = node.label;
   document.getElementById('panelSubtitle').textContent = node.desc;

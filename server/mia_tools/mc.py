@@ -13,6 +13,7 @@ import math
 import time
 from typing import Protocol
 
+from .normalize import normalize_audits, normalize_clients, normalize_projects
 from .policy import Policy, PolicyError
 
 MC_ORIGIN = "http://127.0.0.1:9090"
@@ -83,6 +84,12 @@ class MCAdapter:
             else:
                 data = json.loads(response.body.decode("utf-8"),
                                   parse_constant=_reject_constant)
+                if name == "read_projects":
+                    data = normalize_projects(data)
+                elif name == "read_clients":
+                    data = normalize_clients(data)
+                elif name == "read_audits":
+                    data = normalize_audits(data)
                 # Bound the serialized data too (escaping/spacing can expand it).
                 if len(json.dumps(data, ensure_ascii=True, allow_nan=False).encode("utf-8")) > limit:
                     result["error"] = "output_limit"
