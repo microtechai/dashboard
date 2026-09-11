@@ -1,0 +1,202 @@
+{
+  "tests": [
+    {
+      "command": [
+        "node",
+        "--test",
+        "tests/call_speech.test.mjs",
+        "tests/voice_capture.test.mjs",
+        "tests/voice_core.test.mjs",
+        "tests/voice_noise.test.mjs",
+        "tests/voice_session.test.mjs",
+        "tests/voice_worker.test.mjs",
+        "tests/core_activity.cjs",
+        "tests/stt_core.cjs",
+        "tests/fire.test.cjs"
+      ],
+      "started": "2026-09-08T23:15:20.592133+00:00",
+      "exit_code": 0,
+      "seconds": 0.39239204197656363,
+      "log": "test-0.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/call_frontend_test.py",
+        "CallFrontend"
+      ],
+      "started": "2026-09-08T23:15:20.984598+00:00",
+      "exit_code": 0,
+      "seconds": 34.78888606792316,
+      "log": "test-1.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/stt_frontend_test.py"
+      ],
+      "started": "2026-09-08T23:15:55.773507+00:00",
+      "exit_code": 0,
+      "seconds": 62.175321944989264,
+      "log": "test-2.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/access_gate_test.py"
+      ],
+      "started": "2026-09-08T23:16:57.948854+00:00",
+      "exit_code": 0,
+      "seconds": 22.07528472400736,
+      "log": "test-3.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/access_browser_test.py",
+        "BrowserAccess"
+      ],
+      "started": "2026-09-08T23:17:20.024183+00:00",
+      "exit_code": 0,
+      "seconds": 2.5776524760294706,
+      "log": "test-4.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/stt_backend_test.py"
+      ],
+      "started": "2026-09-08T23:17:22.601858+00:00",
+      "exit_code": 0,
+      "seconds": 42.607223352068104,
+      "log": "test-5.txt"
+    },
+    {
+      "command": [
+        "xvfb-run",
+        "-a",
+        "python3",
+        "tests/call_barge_in_test.py",
+        "VoiceBargeIn"
+      ],
+      "started": "2026-09-08T23:18:05.209136+00:00",
+      "exit_code": 1,
+      "seconds": 6.661230530939065,
+      "log": "test-6.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/call_female_test.py",
+        "FemaleSpeaker"
+      ],
+      "started": "2026-09-08T23:18:11.870384+00:00",
+      "exit_code": 0,
+      "seconds": 21.349659117986448,
+      "log": "test-7.txt"
+    },
+    {
+      "command": [
+        "php",
+        "-l",
+        "api/chat.php"
+      ],
+      "started": "2026-09-08T23:18:33.220081+00:00",
+      "exit_code": 0,
+      "seconds": 0.03471153404098004,
+      "log": "test-8.txt"
+    },
+    {
+      "command": [
+        "php",
+        "-l",
+        "server/gate.php"
+      ],
+      "started": "2026-09-08T23:18:33.254818+00:00",
+      "exit_code": 0,
+      "seconds": 0.03451271401718259,
+      "log": "test-9.txt"
+    },
+    {
+      "command": [
+        "php",
+        "-l",
+        "server/session.php"
+      ],
+      "started": "2026-09-08T23:18:33.289355+00:00",
+      "exit_code": 0,
+      "seconds": 0.035454193013720214,
+      "log": "test-10.txt"
+    },
+    {
+      "command": [
+        "php",
+        "-l",
+        "server/transcribe.php"
+      ],
+      "started": "2026-09-08T23:18:33.324837+00:00",
+      "exit_code": 0,
+      "seconds": 0.03394392307382077,
+      "log": "test-11.txt"
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "chat/chat.js"
+      ],
+      "started": "2026-09-08T23:18:33.358807+00:00",
+      "exit_code": 0,
+      "seconds": 0.035378809086978436,
+      "log": "test-12.txt"
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "chat/voice/speech.mjs"
+      ],
+      "started": "2026-09-08T23:18:33.394208+00:00",
+      "exit_code": 0,
+      "seconds": 0.04646728502120823,
+      "log": "test-13.txt"
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "chat/voice/capture.js"
+      ],
+      "started": "2026-09-08T23:18:33.440711+00:00",
+      "exit_code": 0,
+      "seconds": 0.039778574951924384,
+      "log": "test-14.txt"
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "chat/voice/worker.js"
+      ],
+      "started": "2026-09-08T23:18:33.480518+00:00",
+      "exit_code": 0,
+      "seconds": 0.0574472330044955,
+      "log": "test-15.txt"
+    }
+  ],
+  "verifiedFiles": {
+    "chat/chat.js": "c217a70e120217c13cd93ba1f1f7b669c3fe6191c14903da0ffc09cbc771aa39",
+    "chat/chat.css": "7f33dc6c0df622b76a91ade2b89aac59d15e9b6ce37be4074945fc2c8cc17df6",
+    "chat/voice/speech.mjs": "e0b49f5394f37f8931b8bc9f7e8c801b2fe2050d5c01edc436777f9a03f2f869",
+    "chat/voice/capture.js": "8d642aa99c4a71c3729048f2e740b01ae66f856af7009bc953d53951726f8cdf",
+    "chat/voice/worker.js": "5fa5041dc1075bf372746cfe68323c340ef2834dae2016c46c323be98e27a4bf",
+    "chat/voice/core.mjs": "7c4ed60ffdb693165d23b24a837abafa695b8c1543c38e7d9a3d9133b51ffde6",
+    "api/chat.php": "dc5db042bf523aa3989ed0d6d43e1ace6c594f8052833b6b1380046fc250ecd3",
+    "server/gate.php": "4cc789ab134720dd1546285f8bf217f1892cd79a2d1e29efd97214b70bc3a02b"
+  },
+  "preserved": {
+    "index.html": "ed15d5a598f68f40ada2f352e09f04df89ceb4f5603fccc23356f3a356dcd5d9",
+    "fire/shaders.js": "90afac07696c5735e417b7b3b9bf1eba3f2ff6066204060ba30a5903bbb3f17e"
+  },
+  "baselineCommit": "445ca76f4d25291ebc7efeb6d22582eaf275c398"
+}

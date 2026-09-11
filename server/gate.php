@@ -16,6 +16,7 @@ if (!in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)) {
 }
 $root = defined('JARVIS_DOCUMENT_ROOT') ? JARVIS_DOCUMENT_ROOT : '/var/www/dashboard';
 $files = [
+    '/reactor/reactor.js' => ['reactor/reactor.js', 'application/javascript'],
     '/' => ['index.html', 'text/html; charset=utf-8'],
     '/index.html' => ['index.html', 'text/html; charset=utf-8'],
     '/integration.js' => ['integration.js', 'application/javascript; charset=utf-8'],
@@ -29,6 +30,7 @@ $files = [
     '/chat/voice/onnxruntime-ThirdPartyNotices.txt' => ['chat/voice/onnxruntime-ThirdPartyNotices.txt', 'text/plain'],
     '/chat/voice/silero-license.txt' => ['chat/voice/silero-license.txt', 'text/plain'],
     '/chat/voice/vad-license.txt' => ['chat/voice/vad-license.txt', 'text/plain'],
+    '/chat/voice/speech.mjs' => ['chat/voice/speech.mjs', 'application/javascript'],
     '/chat/voice/session.mjs' => ['chat/voice/session.mjs', 'application/javascript'],
     '/chat/voice/core.mjs' => ['chat/voice/core.mjs', 'application/javascript'],
     '/chat/voice/capture.js' => ['chat/voice/capture.js', 'application/javascript'],

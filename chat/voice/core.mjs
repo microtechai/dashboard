@@ -12,15 +12,20 @@ export function wav16(samples) {
 }
 export class Segmenter {
  constructor(emit=()=>{}) {this.emit=emit;this.reset();}
- reset() {this.ring=[];this.buffer=null;this.active=false;this.positive=0;this.quiet=0;this.total=0;this.blocked=false;}
+ reset() {this.ring=[];this.buffer=null;this.active=false;this.positive=0;this.quiet=0;this.total=0;this.blocked=false;this.noiseFloor=.001;}
  push(frame,p) {
   if(frame.length!==512) throw new Error('Expected 512 samples at 16 kHz');
   if(this.blocked) {this.quiet=p<.35?this.quiet+1:0;if(this.quiet>=22)this.reset();return;}
   frame=frame.slice();
+  let energy=0;for(const x of frame)energy+=x*x;
+  const rms=Math.sqrt(energy/512);
+  // Learn only neural non-speech, bounded so loud noise cannot lock out later speech.
+  if(!this.active && p<.35)this.noiseFloor=Math.max(.0005,Math.min(.01,this.noiseFloor*.95+rms*.05));
+  const audible=Number.isFinite(rms)&&rms>=Math.max(.002,this.noiseFloor*2.5);
   if(!this.active) {
    this.ring.push(frame);if(this.ring.length>16)this.ring.shift(); // 512 ms including confirmation
-   this.positive=p>=.65?this.positive+1:0;
-   if(this.positive<3)return; // 96 ms evidence; NOT guaranteed end-to-end latency
+   this.positive=Number.isFinite(p)&&p>=.65&&audible?this.positive+1:0;
+   if(this.positive<4)return; // 128 ms neural + relative-energy evidence; not end-to-end latency
    this.active=true;this.buffer=new Float32Array(320000);this.total=0;
    for(const f of this.ring){this.buffer.set(f,this.total);this.total+=f.length;}this.ring=[];
    this.emit({type:'start'});return;

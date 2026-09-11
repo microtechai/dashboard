@@ -8,7 +8,7 @@ test('continuous segmentation preserves pre-roll, closes once and bounds 20 seco
  for(let i=0;i<10;i++)seg.push(new Float32Array(512).fill(.5),.95);
  for(let i=0;i<22;i++)seg.push(new Float32Array(512),0);
  assert.equal(events.length,2);assert.ok(events[1].samples[0]<.1);
- events.length=0;for(let i=0;i<2000;i++)seg.push(new Float32Array(512),.99);
+ events.length=0;for(let i=0;i<2000;i++)seg.push(new Float32Array(512).fill(.1),.99);
  assert.ok(seg.frames === undefined, 'do not accumulate chunks plus a second full PCM copy');
  assert.equal(events.length,2);assert.equal(events[1].samples.length,320000);assert.equal(events[1].wav.byteLength,640044);
  for(let i=0;i<100;i++)seg.push(new Float32Array(512),0);

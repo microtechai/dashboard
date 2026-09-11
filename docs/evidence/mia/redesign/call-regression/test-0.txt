@@ -1,0 +1,26 @@
+✔ ordered bounded speech queue starts early and double cancel drops stale requests (13.213843ms)
+✔ TTS network error and 429 cancel without retry (2.881801ms)
+✔ sentence boundaries wait for lookahead and preserve decimal/abbreviation (0.605113ms)
+✔ speech normalizes decorative Markdown without deleting numbers or code operators (2.305884ms)
+✔ core state accepts bounded live audio, resets and honors reduced motion (3.291822ms)
+✔ classic shader script coexists with legacy inline lexical names (3.375642ms)
+✔ full inline classic script has no declaration collision, without running auth (2.778163ms)
+✔ explicit controller updates real THREE objects without own RAF; state and disposal (14.191472ms)
+✔ changed classic assets are versioned and fire honors reduced motion without hiding (2.542868ms)
+✔ page wires one fire controller into its only render loop (0.967885ms)
+PASS listening RMS + transcribing state
+✔ tests/stt_core.cjs (55.339219ms)
+✔ worklet resamples real input; bounded 512ms scheduling cushion then fails closed (12.710543ms)
+✔ continuous segmentation preserves pre-roll, closes once and bounds 20 seconds (64.518909ms)
+✔ neural false positives at noise floor and short knocks do not interrupt; voice twice retains onset (21.603447ms)
+✔ explicit start only; late permission stopped after shutdown; no automatic restart (3.975247ms)
+✔ pending permission deadline fails closed and late stream is stopped (1.927055ms)
+✔ worker rejects frame 17 rather than overlap or accumulate inference (6.825903ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 344.167497

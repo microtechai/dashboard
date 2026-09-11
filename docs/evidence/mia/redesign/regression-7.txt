@@ -1,0 +1,20 @@
+test_audio_blocked_explicit_retry (__main__.ChatFrontend.test_audio_blocked_explicit_retry) ... ok
+test_audio_full_queue_and_end_cleanup (__main__.ChatFrontend.test_audio_full_queue_and_end_cleanup) ... ok
+test_audio_queue_stop_and_real_wav_analyser (__main__.ChatFrontend.test_audio_queue_stop_and_real_wav_analyser) ... Audio fixture: generated sine WAV (not Piper)
+ok
+test_audio_stale_play_cannot_stop_new_audio (__main__.ChatFrontend.test_audio_stale_play_cannot_stop_new_audio) ... ok
+test_autoread_history_and_tts_error (__main__.ChatFrontend.test_autoread_history_and_tts_error) ... ok
+test_byte_split_sse_abort_stale_and_malformed (__main__.ChatFrontend.test_byte_split_sse_abort_stale_and_malformed) ... ok
+test_errors_and_auth_expiry (__main__.ChatFrontend.test_errors_and_auth_expiry) ... ok
+test_login_csrf_and_safe_history (__main__.ChatFrontend.test_login_csrf_and_safe_history) ... ok
+test_logout_cancels_pending_reply (__main__.ChatFrontend.test_logout_cancels_pending_reply) ... ok
+test_logout_clears_private_history_even_if_refresh_fails (__main__.ChatFrontend.test_logout_clears_private_history_even_if_refresh_fails) ... ok
+test_minimize_responsive_login (__main__.ChatFrontend.test_minimize_responsive_login) ... ok
+test_no_message_during_logout (__main__.ChatFrontend.test_no_message_during_logout) ... ok
+test_session_retry_after_unavailable (__main__.ChatFrontend.test_session_retry_after_unavailable) ... ok
+test_stream_utf8_multiline_and_safe_done (__main__.ChatFrontend.test_stream_utf8_multiline_and_safe_done) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 25.834s
+
+OK

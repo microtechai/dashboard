@@ -28,7 +28,7 @@ self.onmessage=async({data})=>{
   }
   if(failed)return;
   if(!session||data.type!=='frame'||data.frame?.length!==512)throw Error('Invalid VAD frame');
-  if(queue.length+(running?1:0)>=4)throw Error('VAD sobrecargado. Usa Hablar.');
+  if(queue.length+(running?1:0)>=16)throw Error('VAD sobrecargado. Usa Hablar.');
   queue.push(data.frame);void drain();
  }catch(e){fail(e);}
 };

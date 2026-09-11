@@ -1,0 +1,28 @@
+{
+  "nodes": [
+    "srv-hetzner",
+    "srv-microtechsat",
+    "srv-dgx",
+    "srv-local",
+    "wp-cielo",
+    "wp-cotufas2",
+    "wp-microtechsat",
+    "wp-audiomania",
+    "ai-qwen",
+    "ai-glm",
+    "ai-proxy",
+    "ai-hermes",
+    "inf-cloudflare",
+    "inf-github",
+    "inf-ssh",
+    "pr-factura",
+    "pr-jarvis"
+  ],
+  "navigation": 24,
+  "centerX": 829.9999999999999,
+  "expectedCenterX": 830.0,
+  "pageErrors": [],
+  "permissionCalls": 0,
+  "fixtureLogin": true,
+  "hardwarePending": true
+}

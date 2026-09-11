@@ -1,0 +1,178 @@
+{
+  "mode": "operator-preview",
+  "hardwarePerformance": "pending",
+  "sourceStableDuringRun": true,
+  "hashes": {
+    "index.html": "ed15d5a598f68f40ada2f352e09f04df89ceb4f5603fccc23356f3a356dcd5d9",
+    "chat/chat.css": "7f33dc6c0df622b76a91ade2b89aac59d15e9b6ce37be4074945fc2c8cc17df6",
+    "chat/chat.js": "c217a70e120217c13cd93ba1f1f7b669c3fe6191c14903da0ffc09cbc771aa39",
+    "chat/voice/speech.mjs": "e0b49f5394f37f8931b8bc9f7e8c801b2fe2050d5c01edc436777f9a03f2f869",
+    "integration.js": "6c687a9837e0d9bee6e3c34b9e9f39c34eea25a12a47ebf5e4facc3d62b9e553",
+    "api/chat.php": "dc5db042bf523aa3989ed0d6d43e1ace6c594f8052833b6b1380046fc250ecd3",
+    "reactor/reactor.js": "ff5af77f6b7bf5cda36a5279dd15fbb141a70e4744126d5ed16cc1aa0fdaec87",
+    "server/gate.php": "4cc789ab134720dd1546285f8bf217f1892cd79a2d1e29efd97214b70bc3a02b",
+    "login.html": "d1a3fed72360f03e12ac3184af73be7f3fcd65e8843a684998cab31982ca6e80",
+    "chat/voice/core.mjs": "7c4ed60ffdb693165d23b24a837abafa695b8c1543c38e7d9a3d9133b51ffde6"
+  },
+  "tests": [
+    {
+      "command": [
+        "node",
+        "--test",
+        "tests/call_speech.test.mjs",
+        "tests/mia_speech_entry.test.mjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.15237209293991327,
+      "log": "regression-0.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mia_speech_backend_test.py",
+        "EmojiBackend.test_tts_stdin_strips_emoji_without_touching_history"
+      ],
+      "exit_code": 0,
+      "seconds": 0.6839957509655505,
+      "log": "regression-1.txt"
+    },
+    {
+      "command": [
+        "xvfb-run",
+        "-a",
+        "python3",
+        "tests/mia_redesign_test.py",
+        "Redesign"
+      ],
+      "exit_code": 0,
+      "seconds": 27.299554771976545,
+      "log": "regression-2.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mia_branding_test.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.055142821976915,
+      "log": "regression-3.txt"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "tests/mia_reactor.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.8901299680583179,
+      "log": "regression-4.txt"
+    },
+    {
+      "command": [
+        "xvfb-run",
+        "-a",
+        "python3",
+        "tests/mia_reactor_test.py",
+        "Reactor"
+      ],
+      "exit_code": 0,
+      "seconds": 40.08763062406797,
+      "log": "regression-5.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/run_call.py"
+      ],
+      "exit_code": 1,
+      "seconds": 192.99389718903694,
+      "log": "regression-6.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/chat_frontend_test.py"
+      ],
+      "exit_code": 0,
+      "seconds": 26.001536482945085,
+      "log": "regression-7.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/chat_backend_test.py"
+      ],
+      "exit_code": 0,
+      "seconds": 21.30139100702945,
+      "log": "regression-8.txt"
+    },
+    {
+      "command": [
+        "/home/ddr/mia-qa-venv/bin/python",
+        "tests/stt_worker_test.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.23545609996654093,
+      "log": "regression-9.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/executor_minimize.py"
+      ],
+      "exit_code": 1,
+      "seconds": 6.194099353975616,
+      "log": "regression-10.txt"
+    },
+    {
+      "command": [
+        "php",
+        "-l",
+        "api/chat.php"
+      ],
+      "exit_code": 0,
+      "seconds": 0.035165395005606115,
+      "log": "regression-11.txt"
+    },
+    {
+      "command": [
+        "php",
+        "-l",
+        "server/gate.php"
+      ],
+      "exit_code": 0,
+      "seconds": 0.03400620899628848,
+      "log": "regression-12.txt"
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "chat/chat.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.0359427270013839,
+      "log": "regression-13.txt"
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "integration.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.035765624954365194,
+      "log": "regression-14.txt"
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "reactor/reactor.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.03992245497647673,
+      "log": "regression-15.txt"
+    }
+  ]
+}

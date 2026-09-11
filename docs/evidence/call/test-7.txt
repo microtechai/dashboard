@@ -1,0 +1,17 @@
+test_authentication_and_request_guards (__main__.FemaleSpeaker.test_authentication_and_request_guards) ... ok
+test_global_locks (__main__.FemaleSpeaker.test_global_locks) ... ok
+test_history_bound_and_unicode_limit (__main__.FemaleSpeaker.test_history_bound_and_unicode_limit) ... ok
+test_missing_private_temp_dir_fails_closed (__main__.FemaleSpeaker.test_missing_private_temp_dir_fails_closed) ... ok
+test_multiline_tts_is_one_piper_utterance (__main__.FemaleSpeaker.test_multiline_tts_is_one_piper_utterance) ... ok
+test_private_speaker_exact_argv_and_invalid_config (__main__.FemaleSpeaker.test_private_speaker_exact_argv_and_invalid_config) ... ok
+test_session_cookie_and_anonymous_state (__main__.FemaleSpeaker.test_session_cookie_and_anonymous_state) ... ok
+test_stream_history_limits_and_failure (__main__.FemaleSpeaker.test_stream_history_limits_and_failure) ... ok
+test_stream_unlock_and_clear_race (__main__.FemaleSpeaker.test_stream_unlock_and_clear_race) ... ok
+test_tts_process_wav_and_cleanup (__main__.FemaleSpeaker.test_tts_process_wav_and_cleanup) ... ok
+test_tts_single_cpu_affinity (__main__.FemaleSpeaker.test_tts_single_cpu_affinity) ... ok
+test_tts_timeout_reaps_and_unlocks (__main__.FemaleSpeaker.test_tts_timeout_reaps_and_unlocks) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 21.248s
+
+OK

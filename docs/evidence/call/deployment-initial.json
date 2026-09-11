@@ -1,0 +1,63 @@
+{
+  "rollback_dir": "/root/jarvis-call-rollback-20260908T200351Z",
+  "files": [
+    {
+      "source": "chat/voice/speech.mjs",
+      "path": "/var/www/dashboard/chat/voice/speech.mjs",
+      "before": null,
+      "after": "554d41b57213c6a1a8ee453aa61215ce3888e6c4a96c9f0810e8b36e842cb87b",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "chat/voice/capture.js",
+      "path": "/var/www/dashboard/chat/voice/capture.js",
+      "before": "baa1364740ddbec8f40a89372e7a17daef8b59aff033e1164da104526f5890e0",
+      "after": "8d642aa99c4a71c3729048f2e740b01ae66f856af7009bc953d53951726f8cdf",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "chat/voice/worker.js",
+      "path": "/var/www/dashboard/chat/voice/worker.js",
+      "before": "e3fd5574984a2d1342e8a73ec77d52f4e39caba677d095702fc61309bd10889e",
+      "after": "5fa5041dc1075bf372746cfe68323c340ef2834dae2016c46c323be98e27a4bf",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "server/gate.php",
+      "path": "/opt/jarvis-access/gate.php",
+      "before": "c44d88e9584521ac9ab2768b57e90ffd600e234c9ef700774df1b232ee37880a",
+      "after": "e307d8c04e0b2175214d042371bbae4bc3f9eaad9d4ad734d011bdb84302a78a",
+      "uid": 0,
+      "gid": 33,
+      "mode": 416
+    },
+    {
+      "source": "chat/chat.css",
+      "path": "/var/www/dashboard/chat/chat.css",
+      "before": "62c2d55b6f1cc25718e45048aacd14936f7e4a7d8970bf1382e46b8498a87adc",
+      "after": "c08a4db4dc5cde9e96cb51ff08d2e8b9d986f26e5c3265ac63b2bb90d34b2fd0",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    },
+    {
+      "source": "chat/chat.js",
+      "path": "/var/www/dashboard/chat/chat.js",
+      "before": "16fb9438052638fcd37c8db0da421051bf0d5313f8f6e3ea2cfe24807f5fb74f",
+      "after": "b9512b975cdad919983741f69239e69289c5efd2d577072ba4cac1c74caf8e8b",
+      "uid": 0,
+      "gid": 0,
+      "mode": 420
+    }
+  ],
+  "preserved": {
+    "index.html": "46bc325cfc4aba60eaf442eb732a26e421872df1e0bc8ad177e0a84cc149cf0e",
+    "fire/shaders.js": "90afac07696c5735e417b7b3b9bf1eba3f2ff6066204060ba30a5903bbb3f17e"
+  }
+}

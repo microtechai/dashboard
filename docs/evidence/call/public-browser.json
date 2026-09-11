@@ -1,0 +1,9 @@
+{
+  "url": "https://dashboard.microtechai.es/login.html",
+  "forms": 1,
+  "privateChat": 0,
+  "canvases": 0,
+  "errors": [],
+  "loginAttempted": false,
+  "microphonePermissionGranted": false
+}

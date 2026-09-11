@@ -1,0 +1,51 @@
+{
+  "viewport": [
+    1440,
+    1120
+  ],
+  "dpr": 1,
+  "software": true,
+  "results": [
+    {
+      "name": "all",
+      "frameMedian": 343,
+      "frameP95": 535.7999999523163,
+      "renderReadbackMedian": 263.59999990463257,
+      "renderReadbackP95": 459.09999990463257,
+      "calls": 48,
+      "triangles": 31744,
+      "dpr": 1
+    },
+    {
+      "name": "three-quarter-resolution",
+      "frameMedian": 286.6999999284744,
+      "frameP95": 349.5,
+      "renderReadbackMedian": 206.60000002384186,
+      "renderReadbackP95": 267,
+      "calls": 48,
+      "triangles": 31744,
+      "dpr": 0.75
+    },
+    {
+      "name": "half-resolution",
+      "frameMedian": 241.90000009536743,
+      "frameP95": 311.7999999523163,
+      "renderReadbackMedian": 161.69999992847443,
+      "renderReadbackP95": 234.79999995231628,
+      "calls": 48,
+      "triangles": 31744,
+      "dpr": 0.5
+    },
+    {
+      "name": "reactor-unlit-diagnostic-only",
+      "frameMedian": 253.89999997615814,
+      "frameP95": 355.1999999284744,
+      "renderReadbackMedian": 167.20000004768372,
+      "renderReadbackP95": 263.89999997615814,
+      "calls": 48,
+      "triangles": 31744,
+      "dpr": 1
+    }
+  ],
+  "scope": "diagnostic only; readPixels retained to synchronize GPU, sixteen samples per variant. RAF includes explicit additional render and is not release timing."
+}
