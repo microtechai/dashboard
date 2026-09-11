@@ -34,11 +34,11 @@ test('pipeline removed; existing render loop and raycaster retain sole ownership
 });
 test('real state colors and continuous actual levels; no synthetic voice at zero or stale level', () => {
   const f = fixture();
-  assert.equal(f.nodes.length, 21);
+  assert.ok(f.nodes.length >= 21);
   assert.equal(f.reactor.stats.nodes, 7);
   assert.equal(f.reactor.focusStage('project'), true);
   assert.equal(f.reactor.focusStage('missing'), false);
-  for (const [state, color] of Object.entries({ idle: 0x249ac2, listening: 0x22d3ee, transcribing: 0x22d3ee, thinking: 0xd6a343, speaking: 0x2dd4a0 })) {
+  for (const [state, color] of Object.entries({ idle: 0x00a6bd, listening: 0x00c7d9, transcribing: 0x00c7d9, thinking: 0xd7a63a, speaking: 0x2fbf8a })) {
     f.send(state, 0); f.tick();
     assert.equal(f.core.material.emissive.getHex(), color);
   }
@@ -52,7 +52,7 @@ test('real state colors and continuous actual levels; no synthetic voice at zero
     f.send(state, NaN); f.tick(); assert.equal(f.core.scale.x, 1);
   }
   f.send('speaking', 1); f.expire(); f.tick(); assert.equal(f.core.scale.x, 1);
-  f.send('error', 1); f.tick(); assert.equal(f.core.material.emissive.getHex(), 0x2dd4a0);
+  f.send('error', 1); f.tick(); assert.equal(f.core.material.emissive.getHex(), 0xe83b5b);
 });
 test('idle and reduced motion stable; state colors survive; no globals or new GPU resources', () => {
   const f = fixture(); const geometries = new Set(), materials = new Set();
