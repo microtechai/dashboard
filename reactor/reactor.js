@@ -51,8 +51,9 @@
       const group = new T.Group(); group.name = 'mia-sun-'+stage.id; group.position.set(...stage.pos); group.userData.miaStage = stage.id;
       const material = new T.MeshStandardMaterial({color:stage.color,emissive:stage.color,emissiveIntensity:.45,metalness:.35,roughness:.25});
       const sun = new T.Mesh(new T.SphereGeometry(.28,16,12), material); sun.userData.miaStage=stage.id; group.add(sun);
-      const halo = new T.Mesh(new T.SphereGeometry(.46,12,8), new T.MeshBasicMaterial({color:stage.color,transparent:true,opacity:.12,depthWrite:false})); group.add(halo);
-      const ring = new T.Mesh(new T.TorusGeometry(.42,.012,5,24), new T.MeshBasicMaterial({color:stage.color,transparent:true,opacity:.65})); ring.rotation.x=.8; group.add(ring);
+      const halo = new T.Mesh(new T.SphereGeometry(.46,12,8), new T.MeshBasicMaterial({color:stage.color,transparent:true,opacity:.12,depthWrite:false})); halo.userData.miaStage=stage.id; group.add(halo);
+      const ring = new T.Mesh(new T.TorusGeometry(.42,.012,5,24), new T.MeshBasicMaterial({color:stage.color,transparent:true,opacity:.65})); ring.userData.miaStage=stage.id; ring.rotation.x=.8; group.add(ring);
+      if(typeof document!=='undefined'){const labelCanvas=document.createElement('canvas'); labelCanvas.width=512; labelCanvas.height=72; const labelCtx=labelCanvas.getContext('2d'); labelCtx.font='700 28px system-ui'; labelCtx.textAlign='center'; labelCtx.fillStyle='#d9f7ff'; labelCtx.shadowColor='#00a6bd'; labelCtx.shadowBlur=10; labelCtx.fillText(stage.label,256,38); const label=new T.Sprite(new T.SpriteMaterial({map:new T.CanvasTexture(labelCanvas),transparent:true,depthTest:false})); label.scale.set(1.7,.24,1); label.position.set(0,-.55,.05); label.userData.miaStage=stage.id; group.add(label);}
       galaxy.add(group); hitTargets.push(sun); nodes.push({stage,group,sun,halo,ring,material,active:false});
       const line = makeLine(T,[0,0,0],stage.pos,linkMaterial); line.userData.miaStage=stage.id; galaxy.add(line); links.push({line,stage,active:false});
     });
