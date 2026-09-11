@@ -58,6 +58,21 @@ class Access(unittest.TestCase):
         self.assertNotIn('try_files $uri $uri/',text)
         self.assertIn('return 421',text)
 
+    def test_all_voice_assets_private_and_exact_mime(self):
+        import hashlib
+        assets={ 'session.mjs':'application/javascript','core.mjs':'application/javascript','capture.js':'application/javascript','worker.js':'application/javascript','assets/ort.wasm.min.js':'application/javascript','assets/ort-wasm-simd-threaded.mjs':'application/javascript','assets/ort-wasm-simd-threaded.wasm':'application/wasm','assets/silero_vad_v5.onnx':'application/octet-stream'}
+        assets.update({'assets-manifest.json':'application/json',**{name:'text/plain' for name in ['onnxruntime-license.txt','onnxruntime-ThirdPartyNotices.txt','silero-license.txt','vad-license.txt']}})
+        for name in assets:
+            self.assertEqual(self.get('/chat/voice/'+name)[0],401)
+        self.login()
+        for name,mime in assets.items():
+            s,h,b=self.get('/chat/voice/'+name)
+            self.assertEqual(s,200,name);self.assertEqual({k.lower():v for k,v in h.items()}['content-type'].split(';')[0],mime)
+            self.assertEqual(hashlib.sha256(b).hexdigest(),hashlib.sha256((ROOT/'chat/voice'/name).read_bytes()).hexdigest())
+            self.assertIn('no-store',h['Cache-Control'])
+        self.req('logout',{})
+        for name in assets:self.assertEqual(self.get('/chat/voice/'+name)[0],401)
+
     def test_single_public_login_no_local_or_second_form(self):
         login = ROOT/'login.html'
         self.assertTrue(login.exists(), 'public login missing')

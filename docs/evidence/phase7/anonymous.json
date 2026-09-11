@@ -1,0 +1,531 @@
+[
+  {
+    "target": "edge",
+    "path": "/",
+    "status": 303,
+    "expected": 303,
+    "bytes": 0,
+    "headers": {
+      "content-type": "text/html; charset=UTF-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "location": "/login.html",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/index.html",
+    "status": 303,
+    "expected": 303,
+    "bytes": 0,
+    "headers": {
+      "content-type": "text/html; charset=UTF-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "location": "/login.html",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/login.html",
+    "status": 200,
+    "expected": 200,
+    "bytes": 3126,
+    "headers": {
+      "content-type": "text/html",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/voice/assets/ort-wasm-simd-threaded.mjs",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/voice/assets/ort-wasm-simd-threaded.wasm",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/voice/assets/ort.wasm.min.js",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/voice/assets/silero_vad_v5.onnx",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/voice/assets-manifest.json",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/voice/capture.js",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/voice/core.mjs",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/voice/onnxruntime-ThirdPartyNotices.txt",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/voice/onnxruntime-license.txt",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/voice/session.mjs",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/voice/silero-license.txt",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/voice/vad-license.txt",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/voice/worker.js",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/chat.css",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/chat.js",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/chat/chat.js?v=20260908-chat4",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/fire/shaders.js",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "edge",
+    "path": "/api/stats.php",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "cf-cache-status": "DYNAMIC"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/",
+    "status": 303,
+    "expected": 303,
+    "bytes": 0,
+    "headers": {
+      "content-type": "text/html; charset=UTF-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "location": "/login.html"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/index.html",
+    "status": 303,
+    "expected": 303,
+    "bytes": 0,
+    "headers": {
+      "content-type": "text/html; charset=UTF-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate",
+      "location": "/login.html"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/login.html",
+    "status": 200,
+    "expected": 200,
+    "bytes": 3126,
+    "headers": {
+      "content-type": "text/html",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/voice/assets/ort-wasm-simd-threaded.mjs",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/voice/assets/ort-wasm-simd-threaded.wasm",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/voice/assets/ort.wasm.min.js",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/voice/assets/silero_vad_v5.onnx",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/voice/assets-manifest.json",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/voice/capture.js",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/voice/core.mjs",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/voice/onnxruntime-ThirdPartyNotices.txt",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/voice/onnxruntime-license.txt",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/voice/session.mjs",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/voice/silero-license.txt",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/voice/vad-license.txt",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/voice/worker.js",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/chat.css",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/chat.js",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/chat/chat.js?v=20260908-chat4",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/fire/shaders.js",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  },
+  {
+    "target": "origin",
+    "path": "/api/stats.php",
+    "status": 401,
+    "expected": 401,
+    "bytes": 42,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store, no-cache, max-age=0, must-revalidate"
+    },
+    "exit_code": 0
+  }
+]

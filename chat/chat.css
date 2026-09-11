@@ -26,4 +26,9 @@
 .jarvis-chat-actions{display:flex;gap:8px;justify-content:space-between;margin-top:6px}
 #jarvis-chat footer{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-top:1px solid #243654;gap:8px}
 #jarvis-chat footer label{display:flex;align-items:center;gap:6px}
-@media(max-width:600px){#jarvis-chat{right:12px;bottom:12px}#jarvis-chat-panel{height:min(460px,65dvh)}}
+#jarvis-chat-continuous{margin:4px 14px;flex-shrink:0}
+#jarvis-chat-mic{margin:3px 14px;color:#b3c7e8;font-size:12px;flex-shrink:0}
+#jarvis-chat-mic[data-state=active],#jarvis-chat-mic[data-state=loading]{color:#8ef2bd;border-left:3px solid #62e99e;padding-left:8px}
+#jarvis-chat .jarvis-voice-notice{margin:3px 14px 8px;color:#9fafc7;font-size:11px;line-height:1.35;flex-shrink:0}
+#jarvis-chat-panel{height:620px}
+@media(max-width:600px){#jarvis-chat{right:12px;bottom:12px}#jarvis-chat-panel{height:min(620px,calc(100dvh - 36px));max-height:calc(100dvh - 36px)}}

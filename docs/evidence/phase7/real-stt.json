@@ -1,0 +1,26 @@
+[
+  {
+    "file": "/home/ddr/jarvis-bargein-spike/captured-piper.wav",
+    "sha256": "ebd9df0c6366c71fd4104963ab291b411019f3bbd10e57ddac3363314cc1813f",
+    "bytes": 224300,
+    "exit_code": 0,
+    "seconds": 2.305496865999885,
+    "output": "{\"text\": \"Hola, soy Jardis. El n\u00facleo azul est\u00e1 conectado. Puedes escribirme y escuchar mis respuestas en espa\u00f1ol.\"}\n",
+    "stderr": "",
+    "realWhisper": true,
+    "authenticatedHTTP": false,
+    "cpu": 1
+  },
+  {
+    "file": "/home/ddr/jarvis-phase2-20260908/docs/evidence/phase7/captured-browser.wav",
+    "sha256": "1c8e544259a56d3086bafe8dd8ded530255578024dd0b1c17b2cf881010fab4c",
+    "bytes": 224300,
+    "exit_code": 0,
+    "seconds": 2.2414519569138065,
+    "output": "{\"text\": \"Hola, soy Jardis. El n\u00facleo azul est\u00e1 conectado. Puedes escribirme y escuchar mis respuestas en espa\u00f1ol.\"}\n",
+    "stderr": "",
+    "realWhisper": true,
+    "authenticatedHTTP": false,
+    "cpu": 1
+  }
+]

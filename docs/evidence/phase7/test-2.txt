@@ -1,0 +1,7 @@
+.................................
+----------------------------------------------------------------------
+Ran 33 tests in 56.724s
+
+OK
+Audio fixture: generated sine WAV (not Piper)
+Audio fixture: generated sine WAV (not Piper)

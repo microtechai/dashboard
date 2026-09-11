@@ -1,0 +1,21 @@
+✔ core state accepts bounded live audio, resets and honors reduced motion (2.61708ms)
+✔ classic shader script coexists with legacy inline lexical names (2.627677ms)
+✔ full inline classic script has no declaration collision, without running auth (2.614239ms)
+✔ explicit controller updates real THREE objects without own RAF; state and disposal (12.475662ms)
+✔ changed classic assets are versioned and fire honors reduced motion without hiding (2.394233ms)
+✔ page wires one fire controller into its only render loop (0.899859ms)
+PASS listening RMS + transcribing state
+✔ tests/stt_core.cjs (48.877245ms)
+✔ worklet resamples real input; max four unacked frames then fails closed (11.051814ms)
+✔ continuous segmentation preserves pre-roll, closes once and bounds 20 seconds (23.263915ms)
+✔ explicit start only; late permission stopped after shutdown; no automatic restart (3.221907ms)
+✔ pending permission deadline fails closed and late stream is stopped (1.410343ms)
+✔ worker rejects fifth queued frame rather than overlap or accumulate inference (8.996446ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 206.612726

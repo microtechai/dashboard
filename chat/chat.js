@@ -14,6 +14,9 @@
         <p id="jarvis-chat-status" role="status" aria-live="polite">Conectando sesión…</p>
         <button type="button" id="jarvis-chat-retry" hidden>Actualizar sesión</button>
         <div id="jarvis-chat-conversation" hidden>
+          <button type="button" id="jarvis-chat-continuous" disabled>Iniciar conversación</button>
+          <p id="jarvis-chat-mic" data-state="off" role="status">Micrófono cerrado</p>
+          <p class="jarvis-voice-notice">Voz continua experimental · usa auriculares. AEC solicitado al navegador; VAD no elimina eco ni garantiza evitar auto-interrupciones con altavoces. Máximo 20 s por frase, 6 envíos/min; sin reintentos automáticos.</p>
           <div id="jarvis-chat-history" role="log" aria-label="Mensajes" aria-live="polite"></div>
           <form id="jarvis-chat-compose"><label for="jarvis-chat-input">Mensaje</label><textarea id="jarvis-chat-input" maxlength="4000" rows="2" placeholder="Escribe a JARVIS…"></textarea><div class="jarvis-chat-actions"><button type="submit">Enviar</button><button type="button" id="jarvis-chat-talk">Hablar</button><button type="button" id="jarvis-chat-logout">Salir</button></div></form>
         </div>
@@ -37,6 +40,7 @@
       return response;
     }
     function showError(error) {
+      if (continuous?.active || continuous?.pending) stop();
       if (error.status === 401) {
         stop(); authenticated = false; el('conversation').hidden = true; location.replace('/login.html');
         el('history').replaceChildren(); el('input').value = '';
@@ -98,6 +102,7 @@
       if (micSource) micSource.disconnect(); if (micAnalyser) micAnalyser.disconnect(); micSource = micAnalyser = null;
       if (micContext) micContext.close().catch(() => {}); micContext = null;
       el('talk').textContent = 'Hablar';
+      if (!continuous?.active && !continuous?.pending) micState('off');
     }
     function cleanupMic() {
       if (recorder) {
@@ -123,6 +128,7 @@
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
         if (id !== generation) { stream.getTracks().forEach(track => track.stop()); return; }
         mic = stream;
+        el('mic').dataset.state = 'active'; el('mic').textContent = 'Micrófono activo · grabación manual, máximo 20 s';
         const Context = window.AudioContext || window.webkitAudioContext;
         if (Context) {
           micContext = new Context(); micContext.resume().catch(() => {});
@@ -197,7 +203,7 @@
     }
     async function speak(text) {
       if (!authenticated || authBusy) return;
-      stop(); const id = generation; controller = new AbortController();
+      cancelResponse(); cleanupMic(); const id = generation; controller = new AbortController(); armResponseDeadline(id);
       try {
         // Resume in the user click, before waiting for the authenticated WAV.
         const Context = window.AudioContext || window.webkitAudioContext;
@@ -243,19 +249,70 @@
       } catch (error) {
         if (id === generation && error.name !== 'AbortError') showError(error);
       } finally {
-        if (id === generation) { cleanupAudio(); controller = null; state('idle'); }
+        if (id === generation) { clearTimeout(responseTimer); cleanupAudio(); controller = null; state('idle'); }
       }
     }
     function state(value, level = 0) {
-      window.dispatchEvent(new CustomEvent('jarvis-chat-state', { detail: { state: value, level: Math.max(0, Math.min(1, Number(level) || 0)) } }));
+      if (value === 'idle' && continuous?.active) { value = 'listening'; level = micLevel; }
+      window.dispatchEvent(new CustomEvent('jarvis-chat-state', { detail: { state: value, micActive: continuous?.active === true, level: Math.max(0, Math.min(1, Number(level) || 0)) } }));
     }
-    function stop() {
-      generation++; if (controller) controller.abort(); controller = null; busy = false;
-      cleanupAudio(); cleanupMic();
+    let continuous = null, responseTimer = 0, micLevel = 0;
+    function micState(value, settings) {
+      el('mic').dataset.state = value;
+      if (value === 'active') status('Conversación activa · escuchando. Finalizar cierra el micrófono.');
+      else if (value === 'pending') status('Esperando permiso de micrófono…');
+      else if (value === 'loading') status('Cargando VAD local…');
+      el('mic').textContent = value === 'off' ? 'Micrófono cerrado' : value === 'pending' ? 'Esperando permiso · Finalizar cancela' : value === 'loading' ? 'Micrófono activo · cargando VAD local…' : 'Micrófono activo · escucha también mientras JARVIS habla · AEC: ' + (settings?.echoCancellation === true ? 'solicitado/activo, no garantizado' : 'no confirmado');
+      el('continuous').textContent = value === 'off' ? 'Iniciar conversación' : 'Finalizar conversación';
+    }
+    import('/chat/voice/session.mjs').then(({ ContinuousVoice }) => {
+      continuous = new ContinuousVoice({
+        onMic: micState,
+        onStart: () => { cancelResponse(); state('listening'); status('Nueva voz · respuesta interrumpida, escuchando…'); },
+        onLevel: level => { micLevel = level; if (!controller && !busy && !audio) state('listening', level); },
+        onEnd: async event => {
+          cancelResponse(); const id = generation; const current = new AbortController(); controller = current;
+          armResponseDeadline(id); state('transcribing'); status(event.reason === 'limit' ? 'Límite 20 s alcanzado · espera silencio para otra frase.' : 'Transcribiendo audio local…');
+          const form = new FormData(); form.append('audio', new Blob([event.wav], { type: 'audio/wav' }), 'voice.wav');
+          try {
+            const data = await (await api('transcribe', form, current.signal)).json();
+            if (id !== generation) return;
+            if (typeof data.text !== 'string' || data.text.length > 4000) throw new Error('Transcripción inválida.');
+            if (!data.text.trim()) { status('No se detectó texto. Escuchando…'); return; }
+            await sendText(data.text.trim(), true);
+          } catch (error) { if (id === generation && error.name !== 'AbortError') showError(error); }
+          finally { if (id === generation) { clearTimeout(responseTimer); controller = null; state('idle'); } }
+        },
+        onError: error => { cancelResponse(); status('Voz continua cerrada: ' + error.message + ' Puedes usar Hablar o texto.'); }
+      });
+      el('continuous').disabled = false;
+    }).catch(() => { status('VAD local no disponible. Usa Hablar o texto.'); });
+    el('continuous').addEventListener('click', () => {
+      if (!authenticated || authBusy || !continuous) return;
+      if (continuous.active || continuous.pending) { stop(); status('Conversación finalizada.'); return; }
+      stop();
+      // Both audio unlock and permission begin in this explicit user click.
+      const Context = window.AudioContext || window.webkitAudioContext;
+      if (Context && !audioContext) audioContext = new Context();
+      audioContext?.resume().catch(() => {});
+      void continuous.start();
+    });
+    function armResponseDeadline(id) {
+      clearTimeout(responseTimer);
+      responseTimer = setTimeout(() => { if (id === generation) { stop(); status('Tiempo de respuesta agotado. Micrófono cerrado; sin reintento automático.'); } }, 65000);
+    }
+    function cancelResponse() {
+      generation++; cleanupAudio(); if (controller) controller.abort(); controller = null; busy = false;
+      clearTimeout(responseTimer);
       el('compose').querySelector('button').disabled = false;
       state('idle');
     }
-    el('stop').addEventListener('click', () => { stop(); status('Detenido.'); });
+    function shutdownVoice() { continuous?.shutdown(); cleanupMic(); micLevel = 0; }
+    function stop() {
+      shutdownVoice(); cancelResponse();
+      if (audioContext) audioContext.close().catch(() => {}); audioContext = null;
+    }
+    el('stop').addEventListener('click', () => { if (continuous?.active) cancelResponse(); else stop(); status('Respuesta detenida.'); });
     async function consume(response, id, update) {
       if (!response.headers.get('content-type')?.includes('text/event-stream') || !response.body) throw new Error('Respuesta de streaming no válida.');
       const reader = response.body.getReader(), decoder = new TextDecoder();
@@ -299,7 +356,7 @@
     }
     async function sendText(text, fromVoice = false) {
       if (!authenticated || authBusy || busy || !text || text.length > 4000) return;
-      stop(); const id = generation; controller = new AbortController(); busy = true;
+      cancelResponse(); cleanupMic(); const id = generation; controller = new AbortController(); busy = true; armResponseDeadline(id);
       el('compose').querySelector('button').disabled = true;
       el('input').value = ''; addMessage('user', text);
       const message = addMessage('assistant', ''); let answer = '';
@@ -318,9 +375,9 @@
       } catch (error) {
         if (id === generation && error.name !== 'AbortError') showError(error);
       } finally {
-        if (id === generation) { busy = false; controller = null; el('compose').querySelector('button').disabled = false; state('idle'); }
+        if (id === generation) { clearTimeout(responseTimer); busy = false; controller = null; el('compose').querySelector('button').disabled = false; state('idle'); }
       }
-      if (id === generation && message.row.querySelector('.jarvis-chat-read') && fromVoice && el('autoread').checked) speak(answer);
+      if (id === generation && message.row.querySelector('.jarvis-chat-read') && fromVoice && (continuous?.active || el('autoread').checked)) speak(answer);
     }
     el('compose').addEventListener('submit', e => { e.preventDefault(); sendText(el('input').value.trim()); });
     el('input').addEventListener('keydown', e => {
@@ -338,10 +395,11 @@
     el('retry').addEventListener('click', refreshSession);
     refreshSession();
     function expand(value) {
+      if (!value) stop();
       el('panel').hidden = !value;
       el('toggle').hidden = value;
       el('toggle').setAttribute('aria-expanded', String(value));
-      (value ? el(authenticated ? 'input' : 'username') : el('toggle')).focus();
+      (value ? el('input') : el('toggle')).focus();
     }
     el('toggle').addEventListener('click', () => expand(true));
     el('minimize').addEventListener('click', () => expand(false));

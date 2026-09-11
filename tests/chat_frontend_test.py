@@ -17,7 +17,7 @@ class ChatFrontend(unittest.TestCase):
         self.message_status = 200
         self.stream = 'event: delta\ndata: {"text":"Hola"}\n\nevent: done\ndata: {"text":"Hola"}\n\n'
         self.page.route('http://chat-fixture.test/**', self.route)
-        self.page.goto('http://chat-fixture.test/')
+        self.page.goto('http://chat-fixture.test/login.html')
 
     def route(self, route):
         req = route.request
@@ -34,12 +34,15 @@ class ChatFrontend(unittest.TestCase):
                 self.auth = False
                 route.fulfill(json={'ok': True})
             elif action == 'message':
+                if self.message_status == 401: self.auth = False
                 route.fulfill(status=self.message_status, content_type='text/event-stream' if self.message_status == 200 else 'application/json', body=self.stream if self.message_status == 200 else '{"error":"Fixture unavailable"}')
             else:
                 route.fulfill(status=503, json={'error': 'Fixture TTS unavailable'})
-        elif req.url.endswith('/chat/chat.js') or req.url.endswith('/chat/chat.css'):
+        elif req.url.endswith('/login.html'):
+            route.fulfill(content_type='text/html',body=(ROOT/'login.html').read_text())
+        elif '/chat/' in req.url:
             path = ROOT / req.url.split('chat-fixture.test/')[1]
-            route.fulfill(status=200 if path.exists() else 404, content_type='text/javascript' if path.suffix == '.js' else 'text/css', body=path.read_text() if path.exists() else '')
+            route.fulfill(status=200 if path.exists() else 404, content_type='text/javascript' if path.suffix in ['.js','.mjs'] else 'text/css', body=path.read_text() if path.exists() else '')
         else:
             route.fulfill(content_type='text/html', body='<!doctype html><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><body style="background:#050810;color:white"><h1>ISOLATED MOCK API FIXTURE — NOT LIVE</h1><link rel="stylesheet" href="/chat/chat.css"><script defer src="/chat/chat.js"></script>')
 
@@ -51,10 +54,11 @@ class ChatFrontend(unittest.TestCase):
         self.page.locator('#jarvis-chat-toggle').click(timeout=1500)
 
     def login(self):
+        self.page.locator('[name=username]').fill('fixture-user')
+        self.page.locator('[name=password]').fill('NOT-A-REAL-PASSWORD')
+        self.page.locator('#submit').click()
+        self.page.wait_for_url('http://chat-fixture.test/')
         self.open()
-        self.page.locator('#jarvis-chat-username').fill('fixture-user')
-        self.page.locator('#jarvis-chat-password').fill('NOT-A-REAL-PASSWORD')
-        self.page.locator('#jarvis-chat-login button[type=submit]').click()
         self.page.locator('#jarvis-chat-input').wait_for(state='visible')
 
     def send(self, text='test fixture'):
@@ -68,12 +72,12 @@ class ChatFrontend(unittest.TestCase):
         self.assertEqual(login[1], {'username': 'fixture-user', 'password': 'NOT-A-REAL-PASSWORD'})
         self.assertEqual(login[2]['x-csrf-token'], 'initial-fixture')
         self.assertEqual([c[0] for c in self.calls], ['session', 'login', 'session'])
-        self.assertEqual(self.page.locator('#jarvis-chat-password').input_value(), '')
+        self.assertEqual(self.page.locator('input[type=password]').count(), 0)
         self.assertEqual(self.page.locator('#jarvis-chat-history img').count(), 0)
         self.assertIn('<img', self.page.locator('#jarvis-chat-history').inner_text())
         self.page.locator('#jarvis-chat-logout').click()
-        self.page.locator('#jarvis-chat-login').wait_for(state='visible')
-        self.assertEqual(self.page.locator('#jarvis-chat-history').inner_text(), '')
+        self.page.wait_for_url('**/login.html')
+        self.assertEqual(self.page.locator('#jarvis-chat-history').count(), 0)
 
     def test_stream_utf8_multiline_and_safe_done(self):
         self.login()
@@ -137,12 +141,13 @@ class ChatFrontend(unittest.TestCase):
             with self.subTest(code=code):
                 self.message_status = code
                 self.send(str(code))
-                self.page.wait_for_function("document.querySelector('#jarvis-chat-status').textContent.includes('Fixture unavailable')", timeout=2000)
-                self.assertFalse(self.page.locator('#jarvis-chat-compose button[type=submit]').is_disabled())
                 if code == 401:
-                    self.assertTrue(self.page.locator('#jarvis-chat-login').is_visible())
-                    self.assertEqual(self.page.locator('#jarvis-chat-history').inner_text(), '')
+                    self.page.wait_for_url('**/login.html')
+                    self.assertTrue(self.page.locator('#access').is_visible())
+                    self.assertEqual(self.page.locator('#jarvis-chat-history').count(), 0)
                 else:
+                    self.page.wait_for_function("document.querySelector('#jarvis-chat-status').textContent.includes('Fixture unavailable')", timeout=2000)
+                    self.assertFalse(self.page.locator('#jarvis-chat-compose button[type=submit]').is_disabled())
                     self.page.locator('#jarvis-chat-stop').click()
 
     def test_byte_split_sse_abort_stale_and_malformed(self):
@@ -193,12 +198,12 @@ class ChatFrontend(unittest.TestCase):
           const original=fetch; window.fetch=(u,o)=>u.includes('action=message') ? new Promise(resolve=>{window.pending=()=>resolve(new Response('event: done\\ndata: {"text":"STALE AFTER LOGOUT"}\\n\\n',{headers:{'Content-Type':'text/event-stream'}})); window.sig=o.signal}) : original(u,o);
         }''')
         self.send()
+        self.page.evaluate("addEventListener('pagehide',()=>{pending();sessionStorage.setItem('aborted',String(sig.aborted));})")
         self.page.locator('#jarvis-chat-logout').click()
-        self.page.locator('#jarvis-chat-login').wait_for(state='visible')
-        self.assertTrue(self.page.evaluate('sig.aborted'))
-        self.page.evaluate('pending()')
+        self.page.wait_for_url('**/login.html')
+        self.assertEqual(self.page.evaluate("sessionStorage.getItem('aborted')"),'true')
         self.page.wait_for_timeout(100)
-        self.assertEqual(self.page.locator('#jarvis-chat-history').inner_text(), '')
+        self.assertEqual(self.page.locator('#jarvis-chat-history').count(), 0)
 
     def test_audio_blocked_explicit_retry(self):
         self.login()
@@ -262,22 +267,24 @@ class ChatFrontend(unittest.TestCase):
         self.assertEqual(self.page.evaluate('created'), self.page.evaluate('revoked'))
 
     def test_session_retry_after_unavailable(self):
+        self.login()
         self.page.route('**/api/chat.php?action=session', lambda r: r.fulfill(status=503, json={'error': 'Fixture session unavailable'}))
         self.page.reload()
         self.open()
         self.page.wait_for_function("document.querySelector('#jarvis-chat-status').textContent.includes('Fixture session unavailable')")
         self.page.unroute('**/api/chat.php?action=session')
         self.page.locator('#jarvis-chat-retry').click(timeout=1500)
-        self.page.wait_for_function("!document.querySelector('#jarvis-chat-login button[type=submit]').disabled")
+        self.page.locator('#jarvis-chat-conversation').wait_for(state='visible')
 
     def test_logout_clears_private_history_even_if_refresh_fails(self):
         self.history = [{'role': 'assistant', 'content': 'Private fixture'}]
         self.login()
         self.page.route('**/api/chat.php?action=session', lambda r: r.fulfill(status=503, json={'error': 'Fixture refresh down'}))
         self.page.locator('#jarvis-chat-logout').click()
-        self.page.wait_for_function("document.querySelector('#jarvis-chat-status').textContent.includes('Fixture refresh down')")
-        self.assertEqual(self.page.locator('#jarvis-chat-history').inner_text(), '')
-        self.assertTrue(self.page.locator('#jarvis-chat-login').is_visible())
+        self.page.wait_for_url('**/login.html')
+        self.page.wait_for_function("document.querySelector('#status').textContent.includes('Fixture refresh down')")
+        self.assertEqual(self.page.locator('#jarvis-chat-history').count(), 0)
+        self.assertTrue(self.page.locator('#access').is_visible())
 
     def test_no_message_during_logout(self):
         self.login()
@@ -288,11 +295,11 @@ class ChatFrontend(unittest.TestCase):
         self.assertFalse(any(c[0] == 'message' for c in self.calls))
 
     def test_minimize_responsive_login(self):
-        self.open()
+        self.login()
         panel = self.page.locator('#jarvis-chat-panel')
         self.assertTrue(panel.is_visible())
         self.assertLessEqual(panel.bounding_box()['width'], 400)
-        self.assertLessEqual(panel.bounding_box()['height'], 460)
+        self.assertLessEqual(panel.bounding_box()['height'], 620)
         self.page.locator('#jarvis-chat-minimize').click()
         self.assertFalse(panel.is_visible())
         self.page.set_viewport_size({'width': 375, 'height': 667})

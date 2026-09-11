@@ -1,0 +1,38 @@
+{
+  "uploads": 3,
+  "sizes": [
+    224483,
+    218339,
+    218339
+  ],
+  "initialMicCalls": 1,
+  "performance": {
+    "maxPending": 4,
+    "frames": 938,
+    "roundTripP95Ms": 3.700000047683716,
+    "roundTripMaxMs": 102.70000004768372,
+    "syntheticInjectionToPauseMs": [
+      238,
+      288.09999990463257
+    ]
+  },
+  "headful": true,
+  "errors": [],
+  "realONNX": true,
+  "realWorklet": true,
+  "physicalMic": false,
+  "AECtested": false,
+  "cases": [
+    "double barge-in",
+    "silence no auto-loop",
+    "stale STT",
+    "response deadline",
+    "late permission",
+    "denial",
+    "missing worker",
+    "real PHP 401",
+    "sidebar logout",
+    "mobile controls"
+  ],
+  "backend": "MC/model/STT/TTS fixtures, real PHP auth form and gate"
+}
