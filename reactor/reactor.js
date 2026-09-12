@@ -46,18 +46,19 @@
 
     const links = [];
     const energyDots = [];
-    const linkMaterial = new T.LineBasicMaterial({color:0x24566a,transparent:true,opacity:.42});
-    const activeLinkMaterial = new T.LineBasicMaterial({color:0x00c7d9,transparent:true,opacity:.95});
     const nodes = [];
     const hitTargets = [];
     STAGES.forEach(stage=>{
       const group = new T.Group(); group.name = 'mia-sun-'+stage.id; group.position.set(...stage.pos); group.userData.miaStage = stage.id;
-      const material = new T.MeshStandardMaterial({color:stage.color,emissive:stage.color,emissiveIntensity:.45,metalness:.35,roughness:.25});
+      const material = new T.MeshStandardMaterial({color:stage.color,emissive:stage.color,emissiveIntensity:1.25,metalness:.25,roughness:.2});
       const sun = new T.Mesh(new T.SphereGeometry(.28,16,12), material); sun.userData.miaStage=stage.id; group.add(sun);
-      const halo = new T.Mesh(new T.SphereGeometry(.46,12,8), new T.MeshBasicMaterial({color:stage.color,transparent:true,opacity:.12,depthWrite:false})); halo.userData.miaStage=stage.id; group.add(halo);
-      const ring = new T.Mesh(new T.TorusGeometry(.42,.012,5,24), new T.MeshBasicMaterial({color:stage.color,transparent:true,opacity:.65})); ring.userData.miaStage=stage.id; ring.rotation.x=.8; group.add(ring);
+      const shell = new T.Mesh(new T.SphereGeometry(.37,14,10), new T.MeshBasicMaterial({color:stage.color,transparent:true,opacity:.28,depthWrite:false,blending:T.AdditiveBlending})); shell.userData.miaStage=stage.id; group.add(shell);
+      const halo = new T.Mesh(new T.SphereGeometry(.52,12,8), new T.MeshBasicMaterial({color:stage.color,transparent:true,opacity:.24,depthWrite:false,blending:T.AdditiveBlending})); halo.userData.miaStage=stage.id; group.add(halo);
+      const ring = new T.Mesh(new T.TorusGeometry(.46,.018,6,32), new T.MeshBasicMaterial({color:stage.color,transparent:true,opacity:.92,blending:T.AdditiveBlending})); ring.userData.miaStage=stage.id; ring.rotation.x=.8; group.add(ring);
       galaxy.add(group); hitTargets.push(sun); nodes.push({stage,group,sun,halo,ring,material,active:false});
-      const line = makeLine(T,[0,0,0],stage.pos,linkMaterial); line.userData.miaStage=stage.id; galaxy.add(line); links.push({line,stage,active:false});
+      const lineMaterial = new T.LineBasicMaterial({color:stage.color,transparent:true,opacity:.72,blending:T.AdditiveBlending});
+      const activeLineMaterial = new T.LineBasicMaterial({color:stage.color,transparent:true,opacity:1,blending:T.AdditiveBlending});
+      const line = makeLine(T,[0,0,0],stage.pos,lineMaterial); line.userData.miaStage=stage.id; galaxy.add(line); links.push({line,stage,active:false,lineMaterial,activeLineMaterial});
       for(let q=0;q<3;q++){const dot = new T.Mesh(new T.SphereGeometry(.065,8,6), new T.MeshBasicMaterial({color:stage.color,transparent:true,opacity:.35,depthWrite:false,blending:T.AdditiveBlending})); dot.userData.miaStage=stage.id; galaxy.add(dot); energyDots.push({dot,stage,phase:q/3});}
     });
 
@@ -81,7 +82,7 @@
       if(stage){targetRotation=-Math.atan2(stage.pos[1],stage.pos[0])+.35;targetZoom=1.38;}
       else {targetRotation=0;targetZoom=1;}
       nodes.forEach(n=>{n.active=n.stage.id===id;n.group.scale.setScalar(n.active?1.35:1);});
-      links.forEach(l=>{l.active=l.stage.id===id;l.line.material=l.active?activeLinkMaterial:linkMaterial;});
+      links.forEach(l=>{l.active=l.stage.id===id;l.line.material=l.active?l.activeLineMaterial:l.lineMaterial;});
       return !id || !!stage;
     }
 
