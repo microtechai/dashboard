@@ -185,10 +185,10 @@ canvas#viz:active{cursor:grabbing}
 }
 </style>
 <script src="fire/shaders.js?v=20260908-volume6-target"></script>
-<script src="reactor/reactor.js?v=20260911-galaxy4-solar-labels"></script>
+<script src="reactor/reactor.js?v=20260912-galaxy5-crisp-flow"></script>
 <!-- Legacy voice/speech.js remains private on disk; chat owns microphone and TTS. -->
 <script src="integration.js?v=20260909-redesign2"></script>
-<link rel="stylesheet" href="chat/chat.css?v=20260911-dark-cyberpunk-live1">
+<link rel="stylesheet" href="chat/chat.css?v=20260912-crisp-stage-labels-flow1">
 <script src="chat/core-state.js?v=20260911-core-visual4"></script>
 <script defer src="chat/chat.js?v=20260911-workflow-intent2"></script>
 </head>
@@ -580,9 +580,12 @@ window.addEventListener('mia-workflow-intent', event => {
   if (window.dashboardFireController.focusStage(stage)) { showWorkflowContext(stage); showNotification('MIA enfoca ' + stage.toUpperCase()); }
 });
 document.querySelectorAll('[data-mia-stage]').forEach(button=>button.addEventListener('click',()=>window.dispatchEvent(new CustomEvent('mia-workflow-intent',{detail:{stage:button.dataset.miaStage,source:'hud'}}))));
+    const stageLabelLayer=document.createElement('div'); stageLabelLayer.id='mia-stage-labels'; stageLabelLayer.setAttribute('aria-hidden','true'); document.getElementById('mia-theater').appendChild(stageLabelLayer);
+    const stageLabelEls=new Map(); fireController.stageTargets.forEach(target=>{const el=document.createElement('span');el.className='mia-stage-label';el.dataset.stage=target.id;el.textContent=target.label;stageLabelLayer.appendChild(el);stageLabelEls.set(target.id,{el,target});});
 const miaStateVisual = window.JarvisCoreState.createVisualController(fireController.group);
 const fireMotionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
 const miaPosition = new THREE.Vector3();
+const miaLabelWorld = new THREE.Vector3();
 let miaFrame = {x:innerWidth/2,y:innerHeight*.31,radius:160};
 const miaAnchor = document.getElementById('mia-reactor-anchor');
 function measureMiaFrame(){const b=miaAnchor.getBoundingClientRect();miaFrame={x:b.x+b.width/2,y:b.y+b.height/2,radius:b.height/2};}
@@ -975,6 +978,7 @@ function animate(now = performance.now()){
   const halfHeight = camDist * Math.tan(camera.fov * Math.PI / 360);
   miaPosition.set((miaFrame.x / innerWidth * 2 - 1) * halfHeight * camera.aspect, (1 - miaFrame.y / innerHeight * 2) * halfHeight, -camDist).applyQuaternion(camera.quaternion).add(camera.position);
   fireController.group.position.copy(miaPosition);
+  stageLabelEls.forEach(({el,target})=>{target.group.getWorldPosition(miaLabelWorld); const projected=miaLabelWorld.clone().project(camera); const visible=projected.z>-1&&projected.z<1&&currentView==='dashboard'; el.hidden=!visible; if(visible){el.style.left=((projected.x*.5+.5)*innerWidth)+'px';el.style.top=((-projected.y*.5+.5)*innerHeight)+'px';el.dataset.active=String(target.id===document.querySelector('[data-mia-stage][data-active=true]')?.dataset.stage);}});
 
 
   rings3d.forEach((ring, i) => {
