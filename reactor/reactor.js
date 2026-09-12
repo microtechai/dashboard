@@ -56,10 +56,9 @@
       const sun = new T.Mesh(new T.SphereGeometry(.28,16,12), material); sun.userData.miaStage=stage.id; group.add(sun);
       const halo = new T.Mesh(new T.SphereGeometry(.46,12,8), new T.MeshBasicMaterial({color:stage.color,transparent:true,opacity:.12,depthWrite:false})); halo.userData.miaStage=stage.id; group.add(halo);
       const ring = new T.Mesh(new T.TorusGeometry(.42,.012,5,24), new T.MeshBasicMaterial({color:stage.color,transparent:true,opacity:.65})); ring.userData.miaStage=stage.id; ring.rotation.x=.8; group.add(ring);
-      if(typeof document!=='undefined'){const labelCanvas=document.createElement('canvas'); labelCanvas.width=512; labelCanvas.height=72; const labelCtx=labelCanvas.getContext('2d'); labelCtx.font='700 28px system-ui'; labelCtx.textAlign='center'; labelCtx.fillStyle='#d9f7ff'; labelCtx.shadowColor='#00a6bd'; labelCtx.shadowBlur=10; labelCtx.fillText(stage.label,256,38); const label=new T.Sprite(new T.SpriteMaterial({map:new T.CanvasTexture(labelCanvas),transparent:true,depthTest:false})); label.scale.set(1.7,.24,1); label.position.set(0,-.55,.05); label.userData.miaStage=stage.id; group.add(label);}
       galaxy.add(group); hitTargets.push(sun); nodes.push({stage,group,sun,halo,ring,material,active:false});
       const line = makeLine(T,[0,0,0],stage.pos,linkMaterial); line.userData.miaStage=stage.id; galaxy.add(line); links.push({line,stage,active:false});
-      const dot = new T.Mesh(new T.SphereGeometry(.07,8,6), new T.MeshBasicMaterial({color:stage.color,transparent:true,opacity:.12,depthWrite:false})); dot.userData.miaStage=stage.id; galaxy.add(dot); energyDots.push({dot,stage});
+      for(let q=0;q<3;q++){const dot = new T.Mesh(new T.SphereGeometry(.065,8,6), new T.MeshBasicMaterial({color:stage.color,transparent:true,opacity:.35,depthWrite:false,blending:T.AdditiveBlending})); dot.userData.miaStage=stage.id; galaxy.add(dot); energyDots.push({dot,stage,phase:q/3});}
     });
 
     const starField = new T.Points(new T.BufferGeometry(), new T.PointsMaterial({color:0x29e7ff,size:.018,transparent:true,opacity:.42}));
@@ -92,6 +91,7 @@
       stats:{paths:STAGES.length,segments:1,nodes:STAGES.length},
       get levels(){return {input:inputLevel,output:outputLevel};},
       get zoomFactor(){return zoomFactor;},
+      get stageTargets(){return nodes.map(node=>({id:node.stage.id,label:node.stage.label,group:node.group,sun:node.sun}));},
       focusStage,
       setState(options={}){reduced=!!options.reducedMotion;},
       update(delta){
@@ -106,7 +106,7 @@
         core.rotation.y = time*.35;
         coreMaterial.color.setHex(PALETTE[state]||PALETTE.idle); coreMaterial.emissive.setHex(PALETTE[state]||PALETTE.idle); coreMaterial.emissiveIntensity=1.1+pulse*1.8;
         core.scale.setScalar(1+pulse*.18); coreGlow.material.opacity=.10+pulse*.12; aura.material.opacity=.025+pulse*.08; key.intensity=2.0+pulse*2.0;
-        energyDots.forEach(({dot,stage})=>{const t=(time*.28+STAGES.indexOf(stage)*.17)%1; dot.position.set(stage.pos[0]*t,stage.pos[1]*t,stage.pos[2]*t); dot.material.opacity=selected===stage.id?.85:.12; dot.scale.setScalar(selected===stage.id?1.5:1);});
+        energyDots.forEach(({dot,stage,phase})=>{const t=(time*.42+STAGES.indexOf(stage)*.11+phase)%1; dot.position.set(stage.pos[0]*t,stage.pos[1]*t,stage.pos[2]*t); dot.material.opacity=selected===stage.id?.98:.35; dot.scale.setScalar(selected===stage.id?1.8:1);});
         nodes.forEach(node=>{const amount=node.active?pulse*.8:0;node.material.emissiveIntensity=.35+amount;node.halo.material.opacity=node.active?.16+amount*.2:.08;node.ring.rotation.z=time*(node.active?1.4:.35);});
       },
       dispose(){
