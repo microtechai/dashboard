@@ -41,8 +41,11 @@
       const ring = new T.Mesh(new T.TorusGeometry(radius,.012,6,96), orbitMaterials[i]);
       ring.rotation.x = .85 + i*.16; ring.rotation.z = i*.22; ring.userData.miaOrbit = true; galaxy.add(ring);
     });
+    const grid = new T.GridHelper(14,28,0x00a6bd,0x09253a); grid.position.y=-4.4; grid.material.transparent=true; grid.material.opacity=.12; galaxy.add(grid);
+    const aura = new T.Mesh(new T.SphereGeometry(1.05,24,16), new T.MeshBasicMaterial({color:0xd51f8f,transparent:true,opacity:.035,depthWrite:false})); aura.userData.miaCore=true; galaxy.add(aura);
 
     const links = [];
+    const energyDots = [];
     const linkMaterial = new T.LineBasicMaterial({color:0x24566a,transparent:true,opacity:.42});
     const activeLinkMaterial = new T.LineBasicMaterial({color:0x00c7d9,transparent:true,opacity:.95});
     const nodes = [];
@@ -56,11 +59,12 @@
       if(typeof document!=='undefined'){const labelCanvas=document.createElement('canvas'); labelCanvas.width=512; labelCanvas.height=72; const labelCtx=labelCanvas.getContext('2d'); labelCtx.font='700 28px system-ui'; labelCtx.textAlign='center'; labelCtx.fillStyle='#d9f7ff'; labelCtx.shadowColor='#00a6bd'; labelCtx.shadowBlur=10; labelCtx.fillText(stage.label,256,38); const label=new T.Sprite(new T.SpriteMaterial({map:new T.CanvasTexture(labelCanvas),transparent:true,depthTest:false})); label.scale.set(1.7,.24,1); label.position.set(0,-.55,.05); label.userData.miaStage=stage.id; group.add(label);}
       galaxy.add(group); hitTargets.push(sun); nodes.push({stage,group,sun,halo,ring,material,active:false});
       const line = makeLine(T,[0,0,0],stage.pos,linkMaterial); line.userData.miaStage=stage.id; galaxy.add(line); links.push({line,stage,active:false});
+      const dot = new T.Mesh(new T.SphereGeometry(.07,8,6), new T.MeshBasicMaterial({color:stage.color,transparent:true,opacity:.12,depthWrite:false})); dot.userData.miaStage=stage.id; galaxy.add(dot); energyDots.push({dot,stage});
     });
 
     const starField = new T.Points(new T.BufferGeometry(), new T.PointsMaterial({color:0x29e7ff,size:.018,transparent:true,opacity:.42}));
-    const positions = new Float32Array(180*3);
-    for(let i=0;i<180;i++){positions[i*3]=(Math.random()-.5)*15;positions[i*3+1]=(Math.random()-.5)*12;positions[i*3+2]=(Math.random()-.5)*8;}
+    const positions = new Float32Array(320*3);
+    for(let i=0;i<320;i++){positions[i*3]=(Math.random()-.5)*15;positions[i*3+1]=(Math.random()-.5)*12;positions[i*3+2]=(Math.random()-.5)*8;}
     starField.geometry.setAttribute('position',new T.BufferAttribute(positions,3)); galaxy.add(starField);
 
     const key = new T.PointLight(0x00a6bd,2.3,14); key.position.set(-2,3,5); galaxy.add(key);
@@ -95,7 +99,8 @@
         starField.rotation.y = time*.008;
         core.rotation.y = time*.35;
         coreMaterial.color.setHex(PALETTE[state]||PALETTE.idle); coreMaterial.emissive.setHex(PALETTE[state]||PALETTE.idle); coreMaterial.emissiveIntensity=1.1+pulse*1.8;
-        core.scale.setScalar(1+pulse*.18); coreGlow.material.opacity=.10+pulse*.12; key.intensity=2.0+pulse*2.0;
+        core.scale.setScalar(1+pulse*.18); coreGlow.material.opacity=.10+pulse*.12; aura.material.opacity=.025+pulse*.08; key.intensity=2.0+pulse*2.0;
+        energyDots.forEach(({dot,stage})=>{const t=(time*.28+STAGES.indexOf(stage)*.17)%1; dot.position.set(stage.pos[0]*t,stage.pos[1]*t,stage.pos[2]*t); dot.material.opacity=selected===stage.id?.85:.12; dot.scale.setScalar(selected===stage.id?1.5:1);});
         nodes.forEach(node=>{const amount=node.active?pulse*.8:0;node.material.emissiveIntensity=.35+amount;node.halo.material.opacity=node.active?.16+amount*.2:.08;node.ring.rotation.z=time*(node.active?1.4:.35);});
       },
       dispose(){
