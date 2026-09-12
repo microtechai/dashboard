@@ -69,7 +69,7 @@
 
     const key = new T.PointLight(0x00a6bd,2.3,14); key.position.set(-2,3,5); galaxy.add(key);
     const rim = new T.PointLight(0xd51f8f,1.2,12); rim.position.set(4,-2,-3); galaxy.add(rim);
-    let time=0, disposed=false, reduced=false, selected=null, inputLevel=0, outputLevel=0, inputAt=0, outputAt=0;
+    let time=0, disposed=false, reduced=false, selected=null, inputLevel=0, outputLevel=0, inputAt=0, outputAt=0, targetRotation=0, zoomFactor=1, targetZoom=1;
 
     function inputEvent(event){const detail=event.detail||{};if(detail.channel!=='input')return;inputLevel=clamp(detail.level);inputAt=root.performance.now();}
     function stateEvent(event){const detail=event.detail||{}; if(!PALETTE[detail.state])return; state=detail.state; level=clamp(detail.level); updated=root.performance.now(); if(detail.state==='listening'){inputLevel=level;inputAt=updated;} else {inputLevel=0;inputAt=0;} if(detail.state==='speaking'){outputLevel=level;outputAt=updated;} else {outputLevel=0;outputAt=0;} if(!['listening','speaking'].includes(detail.state))level=0; }
@@ -78,9 +78,12 @@
 
     function focusStage(id){
       selected=id;
+      const stage=STAGES.find(item=>item.id===id);
+      if(stage){targetRotation=-Math.atan2(stage.pos[1],stage.pos[0])+.35;targetZoom=1.38;}
+      else {targetRotation=0;targetZoom=1;}
       nodes.forEach(n=>{n.active=n.stage.id===id;n.group.scale.setScalar(n.active?1.35:1);});
       links.forEach(l=>{l.active=l.stage.id===id;l.line.material=l.active?activeLinkMaterial:linkMaterial;});
-      return STAGES.some(s=>s.id===id);
+      return !id || !!stage;
     }
 
     const controller = {
@@ -88,12 +91,15 @@
       hitTargets,
       stats:{paths:STAGES.length,segments:1,nodes:STAGES.length},
       get levels(){return {input:inputLevel,output:outputLevel};},
+      get zoomFactor(){return zoomFactor;},
       focusStage,
       setState(options={}){reduced=!!options.reducedMotion;},
       update(delta){
         if(disposed||!Number.isFinite(delta)||delta<0)return;
         const now=root.performance.now(); if(now-updated>1000)level=0; if(now-inputAt>1000)inputLevel=0; if(now-outputAt>1000)outputLevel=0;
         if(!reduced)time+=Math.min(delta,.06);
+        galaxy.rotation.z += reduced?0:(targetRotation-galaxy.rotation.z)*.045;
+        zoomFactor += (targetZoom-zoomFactor)*(reduced?1:.045);
         const pulse=reduced?0:(state==='thinking'?.18+Math.sin(time*4)*.06:Math.max(level,inputLevel,outputLevel));
         galaxy.rotation.z += reduced?0:delta*.018;
         starField.rotation.y = time*.008;

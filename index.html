@@ -665,28 +665,36 @@ scene.add(particles3d);
 // HOVER
 const raycaster = new THREE.Raycaster();
 const mouse3d = new THREE.Vector2();
+let hoveredStage = null;
 
 function checkHover(mx, my){
   mouse3d.x = (mx / window.innerWidth) * 2 - 1;
   mouse3d.y = -(my / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse3d, camera);
-  const intersects = raycaster.intersectObjects(nodeMeshes.filter(mesh=>mesh.visible));
-  hoveredNode = null;
-  if(intersects.length > 0){
-    hoveredNode = intersects[0].object.userData.node;
+  const stageHits = raycaster.intersectObjects(fireController.hitTargets || [], true);
+  const nodeHits = raycaster.intersectObjects(nodeMeshes.filter(mesh=>mesh.visible), true);
+  hoveredNode = null; hoveredStage = null;
+  const stageHit = stageHits[0], nodeHit = nodeHits[0];
+  if(stageHit && (!nodeHit || stageHit.distance <= nodeHit.distance)){
+    hoveredStage = stageHit.object.userData.miaStage;
+    const label = (window.MiaReactor.stages||[]).find(item=>item.id===hoveredStage)?.label || hoveredStage;
+    const tt=document.getElementById('tooltip'); tt.querySelector('.tt-name').textContent=label; tt.querySelector('.tt-meta').textContent='Workflow MIA · foco cinematográfico'; tt.classList.add('visible'); tt.style.left=(mx+16)+'px'; tt.style.top=(my-10)+'px'; canvas.style.cursor='pointer';
+  } else if(nodeHit){
+    hoveredNode = nodeHit.object.userData.node;
     const tt = document.getElementById('tooltip');
     tt.querySelector('.tt-name').textContent = hoveredNode.label;
     tt.querySelector('.tt-meta').textContent = hoveredNode.desc;
-    tt.classList.add('visible');
-    tt.style.left = (mx + 16) + 'px'; tt.style.top = (my - 10) + 'px';
-    canvas.style.cursor = 'pointer';
+    tt.classList.add('visible'); tt.style.left = (mx + 16) + 'px'; tt.style.top = (my - 10) + 'px'; canvas.style.cursor = 'pointer';
   } else {
     document.getElementById('tooltip').classList.remove('visible');
     canvas.style.cursor = isDragging ? 'grabbing' : 'grab';
   }
 }
 
-canvas.addEventListener('click', e => { if(hoveredNode) showNodeDetail(hoveredNode); });
+canvas.addEventListener('click', e => {
+  if(hoveredStage) window.dispatchEvent(new CustomEvent('mia-workflow-intent',{detail:{stage:hoveredStage,source:'canvas'}}));
+  else if(hoveredNode) showNodeDetail(hoveredNode);
+});
 
 // Maps the existing 17-node catalog to the seven visible workflow suns.
 function focusMiaWorkflowForNode(node){
@@ -963,7 +971,7 @@ function animate(now = performance.now()){
   fireController.group.visible = currentView === 'dashboard';
   // Frame the face above the single chat bar in viewport-relative coordinates.
   const miaRadius = miaFrame.radius;
-  fireController.group.scale.setScalar(miaRadius * camDist * Math.tan(camera.fov * Math.PI / 360) / innerHeight);
+  fireController.group.scale.setScalar(miaRadius * camDist * Math.tan(camera.fov * Math.PI / 360) / innerHeight * fireController.zoomFactor);
   const halfHeight = camDist * Math.tan(camera.fov * Math.PI / 360);
   miaPosition.set((miaFrame.x / innerWidth * 2 - 1) * halfHeight * camera.aspect, (1 - miaFrame.y / innerHeight * 2) * halfHeight, -camDist).applyQuaternion(camera.quaternion).add(camera.position);
   fireController.group.position.copy(miaPosition);

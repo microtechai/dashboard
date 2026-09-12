@@ -28,7 +28,7 @@ test('pipeline removed; existing render loop and raycaster retain sole ownership
   assert.doesNotMatch(html, /mia-pipeline|data-stage=/);
   assert.equal((html.match(/requestAnimationFrame\(/g) || []).length, 1);
   assert.equal((html.match(/new THREE.WebGLRenderer\(/g) || []).length, 1);
-  assert.match(html, /intersectObjects\(nodeMeshes.filter\(mesh=>mesh.visible\)\)/);
+  assert.match(html, /intersectObjects\(nodeMeshes\.filter\(mesh=>mesh\.visible\), true\)/);
   assert.match(html, /miaStateVisual.update\(now, time, fireMotionPreference.matches\)/);
   assert.doesNotMatch(source, /requestAnimationFrame|setTimeout|AudioContext|getUserMedia|createAnalyser/);
 });
